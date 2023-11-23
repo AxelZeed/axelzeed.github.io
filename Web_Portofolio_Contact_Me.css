@@ -2,6 +2,21 @@
     box-sizing: border-box;
 }
 
+@font-face {
+    font-family: Code Next;
+    src : url('/font/CodeNext-ExtraBold.otf');
+    src : url('/font/CodeNext-ExtraBoldItalic.otf');
+    
+    font-family: Century Gothic;
+    src : url('/font/Century\ Gothic.ttf');
+    src : url('/font/CenturyGothic.ttf');
+    src : url('/font/GOTHIC.TTF');
+    src : url('/font/GOTHICB.TTF');
+    src : url('/font/GOTHICB0.TTF');
+    src : url('/font/GOTHICI.TTF');
+    src : url('/font/GOTHICBI.TTF');
+}
+
 html, body{
     background-color: #e6eced;
     padding-bottom: 0;
