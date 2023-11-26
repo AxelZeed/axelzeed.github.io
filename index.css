@@ -253,3 +253,9 @@ html, body{
     }
 
 }
+
+@media screen and (max-width: 500px) {
+    .navbar_container_right a{
+        font-size: 14px;
+    }
+}
