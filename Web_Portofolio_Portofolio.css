@@ -329,3 +329,15 @@ html, body{
         height: 350px;
     }
 }
+
+@media screen and (max-width: 500px) {
+    .navbar_container_right a{
+        font-size: 14px;
+    }
+
+    .header_video_frame_column iframe{
+        width: 235px;
+        height: 132px;
+        margin: auto auto 40px;
+    }
+}
