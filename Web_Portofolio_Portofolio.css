@@ -270,12 +270,17 @@ html, body{
         height: 281px;
         margin: auto auto 50px;
     }
+
+    .header_container{
+        height : auto;
+        padding: 150px 75px 100px;
+    }
 }
 
 @media screen and (max-width: 750px) {
     .header_video_frame_column iframe{
-        width: 400px;
-        height: 225px;
+        width: 450px;
+        height: 253px;
         margin: auto auto 40px;
     }
 
@@ -283,6 +288,15 @@ html, body{
         flex: 100%;
         max-width: 100%;
         padding: 0 4px;
+    }
+
+    .header_container{
+        height : auto;
+        padding: 150px 75px 100px;
+    }
+
+    .header_video{
+        width : 100%;
     }
 }
 
@@ -320,9 +334,18 @@ html, body{
     }
 
     .header_video_frame_column iframe{
-        width: 285px;
-        height: 160px;
+        width: 350px;
+        height: 196px;
         margin: auto auto 40px;
+    }
+
+    .header_video{
+        width : 100%;
+    }
+
+    .header_container{
+        height : auto;
+        padding: 150px 75px 100px;
     }
 
     .footer_content{
@@ -336,8 +359,30 @@ html, body{
     }
 
     .header_video_frame_column iframe{
-        width: 235px;
-        height: 132px;
+        width: 325px;
+        height: 182px;
         margin: auto auto 40px;
+    }
+
+    .header_container{
+        height : auto;
+        padding: 150px 30px 100px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .navbar_container_right a{
+        font-size: 14px;
+    }
+
+    .header_video_frame_column iframe{
+        width: 300px;
+        height: 168px;
+        margin: auto auto 40px;
+    }
+
+    .header_container{
+        height : auto;
+        padding: 150px 25px 100px;
     }
 }
