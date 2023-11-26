@@ -430,3 +430,23 @@ html, body{
         height: 350px;
     }
 }
+
+@media screen and (max-width: 600px) {
+    .upper_section{
+        width: 90%;
+        font-family: Code Next;
+        color: white;
+        margin: 20px auto 30px auto;
+    }
+
+    .bottom_section{
+        width : 90%;
+        margin: 50px auto 20px auto;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .navbar_container_right a{
+        font-size: 14px;
+    }
+}
