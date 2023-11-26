@@ -300,3 +300,34 @@ html, body{
         flex-wrap: wrap;
     }
 }
+
+@media screen and (max-width: 415px) {
+    .header_container{
+        height : 100%;
+        width : 95%;
+        padding : 140px auto 40px;
+        margin-bottom : 80px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #header_form_name{
+        margin-left: 100px;
+        border-radius: 4px;
+    }
+    
+    #header_form_email{
+        margin-left: 105px;
+        border-radius: 4px;
+    }
+    
+    #header_form_phone{
+        margin-left: 28px;
+        border-radius: 4px;
+    }
+    
+    #header_form_question{
+        border-radius: 4px;
+        width: 50px;
+    }
+}
