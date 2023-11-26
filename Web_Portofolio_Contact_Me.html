@@ -1,333 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Contact Me</title>
+        <link rel="stylesheet" href="Web_Portofolio_Contact_Me.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
 
-*{
-    box-sizing: border-box;
-}
+    <body>
+        <!-- Navbar Content -->
 
-@font-face {
-    font-family: Code Next;
-    src : url('/font/CodeNext-Trial-Bold.otf');
-    
-    font-family: Century Gothic;
-    src : url('/font/Century\ Gothic.otf');
-}
+        <div class="navbar_content">
+            <a href="Web_Portofolio_Home.html" target="new" class="navbar_img">
+                <img src="Logo_White.png" alt="My Logo" width="65" height="44" id="navbar_logo"/>
+            </a>
+            <div  class="navbar_container_right">
+                <a href="index.html" target="new" class="navbar_link">Home</a>
+                <a href="Web_Portofolio_About_Me.html" target="new" class="navbar_link">About Me</a>
+                <a href="Web_Portofolio_Portofolio.html" target="new" class="navbar_link">Portfolio</a>
+                <a href="Web_Portofolio_Contact_Me.html" target="new" class="navbar_link active">Contact Me</a>
+            </div>
+        </div>
 
+        <!-- Header Content -->
+        <div class="header_container">
+            <div class="header_intro">
+                <h1>Hi! Glad to see you here!</h1>
+                <h3>If you wondering how you get here, well because you click on the Contact Me button.<br>
+                    Since you are here, why don't you ask some questions or anything you want to say? Go for it~
+                </h3>
+            </div>
 
-html, body{
-    background-color: #e6eced;
-    padding-bottom: 0;
-    margin : 0;
-    height: 750px; 
-    background-image: url('Hill_Background.jpg');
-    background-repeat: no-repeat;
-}
+            <div class="header_form">
+                <div class="header_form_container">
+                    <h1>Contact Me</h1>
 
-/* Navbar Content */
-.navbar_content{
-    z-index: 2;
-    top : 0;
-    width : 98%;
-    margin : 15px 1% 0 1%;
-    text-align: center;
-    justify-content: center;
-    position: fixed;
-    padding : 10px;
-    background-color: #6a84aa;
-    overflow : hidden;
-    border-radius: 20px;
-}
+                    <form autocomplete="on">
+                        <label for="header_form_nama">Name</label>
+                        <input type="text" id="header_form_name" name="header_form_nama" cols="20"><br><br>
+                    
+                        <label for="header_form_email">Email</label>
+                        <input type="text" id="header_form_email" name="header_form_email" cols="20"><br><br>
+                        
+                        <label for="header_form_email">Phone Number</label>
+                        <input type="text" id="header_form_phone" name="header_form_phone" row="20"><br><br>
 
-.navbar_container_right a{
-    float : left;
-    padding : 8px;
-    font-size: 18px;
-    border-radius: 5px;
-    margin : 0 5px;
-}
+                        <label for="header_form_email">What Do You Want To Say?</label><br>
+                        <textarea id="header_form_question" name="header_form_question" style="width:325px;height:150px;"></textarea><br><br><br>
 
-.navbar_img{
-    float : left;
-    padding : 10px 8px 4px 8px;
-    border-radius: 5px;
-    margin : 0 5px;
-}
+                        <input type="submit" value="Submit" class="header_form_button"> <input type="reset" value="Reset" class="header_form_button">
+                    </form>
+                </div>
+            </div>
+        </div>
 
-.navbar_content a.active{
-    background-color: #394d99;
-}
+        <!-- Footer Content -->
+        <div class="footer_content">
+            <div class="footer_desc">
+                <h2>Edgi Axel Limandibrata</h2>
+                <p>I am a STMIK LIKMI student majoring in Software Engineering & Mobile App Development.</p>
+            
 
-.navbar_content a:hover{
-    background-color: #1d2d77;
-}
+                <ul class="social_icon">
+                    <li class="social_icon_item">
+                        <a class="social_icon_link" href="https://youtube.com/@axelzeed?si=0k375oX5JY4gNBa_" target="new">
+                            <img src="Youtube_Logo.png" alt="My Youtube" width="54" height="40" class="social_icon_img"/>
+                        </a>
+                    </li>
 
-.navbar_container_right{
-    float : right;
-    margin : 14px auto;
-}
+                    <li class="social_icon_item">
+                        <a class="social_icon_link" href="https://twitter.com/axel_zeed" target="new">
+                            <img src="Twitter_Logo.png" alt="My Twitter" width="42" height="40" class="social_icon_img"/>
+                        </a>
+                    </li>
 
-.navbar_link{
-    font-family: Code Next;
-    text-decoration: none;
-    color : white;
-}
+                    <li class="social_icon_item">
+                        <a class="social_icon_link" href="https://www.instagram.com/axel_zeed/" target="new">
+                            <img src="Instagram_Logo.png" alt="My Instagram" width="42" height="43" class="social_icon_img"/>
+                        </a>
+                    </li>
 
-/* Header Content */
-.header_container{
-    height : 100%;
-    width : 100%;
-    padding : 140px 10% 40px;
-	margin-bottom : 80px;
-    display: flex;
-    flex-wrap: wrap;
-}
+                <p>© 2023 Edgi Axel Limandibrata. All Rights Reserved.</p>
+            </div>
+        </div>
 
-.header_intro{
-    padding : 5%;
-    text-align: center;
-    justify-content: center;
-    flex : 50%;
-    max-width: 50%;
-}
-
-.header_intro h1{
-    font-family: Code Next;
-    color : white;
-}
-
-.header_intro h3{
-    font-family : Century Gothic;
-    color : white;
-}
-
-.header_form{
-    padding : 5%;
-    color : white;
-    flex : 50%;
-    max-width: 50%;
-}
-
-.header_form_container{
-    margin: auto;
-    text-align: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.header_form h1{
-    font-family : Code Next;
-}
-
-.header_form label{
-    font-family : Century Gothic;
-}
-
-.header_form input{
-    font-family : Century Gothic;
-}
-
-#header_form_name{
-    margin-left: 150px;
-    border-radius: 4px;
-}
-
-#header_form_email{
-    margin-left: 157px;
-    border-radius: 4px;
-}
-
-#header_form_phone{
-    margin-left: 80px;
-    border-radius: 4px;
-}
-
-#header_form_question{
-    border-radius: 4px;
-}
-
-.header_form_button{
-    width : 100px;
-    height : 40px;
-    font-size: 18px;
-    border-radius: 10px;
-}
-
-#header_form_question{
-    height: 70px;
-    width : 350px;
-    overflow : scroll;
-}
-
-/* Footer Content */
-.footer_content{
-    height : 300px;
-    width : 100%;
-    background-color: #36586b;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    bottom : 0;
-    overflow : hidden;
-    
-}
-
-.footer_desc{
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    margin-top : -15px;
-    margin-bottom: -12px;
-}
-
-.footer_desc h2{
-    font-size: 30px;
-    margin : 10px auto;
-}
-
-.footer_desc p{
-    width : 60%;
-    margin: 15px 18%;
-}
-
-.footer_desc h2{
-    font-family : Code Next;
-    color: white;
-}
-
-.footer_desc p{
-    font-family : Century Gothic;
-    color: white;
-}
-
-.social_icon{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0;
-    flex-wrap: wrap;
-    padding : 0 5px;
-}
-
-.social_icon_item{
-    list-style: none;
-    height : 60px;
-    padding-top: 8px;
-}
-
-.social_icon_item:hover{
-    background-color: #123069;
-    border-radius: 10px;
-}
-
-.social_icon_link{
-    text-decoration: none;
-    font-size: 20px;
-    color: #fff;
-    margin: 0 20px;
-    display: inline-block;
-}
-
-@media screen and (max-width: 1100px) {
-    body{
-        height: 1000px;
-    }
-    
-    .header_intro{
-        flex: 100%;
-        max-width: 100%;
-    }
-
-    .header_form{
-        flex: 100%;
-        max-width: 100%;
-    }
-
-    .header_container{
-        padding-top: 150px;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    html, body{
-        padding-top: 30px;
-        height: 1100px;
-    }
-    
-    .navbar_content{
-        float: none;
-        display: block;
-        text-align: left;
-        width : 98%;
-        margin: 7px 0 0 6px;
-    }
-
-    .navbar_img{
-        width: 100%;
-    }
-
-    #navbar_logo{
-        margin : 0 40% 17px 40%;
-    }
-
-    .navbar_container_right a{
-        width: 25%;
-        margin : 2px 0 0 0;
-        text-align: center;
-        font-size: 16px;
-    }
-
-    .navbar_container_right{
-        width: 100%;
-        margin: 2% 0 0 0;
-    }
-
-    .footer_content{
-        height: 350px;
-    }
-    
-}
-
-@media screen and (max-width: 500px) {
-    .navbar_container_right a{
-        font-size: 14px;
-    }
-
-    .header_container{
-        height : 100%;
-        width : 100%;
-        padding : 140px 3% 40px;
-        margin-bottom : 80px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-}
-
-@media screen and (max-width: 415px) {
-    .header_container{
-        height : 100%;
-        width : 95%;
-        padding : 140px auto 40px;
-        margin-bottom : 80px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    #header_form_name{
-        margin-left: 100px;
-        border-radius: 4px;
-    }
-    
-    #header_form_email{
-        margin-left: 105px;
-        border-radius: 4px;
-    }
-    
-    #header_form_phone{
-        margin-left: 28px;
-        border-radius: 4px;
-    }
-    
-    #header_form_question{
-        border-radius: 4px;
-        width: 50px;
-    }
-}
+    </body>
+</html>
