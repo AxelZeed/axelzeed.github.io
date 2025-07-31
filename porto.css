@@ -1,0 +1,217 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Nexa', sans-serif;
+    background-image: url("Assets/BG.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    line-height: 1.6;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Body Section */
+.main-body {
+    width: 95%;
+    max-width: 1200px;
+    margin: 20px auto 60px;
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.section-title {
+    text-align: center;
+    font-weight: 700;
+    color: #E3E9F9;
+    font-size: 2.5em;
+    margin: 40px auto 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Scroll Animation Classes */
+.hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Gallery Layout */
+.gallery-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+    /* Gutter compensation */
+}
+
+.gallery-column {
+    flex: 1 0 100%;
+    /* Full width on mobile */
+    max-width: 100%;
+    padding: 10px;
+    /* Gutter */
+    position: relative;
+}
+
+.gallery-column-hover {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-column-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-column-hover img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.4s ease-in-out;
+}
+
+.gallery-column-hover:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-column-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(40, 52, 73, 0);
+    /* Transparent initially */
+    opacity: 0;
+    transition: background-color 0.4s ease, opacity 0.4s ease;
+}
+
+.gallery-column-hover:hover .gallery-column-content {
+    background-color: rgba(40, 52, 73, 0.8);
+    opacity: 1;
+}
+
+.gallery-column-content-text {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    transform: translateY(15px);
+    opacity: 0;
+    transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+}
+
+.gallery-column-hover:hover .gallery-column-content-text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Review Section */
+.main-review {
+    background-color: rgba(36, 46, 58, 0.8);
+    padding: 40px;
+    border-radius: 18px;
+    margin-top: 60px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.review-placeholder {
+    padding: 30px;
+    border-radius: 10px;
+    color: #E3E9F9;
+    font-size: 1.2em;
+    font-style: italic;
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Tablet Portrait */
+@media (min-width: 600px) {
+    .gallery-column {
+        flex-basis: 50%;
+        max-width: 50%;
+    }
+}
+
+/* Tablet Landscape */
+@media (min-width: 900px) {
+    .gallery-column {
+        flex-basis: 33.333%;
+        max-width: 33.333%;
+    }
+
+    /* Special layout for chibi on wider screens */
+    .gallery-row.chibi .gallery-column {
+        flex-basis: 25%;
+        max-width: 25%;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1200px) {
+    .gallery-column {
+        flex-basis: 25%;
+        max-width: 25%;
+    }
+
+    .gallery-row.emotes .gallery-column {
+        flex-basis: 50%;
+        max-width: 50%;
+    }
+
+    .gallery-row.models .gallery-column {
+        flex-basis: 33.333%;
+        max-width: 33.333%;
+    }
+
+    .gallery-row.overlay .gallery-column {
+        flex-basis: 50%;
+        max-width: 50%;
+    }
+
+    .gallery-row.video .gallery-column {
+        flex-basis: 33.333%;
+        max-width: 33.333%;
+    }
+}

@@ -1,0 +1,287 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-ExtraLight.ttf') format('truetype');
+    font-weight: 300;
+    /* ExtraLight */
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-weight: 700;
+    /* Heavy */
+}
+
+body {
+    background-image: url("Assets/BG.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Nexa', sans-serif;
+    color: #fff;
+    /* Default text color for body */
+    line-height: 1.6;
+    min-height: 100vh;
+    /* Ensure body takes full viewport height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Body Section */
+.main-body {
+    width: 90%;
+    /* Adjusted for better mobile display */
+    max-width: 1200px;
+    /* Max width to prevent content from stretching too much on large screens */
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    /* Increased gap for better spacing */
+    flex-grow: 1;
+    /* Allow main-body to grow and push footer down */
+}
+
+.main-body h2 {
+    font-size: 2.5em;
+    /* Larger heading */
+    text-align: center;
+    margin-bottom: 20px;
+    color: #E3E9F9;
+    /* Light color for headings */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    /* Subtle text shadow */
+}
+
+.main-body p {
+    text-align: justify;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+    color: white;
+    /* Slightly lighter text for readability */
+}
+
+.main-body-left,
+.main-body-right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-body-left img {
+    width: 90%;
+    /* Adjusted for better mobile image size */
+    max-width: 500px;
+    /* Max width for image */
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    /* Added shadow for depth */
+    transition: transform 0.3s ease-in-out;
+    /* Smooth hover effect */
+}
+
+.main-body-left img:hover {
+    transform: scale(1.02);
+    /* Slightly enlarge image on hover */
+}
+
+.main-body-right {
+    text-align: center;
+    /* Center align text for mobile */
+}
+
+.main-body-right p {
+    width: 100%;
+    max-width: 480px;
+    text-align: justify;
+    text-align-last: left;
+}
+
+.main-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.main-buttons-container a {
+    text-decoration: none;
+}
+
+.main-body-button {
+    padding: 12px 25px;
+    background-color: #E3E9F9;
+    color: #38445E;
+    border-radius: 25px;
+    /* More rounded buttons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    /* Added transform for hover effect */
+    cursor: pointer;
+    text-decoration: none;
+    /* Remove underline from anchor tags */
+    font-weight: 700;
+    /* Bold text */
+    font-size: 1.1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Button shadow */
+}
+
+.main-body-button:hover {
+    background-color: #38445E;
+    color: white;
+    transform: translateY(-3px);
+    /* Lift button on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.main-body-button img {
+    width: 25px;
+    /* Slightly smaller icons */
+    height: 25px;
+    margin-right: 12px;
+    transition: filter 0.3s ease;
+    filter: brightness(1);
+    /* Ensure initial icon color */
+}
+
+.main-body-button:hover img {
+    filter: brightness(200%);
+    /* Make icons brighter on hover */
+}
+
+/* Specific button icon changes on hover */
+.button-porto:hover img {
+    content: url('Assets/Placeholder.png');
+}
+
+.button-debut:hover img {
+    content: url('Assets/Placeholder.png');
+}
+
+.button-vgen:hover img {
+    content: url('Assets/VGen.png');
+}
+
+/* Animations */
+@keyframes fadeInFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in-left {
+    animation: fadeInFromLeft 1s ease-out forwards;
+    opacity: 0;
+    /* Hidden initially */
+}
+
+.fade-in-right {
+    animation: fadeInFromRight 1s ease-out forwards;
+    opacity: 0;
+    /* Hidden initially */
+    animation-delay: 0.2s;
+    /* Slightly delay right side animation */
+}
+
+.hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Responsive adjustments */
+@media(min-width: 768px) {
+    .main-body {
+        flex-direction: row;
+        gap: 60px;
+    }
+
+    .main-body-left,
+    .main-body-right {
+        width: 50%;
+        align-items: flex-start;
+        /* Align text to left for desktop */
+    }
+
+    .main-body-left {
+        order: 1;
+        /* Image first on desktop */
+    }
+
+    .main-body-right {
+        order: 2;
+        /* Text second on desktop */
+        text-align: center;
+        /* Align text to left for desktop */
+    }
+
+    .main-body h2 {
+        text-align: left;
+    }
+
+    .main-body p {
+        max-width: 100%;
+    }
+
+    .main-buttons-container {
+        max-width: none;
+        /* Remove max width for button group */
+        margin: 0;
+        /* Remove margin auto */
+    }
+
+    .main-body-button {
+        width: auto;
+        /* Allow buttons to size based on content */
+        padding: 15px 30px;
+        /* Larger padding for desktop buttons */
+        font-size: 1.2em;
+    }
+}
+
+@media(min-width: 1024px) {
+    .main-body-left img {
+        width: 80%;
+        /* Further adjust image size for larger screens */
+    }
+}
