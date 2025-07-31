@@ -18,6 +18,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const sliders = document.querySelectorAll('.slider-container');
+    sliders.forEach(container => {
+        const slider = container.querySelector('.slider');
+        const prevBtn = container.querySelector('.pre-btn');
+        const nextBtn = container.querySelector('.nxt-btn');
+
+        if (slider && prevBtn && nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                const scrollAmount = slider.clientWidth;
+                slider.scrollLeft += scrollAmount;
+            });
+
+            prevBtn.addEventListener('click', () => {
+                const scrollAmount = slider.clientWidth;
+                slider.scrollLeft -= scrollAmount;
+            });
+        }
+    });
+
     // 2. Intersection Observer for Fade-in Animations
     // I've added all the classes from your other pages here so they animate properly!
     const elementsToObserve = document.querySelectorAll(
