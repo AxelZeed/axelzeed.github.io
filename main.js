@@ -117,6 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loginOverlay.style.display = 'none';
             mainContent.style.display = 'flex';
             generateSidebar();
+            } catch (error) {
+                // This is the SAFETY NET!
+                console.error("Failed to login with stored passcode. Clearing and reloading.", error);
+                localStorage.removeItem('axelDebutPasscode');
+                location.reload();
+            }
         };
 
         const logout = () => {
