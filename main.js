@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- GLOBAL SCRIPTS (Run on every page) ---
-
     // 1. Hamburger Menu Logic
     const hamb = document.querySelector('.hamb-menu');
     const rightMenu = document.querySelector('.right');
@@ -38,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Intersection Observer for Fade-in Animations
-    // I've added all the classes from your other pages here so they animate properly!
     const elementsToObserve = document.querySelectorAll(
         '.section-title, .gallery-column, .review-placeholder, .table-container, .price-category, .payment-methods, .terms-section, .fade-in-left, .fade-in-right, .footer, .main-review, .price-category, .main-login, .main-container, .content-section'
     );
@@ -46,17 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elementsToObserve.length > 0) {
         const observerOptions = {
             root: null,
-            rootMargin: '0px 0px -50px 0px', // Triggers the animation a little sooner before it's fully on screen
-            threshold: 0.0 // Makes it super sensitive, firing as soon as a tiny part is visible
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.0
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
-                // When the element is intersecting (even a little bit)
                 if (entry.isIntersecting) {
                     entry.target.classList.remove('hidden');
                     entry.target.classList.add('visible');
-                    // We don't need to watch it anymore after it becomes visible
                     observer.unobserve(entry.target);
                 }
             });
@@ -67,14 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // --- PAGE-SPECIFIC SCRIPTS ---
-
-    // 1. DEBUT PAGE LOGIC (Only runs if it finds the login overlay)
+    // 1. DEBUT PAGE LOGIC
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) {
-
-        // Debut Page Elements
         const mainContent = document.getElementById('main-content');
         const loginButton = document.getElementById('login-button');
         const guestLogin = document.getElementById('guest-login');
@@ -100,11 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('axelDebutPasscode', userKey);
 
                 document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
-                
+
                 const welcomeBg = document.querySelector('.main-welcome-bg');
                 const thankYouImg = document.querySelector('.main-thank-you-img');
-                if(welcomeBg) welcomeBg.src = userData.img;
-                if(thankYouImg) thankYouImg.src = userData.img;
+                if (welcomeBg) welcomeBg.src = userData.img;
+                if (thankYouImg) thankYouImg.src = userData.img;
 
                 if (thankYouSection) {
                     if (userKey === 'prototype018' || userKey === 'default') {
@@ -118,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainContent.style.display = 'flex';
                 generateSidebar();
             } catch (error) {
-                // This is the SAFETY NET!
                 console.error("Failed to login with stored passcode. Clearing and reloading.", error);
                 localStorage.removeItem('axelDebutPasscode');
                 location.reload();
@@ -129,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('axelDebutPasscode');
             location.reload();
         };
-        
+
         const generateSidebar = () => {
             if (!sidebar) return;
             const headers = document.querySelectorAll('.section-header');
@@ -166,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loginOverlay.style.display = 'flex';
         }
 
-        // Sidebar Toggle (Hamburger) Logic for Debut Page
         if (sidebar) {
             let toggleBtn = document.getElementById('sidebar-toggle-btn');
             if (!toggleBtn) {
@@ -218,5 +205,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    // END of Debut Page-specific logic
 });
