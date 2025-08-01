@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Intersection Observer for Fade-in Animations
+    // 2. Intersection Observer for Fade-in Animations 
     const elementsToObserve = document.querySelectorAll(
         '.section-title, .gallery-column, .review-placeholder, .table-container, .price-category, .payment-methods, .terms-section, .fade-in-left, .fade-in-right, .footer, .main-review, .price-category, .main-login, .main-container, .content-section'
     );
