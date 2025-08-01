@@ -116,6 +116,7 @@ b {
 
 
 /* Hidden by default */
+
 .hidden {
     opacity: 0;
     transform: translateY(30px);
@@ -181,12 +182,10 @@ b {
 
 #sidebar-toggle-btn {
     display: none;
-    /* Hidden by default on large screens */
     position: fixed;
     top: 90px;
     left: 20px;
     z-index: 1002;
-    /* Needs to be above everything */
     width: 50px;
     height: 50px;
     background-color: rgba(60, 92, 119, 0.8);
@@ -332,6 +331,36 @@ b {
     background-color: rgba(0, 0, 0, 0.2);
     padding: 15px;
     border-radius: 10px;
+}
+
+.intro-details {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.details-list {
+    list-style: none;
+    padding: 0;
+}
+
+.details-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #3c5c77;
+    font-size: 1.1em;
+}
+
+.details-list li:last-child {
+    border-bottom: none;
+}
+
+.details-list li span:first-child {
+    font-weight: 700;
+    color: #8cb3d9;
+    margin-right: 20px;
 }
 
 .history-timeline {
@@ -518,7 +547,6 @@ b {
 
 .main-waifu img {
     width: 100%;
-    max-width: 400px;
     border-radius: 10px;
     margin-bottom: 10px;
 }
@@ -662,7 +690,6 @@ b {
 
 .iframe-wrapper {
     display: none;
-    /* Hidden by default */
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.7s ease-in-out;
@@ -671,7 +698,6 @@ b {
 .iframe-wrapper.active {
     display: block;
     max-height: 800px;
-    /* Adjust height as needed */
 }
 
 
@@ -895,7 +921,8 @@ hr {
     height: auto;
     object-fit: cover;
     margin-top: 20px;
-    border-radius: 16px;;
+    border-radius: 16px;
+    ;
 }
 
 
@@ -907,7 +934,6 @@ hr {
     margin-top: 20px;
     border: none;
     background-color: #c94a4a;
-    /* A reddish color for logout */
     color: white;
     font-family: 'Nexa';
     font-weight: 700;
@@ -935,20 +961,16 @@ hr {
         width: 280px;
         z-index: 1001;
         transform: translateX(-100%);
-        /* Start completely off-screen */
         transition: transform 0.4s ease-in-out;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
         padding-top: 160px;
     }
     .main-sidebar.active {
         transform: translateX(0);
-        /* Slide into view */
     }
-    /* Show the hamburger button */
     #sidebar-toggle-btn {
         display: flex;
     }
-    /* Animate the button icon into an 'X' when active */
     #sidebar-toggle-btn.active span:nth-child(1) {
         transform: translateY(10px) rotate(45deg);
     }
@@ -967,14 +989,17 @@ hr {
 }
 
 @media(max-width: 768px) {
-    .history-timeline {
-        flex-direction: column;
-    }
     .history-arrow {
         transform: rotate(90deg);
     }
     .preferences-grid {
         grid-template-columns: 1fr;
+    }
+    .main-thank h1 {
+        font-size: 2em;
+    }
+    .main-welcome {
+        height: 350px;
     }
 }
 
@@ -991,5 +1016,21 @@ hr {
     }
     .section-header {
         font-size: 2em;
+    }
+    .atf-card,
+    .music-card,
+    .games-card {
+        width: 150px;
+    }
+    .atf-card img,
+    .music-card img,
+    .games-card img {
+        height: 200px;
+    }
+    .main-thank h1 {
+        font-size: 1.5em;
+    }
+    .main-welcome {
+        height: 280px;
     }
 }
