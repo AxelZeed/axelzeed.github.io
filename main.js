@@ -95,28 +95,28 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const login = (userKey) => {
-            const userData = users[userKey] || users['default'];
-            localStorage.setItem('axelDebutPasscode', userKey);
+            try {
+                const userData = users[userKey] || users['default'];
+                localStorage.setItem('axelDebutPasscode', userKey);
 
-            document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
+                document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
+                
+                const welcomeBg = document.querySelector('.main-welcome-bg');
+                const thankYouImg = document.querySelector('.main-thank-you-img');
+                if(welcomeBg) welcomeBg.src = userData.img;
+                if(thankYouImg) thankYouImg.src = userData.img;
 
-            // I've added checks here to make sure these elements exist before trying to change them
-            const welcomeBg = document.querySelector('.main-welcome-bg');
-            const thankYouImg = document.querySelector('.main-thank-you-img');
-            if (welcomeBg) welcomeBg.src = userData.img;
-            if (thankYouImg) thankYouImg.src = userData.img;
-
-            if (thankYouSection) {
-                if (userKey === 'prototype018' || userKey === 'default') {
-                    thankYouSection.style.display = 'none';
-                } else {
-                    thankYouSection.style.display = 'block';
+                if (thankYouSection) {
+                    if (userKey === 'prototype018' || userKey === 'default') {
+                        thankYouSection.style.display = 'none';
+                    } else {
+                        thankYouSection.style.display = 'block';
+                    }
                 }
-            }
 
-            loginOverlay.style.display = 'none';
-            mainContent.style.display = 'flex';
-            generateSidebar();
+                loginOverlay.style.display = 'none';
+                mainContent.style.display = 'flex';
+                generateSidebar();
             } catch (error) {
                 // This is the SAFETY NET!
                 console.error("Failed to login with stored passcode. Clearing and reloading.", error);
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('axelDebutPasscode');
             location.reload();
         };
-
+        
         const generateSidebar = () => {
             if (!sidebar) return;
             const headers = document.querySelectorAll('.section-header');
