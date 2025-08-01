@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- GLOBAL SCRIPTS (Run on every page) ---
+
     // 1. Hamburger Menu Logic
     const hamb = document.querySelector('.hamb-menu');
     const rightMenu = document.querySelector('.right');
@@ -15,25 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const sliders = document.querySelectorAll('.slider-container');
-    sliders.forEach(container => {
-        const slider = container.querySelector('.slider');
-        const prevBtn = container.querySelector('.pre-btn');
-        const nextBtn = container.querySelector('.nxt-btn');
-
-        if (slider && prevBtn && nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                const scrollAmount = slider.clientWidth;
-                slider.scrollLeft += scrollAmount;
-            });
-
-            prevBtn.addEventListener('click', () => {
-                const scrollAmount = slider.clientWidth;
-                slider.scrollLeft -= scrollAmount;
-            });
-        }
-    });
-
     // 2. Intersection Observer for Fade-in Animations
     const elementsToObserve = document.querySelectorAll(
         '.section-title, .gallery-column, .review-placeholder, .table-container, .price-category, .payment-methods, .terms-section, .fade-in-left, .fade-in-right, .footer, .main-review, .price-category, .main-login, .main-container, .content-section'
@@ -43,14 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const observerOptions = {
             root: null,
             rootMargin: '0px 0px -50px 0px',
-            threshold: 0.0
+            threshold: 0.01
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.remove('hidden');
                     entry.target.classList.add('visible');
+                    entry.target.classList.remove('hidden');
                     observer.unobserve(entry.target);
                 }
             });
@@ -61,14 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    // --- PAGE-SPECIFIC SCRIPTS ---
+
     // 1. DEBUT PAGE LOGIC
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) {
+
         const mainContent = document.getElementById('main-content');
         const loginButton = document.getElementById('login-button');
         const guestLogin = document.getElementById('guest-login');
         const passcode_input = document.getElementById('passcode-input');
         const thankYouSection = document.querySelector('.main-thank');
+        const thankYouBody = document.getElementById('thank-you-body');
         const sidebar = document.getElementById('main-sidebar');
 
         const users = {
@@ -85,21 +74,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const login = (userKey) => {
             try {
-                const userData = users[userKey] || users['default'];
-                localStorage.setItem('axelDebutPasscode', userKey);
+                const isGuest = !users[userKey] || userKey === 'default';
+                const effectiveKey = isGuest ? 'default' : userKey;
+                const userData = users[effectiveKey];
+
+                localStorage.setItem('axelDebutPasscode', effectiveKey);
 
                 document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
 
                 const welcomeBg = document.querySelector('.main-welcome-bg');
-                const thankYouImg = document.querySelector('.main-thank-you-img');
                 if (welcomeBg) welcomeBg.src = userData.img;
-                if (thankYouImg) thankYouImg.src = userData.img;
 
                 if (thankYouSection) {
-                    if (userKey === 'prototype018' || userKey === 'default') {
+                    if (effectiveKey === 'prototype018') {
                         thankYouSection.style.display = 'none';
+                    } else if (isGuest) {
+                        thankYouSection.style.display = 'block';
+                        thankYouBody.innerHTML = `
+                            <h4>Also you can take a selfie with me! Just save this template and use it however you like! You can post it, don't forget to tag me :3</h4>
+                            <img class="main-thank-you-img" src="Assets/Photocard_Debut.png" alt="Guest Photocard Template">
+                            <h4>Oh btw if you want my background you can download this too!</h4>
+                            <img class="main-thank-you-img" src="Assets/Photocard_Debut_BG.png" alt="Photocard Background">
+                        `;
                     } else {
                         thankYouSection.style.display = 'block';
+                        thankYouBody.innerHTML = `
+                            <h4>Anyway, take this photocard. It's a souvenir! You can post it, don't forget to tag me :3</h4>
+                            <img class="main-thank-you-img" src="${userData.img}" alt="User Photocard">
+                        `;
                     }
                 }
 
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainContent.style.display = 'flex';
                 generateSidebar();
             } catch (error) {
-                console.error("Failed to login with stored passcode. Clearing and reloading.", error);
+                console.error("Failed to login. Clearing stored data and reloading.", error);
                 localStorage.removeItem('axelDebutPasscode');
                 location.reload();
             }
@@ -183,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.addEventListener('click', toggleSidebar);
         }
 
-        // Iframe Toggle Logic
         const iframeToggleButtons = document.querySelectorAll('.toggle-iframe-btn');
         iframeToggleButtons.forEach(button => {
             button.addEventListener('click', () => {
