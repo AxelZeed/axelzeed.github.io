@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- GLOBAL SCRIPTS (Run on every page) ---
-
+ 
     // 1. Hamburger Menu Logic
     const hamb = document.querySelector('.hamb-menu');
     const rightMenu = document.querySelector('.right');
