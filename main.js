@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- GLOBAL SCRIPTS (Run on every page) ---
- 
+
     // 1. Hamburger Menu Logic
     const hamb = document.querySelector('.hamb-menu');
     const rightMenu = document.querySelector('.right');
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Intersection Observer for Fade-in Animations 
+    // 2. Intersection Observer for Fade-in Animations
     const elementsToObserve = document.querySelectorAll(
         '.section-title, .gallery-column, .review-placeholder, .table-container, .price-category, .payment-methods, .terms-section, .fade-in-left, .fade-in-right, .footer, .main-review, .price-category, .main-login, .main-container, .content-section'
     );
@@ -103,6 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             <img class="main-thank-you-img" src="${userData.img}" alt="User Photocard">
                         `;
                     }
+                }
+
+                const focusControls = document.getElementById('focus-mode-controls');
+                if (focusControls) {
+                    focusControls.style.display = 'flex';
                 }
 
                 loginOverlay.style.display = 'none';
@@ -205,5 +210,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+
+    const mainContainer = document.querySelector('.main-container');
+    if (mainContainer) {
+        const focusControls = document.getElementById('focus-mode-controls');
+        const toggleBtn = document.getElementById('toggle-focus-btn');
+        const nextBtn = document.getElementById('next-section-btn');
+        const prevBtn = document.getElementById('prev-section-btn');
+        const dropdown = document.getElementById('focus-nav-dropdown');
+
+        if (focusControls && toggleBtn && nextBtn && prevBtn && dropdown) {
+            const allChunks = Array.from(document.querySelectorAll('.focusable-chunk'));
+            let currentIndex = -1;
+            let isFocusMode = false;
+
+            dropdown.innerHTML = ''; 
+            allChunks.forEach((chunk, index) => {
+                const header = chunk.querySelector('.section-header, .sub-section-header, h1, h2, h3');
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = header ? header.textContent.trim() : `Section ${index + 1}`;
+                dropdown.appendChild(option);
+            });
+
+            const updateFocus = (newIndex) => {
+                if (currentIndex > -1 && allChunks[currentIndex]) {
+                    allChunks[currentIndex].classList.remove('focused');
+                }
+
+                if (newIndex >= allChunks.length) newIndex = 0;
+                if (newIndex < 0) newIndex = allChunks.length - 1;
+                currentIndex = newIndex;
+
+                const newChunk = allChunks[currentIndex];
+                if (newChunk) {
+                    newChunk.classList.add('focused');
+                    newChunk.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    dropdown.value = currentIndex;
+                }
+            };
+
+            const toggleFocusMode = () => {
+                isFocusMode = !isFocusMode;
+                document.body.classList.toggle('focus-mode-active', isFocusMode);
+
+                if (isFocusMode) {
+                    toggleBtn.textContent = 'Exit Focus';
+                    toggleBtn.style.backgroundColor = '#c94a4a';
+                    updateFocus(0);
+                } else {
+                    toggleBtn.textContent = 'Focus Mode';
+                    toggleBtn.style.backgroundColor = '#3c5c77';
+                    if (currentIndex > -1 && allChunks[currentIndex]) {
+                        allChunks[currentIndex].classList.remove('focused');
+                    }
+                    currentIndex = -1;
+                }
+            };
+
+            toggleBtn.addEventListener('click', toggleFocusMode);
+            nextBtn.addEventListener('click', () => { if (isFocusMode) updateFocus(currentIndex + 1) });
+            prevBtn.addEventListener('click', () => { if (isFocusMode) updateFocus(currentIndex - 1) });
+            dropdown.addEventListener('change', (e) => { if (isFocusMode) updateFocus(parseInt(e.target.value)) });
+        }
     }
 });

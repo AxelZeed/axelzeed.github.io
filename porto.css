@@ -5,6 +5,18 @@
     padding: 0;
 }
 
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-ExtraLight.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-weight: 700;
+}
+
 body {
     font-family: 'Nexa', sans-serif;
     background-image: url("Assets/BG.jpg");
@@ -54,15 +66,12 @@ body {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -10px;
-    /* Gutter compensation */
 }
 
 .gallery-column {
     flex: 1 0 100%;
-    /* Full width on mobile */
     max-width: 100%;
     padding: 10px;
-    /* Gutter */
     position: relative;
 }
 
@@ -101,7 +110,6 @@ body {
     align-items: center;
     justify-content: center;
     background-color: rgba(40, 52, 73, 0);
-    /* Transparent initially */
     opacity: 0;
     transition: background-color 0.4s ease, opacity 0.4s ease;
 }
@@ -130,7 +138,6 @@ body {
     position: relative;
     width: 100%;
     padding-bottom: 56.25%;
-    /* 16:9 Aspect Ratio */
     height: 0;
     overflow: hidden;
     border-radius: 12px;
@@ -146,7 +153,6 @@ body {
     border: none;
 }
 
-/* Review Section */
 .main-review {
     background-color: rgba(36, 46, 58, 0.8);
     padding: 40px;
@@ -166,7 +172,6 @@ body {
 
 /* --- Responsive Adjustments --- */
 
-/* Tablet Portrait */
 @media (min-width: 600px) {
     .gallery-column {
         flex-basis: 50%;
@@ -174,7 +179,6 @@ body {
     }
 }
 
-/* Tablet Landscape */
 @media (min-width: 900px) {
     .gallery-column {
         flex-basis: 33.333%;
@@ -188,7 +192,6 @@ body {
     }
 }
 
-/* Desktop */
 @media (min-width: 1200px) {
     .gallery-column {
         flex-basis: 25%;
