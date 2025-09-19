@@ -1,0 +1,211 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-ExtraLight.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-weight: 700;
+}
+
+body {
+    font-family: 'Nexa', sans-serif;
+    background-image: url("Assets/BG.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    line-height: 1.6;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Body Section */
+.main-body {
+    width: 90%;
+    max-width: 1200px;
+    background-color: rgba(36, 46, 58, 0.85);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 30px auto;
+    flex-grow: 1;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    text-align: center;
+    font-weight: 700;
+    color: #E3E9F9;
+    font-size: 2.8em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Scroll Animation Classes */
+.hidden {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Price Categories */
+.price-category {
+    margin-bottom: 40px;
+    background-color: rgba(56, 68, 94, 0.7);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.price-category h3 {
+    text-align: center;
+    font-weight: 700;
+    color: #A1B0CC;
+    font-size: 2em;
+    margin-bottom: 25px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid #A1B0CC;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Table Styling */
+.table-wrapper {
+    width: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: transparent;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 12px 15px;
+    color: #E3E9F9;
+}
+
+thead tr {
+    background-color: #38445E;
+    border-radius: 10px;
+}
+
+th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1em;
+}
+
+tbody tr {
+    border-bottom: 1px solid rgba(161, 176, 204, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: rgba(60, 92, 119, 0.5);
+}
+
+td {
+    font-size: 1.05em;
+    font-weight: 300;
+}
+
+/* Notes Section */
+.notes-list {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(36, 46, 58, 0.5);
+    border-radius: 10px;
+    color: #C0C0C0;
+}
+
+.note-heading {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #E3E9F9;
+    font-size: 1.2em;
+}
+
+.notes-list ul {
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.notes-list li {
+    margin-bottom: 5px;
+}
+
+/* Payment Methods */
+.payment-methods {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: 300;
+    color: #E3E9F9;
+    padding: 20px;
+    background-color: rgba(36, 46, 58, 0.8);
+    border-radius: 15px;
+}
+
+/* --- Responsive Adjustments for Tables --- */
+
+/* On screens smaller than 768px */
+@media screen and (max-width: 768px) {
+    thead {
+        display: none;
+    }
+
+    tr {
+        display: block;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        background-color: rgba(56, 68, 94, 0.5);
+        border: 1px solid rgba(161, 176, 204, 0.2);
+    }
+
+    td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px solid rgba(161, 176, 204, 0.1);
+    }
+
+    td:last-child {
+        border-bottom: none;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: calc(50% - 30px);
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 700;
+        color: #A1B0CC;
+    }
+}

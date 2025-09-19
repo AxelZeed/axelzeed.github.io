@@ -1,0 +1,247 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-ExtraLight.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Nexa';
+    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-weight: 700;
+}
+
+body {
+    background-image: url("Assets/BG.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Nexa', sans-serif;
+    color: #fff;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Body Section */
+.main-body {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-grow: 1;
+}
+
+.main-body h2 {
+    font-size: 2.5em;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #E3E9F9;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.main-body p {
+    text-align: justify;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+    color: white;
+}
+
+.main-body-left,
+.main-body-right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-body-left img {
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease-in-out;
+}
+
+.main-body-left img:hover {
+    transform: scale(1.02);
+}
+
+.main-body-right {
+    text-align: center;
+}
+
+.main-body-right p {
+    width: 100%;
+    max-width: 480px;
+    text-align: justify;
+    text-align-last: left;
+}
+
+.main-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.main-buttons-container a {
+    text-decoration: none;
+}
+
+.main-body-button {
+    padding: 12px 25px;
+    background-color: #E3E9F9;
+    color: #38445E;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.main-body-button:hover {
+    background-color: #38445E;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.main-body-button img {
+    width: 25px;
+    height: 25px;
+    margin-right: 12px;
+    transition: filter 0.3s ease;
+    filter: brightness(1);
+}
+
+.main-body-button:hover img {
+    filter: brightness(200%);
+}
+
+.button-porto:hover img {
+    content: url('Assets/Placeholder.png');
+}
+
+.button-debut:hover img {
+    content: url('Assets/Placeholder.png');
+}
+
+.button-vgen:hover img {
+    content: url('Assets/VGen.png');
+}
+
+/* Animations */
+@keyframes fadeInFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in-left {
+    animation: fadeInFromLeft 1s ease-out forwards;
+    opacity: 0;
+}
+
+.fade-in-right {
+    animation: fadeInFromRight 1s ease-out forwards;
+    opacity: 0;
+    animation-delay: 0.2s;
+}
+
+.hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Responsive adjustments */
+@media(min-width: 768px) {
+    .main-body {
+        flex-direction: row;
+        gap: 60px;
+    }
+
+    .main-body-left,
+    .main-body-right {
+        width: 50%;
+        align-items: flex-start;
+    }
+
+    .main-body-left {
+        order: 1;
+    }
+
+    .main-body-right {
+        order: 2;
+        text-align: center;
+    }
+
+    .main-body h2 {
+        text-align: left;
+    }
+
+    .main-body p {
+        max-width: 100%;
+    }
+
+    .main-buttons-container {
+        max-width: none;
+        margin: 0;
+    }
+
+    .main-body-button {
+        width: auto;
+        padding: 15px 30px;
+        font-size: 1.2em;
+    }
+}
+
+@media(min-width: 1024px) {
+    .main-body-left img {
+        width: 80%;
+    }
+}
