@@ -10,14 +10,8 @@ html {
 }
 
 @font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-ExtraLight.ttf') format('truetype');
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-family: 'Conthrax';
+    src: url('Conthrax-SemiBold.otf') format('truetype');
     font-weight: 700;
 }
 
@@ -27,7 +21,7 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
-    font-family: 'Nexa', sans-serif;
+    font-family: 'Conthrax', sans-serif;
     color: white;
     font-weight: 300;
 }
@@ -86,7 +80,7 @@ b {
     background-color: #23272a;
     color: white;
     border-radius: 5px;
-    font-family: 'Nexa';
+    font-family: 'Conthrax';
 }
 
 .login-box button,
@@ -681,7 +675,7 @@ b {
     border: none;
     background-color: #3c5c77;
     color: white;
-    font-family: --------------------------------------'Nexa';
+    font-family: --------------------------------------'Conthrax';
     font-weight: 700;
     font-size: 1em;
     cursor: pointer;
@@ -952,7 +946,7 @@ hr {
 
 .main-body-button {
     padding: 12px 25px;
-    background-color: #E3E9F9;
+    background-color: #e3f9f0;
     color: #38445E;
     border-radius: 25px;
     display: flex;
@@ -1000,7 +994,7 @@ hr {
     border: none;
     background-color: #c94a4a;
     color: white;
-    font-family: 'Nexa';
+    font-family: 'Conthrax';
     font-weight: 700;
     cursor: pointer;
     border-radius: 5px;
@@ -1030,7 +1024,7 @@ hr {
 
 #focus-mode-controls button,
 #focus-mode-controls select {
-    font-family: 'Nexa', sans-serif;
+    font-family: 'Conthrax', sans-serif;
     font-weight: 700;
     background-color: #3c5c77;
     color: white;

@@ -1,52 +1,101 @@
+// --- AXEL'S CUSTOM WEB COMPONENTS ---
+
+// 1. NAVBAR COMPONENT
+class AxelNavbar extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+       <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="Assets/Logo.png" alt="Axel Zeed Logo" width="50" height="50">
+                </a>
+                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto text-center">
+                        <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+                        <li class="nav-item"><a class="nav-link" href="porto.html">PORTFOLIO</a></li>
+                        <li class="nav-item"><a class="nav-link" href="price.html">PRICE</a></li>
+                        <li class="nav-item"><a class="nav-link" href="terms.html">TERMS</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        `;
+    }
+}
+customElements.define('axel-navbar', AxelNavbar);
+
+// 2. FOOTER COMPONENT
+class AxelFooter extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+        <footer class="footer mt-auto py-5">
+            <div class="container">
+                <div class="row text-center text-md-start">
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                            <img src="Assets/Footer-PP.png" alt="Profile" class="rounded-circle" width="80">
+                            <div>
+                                <h3 class="mb-0">Axel Zeed</h3>
+                                <p class="mb-0 text-secondary small">Lead Researcher & Scientist @ Zeryuz Corp</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h4 class="text-cyan mb-3">System Access</h4>
+                        <div class="footer-links d-flex justify-content-center justify-content-md-end gap-3 flex-wrap">
+                            <a href="https://www.youtube.com/live/cQinAv1I4to?si=qJamCfGLKZ_5kAHb" target="_blank">Debut</a>
+                            <a href="https://youtu.be/fBEN56Y2MHg" target="_blank">Model Showcase</a>
+                            <a href="price.html" target="_blank">Commission</a>
+                            <a href="https://youtube.com/playlist?list=PLvagROOJB7HcRekgGvNpmUSdctwBllQRx&si=2h8MWNaeYUzFxuhd"
+                                target="_blank">Shorts</a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-secondary my-4">
+                <div class="social-icons d-flex flex-wrap justify-content-center gap-3 gap-md-4"> 
+                    <a href="https://youtube.com/@axelzeed" target="_blank"><img src="Assets/Youtube.png" alt="Youtube"
+                            class="link-image" width="30"></a>
+                    <a href="https://www.instagram.com/axel_zeed/" target="_blank"><img src="Assets/Instagram.png"
+                            alt="Instagram" class="link-image" width="30"></a>
+                    <a href="https://twitter.com/axel_zeed" target="_blank"><img src="Assets/X.png" alt="X"
+                            class="link-image" width="30"></a>
+                    <a href="https://discord.gg/TQPCCM22pV" target="_blank"><img src="Assets/Discord.png" alt="Discord"
+                            class="link-image" width="30"></a>
+                    <a href="https://www.tiktok.com/@axelzeedd" target="_blank"><img src="Assets/Tiktok.png" alt="Tiktok"
+                            class="link-image" width="30"></a>
+                    <a href="https://www.threads.net/@axel_zeed" target="_blank"><img src="Assets/Threads.png" alt="Threads"
+                            class="link-image" width="30"></a>
+                    <a href="https://www.twitch.tv/axel_zeed" target="_blank"><img src="Assets/Twitch.png" alt="Twitch"
+                            class="link-image" width="30"></a>
+                    <a href="https://trello.com/b/AipZ6l9k/axel-zeed-commission-waiting-list" target="_blank"><img
+                            src="Assets/Trello.png" alt="Trello" class="link-image" width="30"></a>
+                    <a href="https://trakteer.id/axel-zeed" target="_blank"><img src="Assets/Trakteer.png" alt="Trakteer"
+                            class="link-image" width="30"></a>
+                    <a href="https://vgen.co/axel_zeed" target="_blank"><img src="Assets/VGen.png" alt="VGen"
+                            class="link-image" width="30"></a>
+                </div>
+                <p class="text-center mt-4 small">©2022-2026 Axel Zeed. All rights reserved.</p>
+            </div>
+        </footer>
+        `;
+    }
+}
+customElements.define('axel-footer', AxelFooter);
+
+// 3. ANIMATION LOGIC
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- GLOBAL SCRIPTS (Run on every page) ---
-
-    // 1. Hamburger Menu Logic
-    const hamb = document.querySelector('.hamb-menu');
-    const rightMenu = document.querySelector('.right');
-
-    if (hamb && rightMenu) {
-        hamb.addEventListener('click', () => {
-            rightMenu.classList.toggle('active');
-        });
-        document.addEventListener('click', (event) => {
-            const isClickInsideNavbar = hamb.contains(event.target) || rightMenu.contains(event.target);
-            if (!isClickInsideNavbar && rightMenu.classList.contains('active')) {
-                rightMenu.classList.remove('active');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
             }
         });
-    }
+    }, { threshold: 0.1 });
 
-    // 2. Intersection Observer for Fade-in Animations
-    const elementsToObserve = document.querySelectorAll(
-        '.section-title, .gallery-column, .review-placeholder, .table-container, .price-category, .payment-methods, .terms-section, .fade-in-left, .fade-in-right, .footer, .main-review, .price-category, .main-login, .main-container, .content-section'
-    );
-
-    if (elementsToObserve.length > 0) {
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -50px 0px',
-            threshold: 0.01
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    entry.target.classList.remove('hidden');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        elementsToObserve.forEach(element => {
-            observer.observe(element);
-        });
-    }
-
-
-    // --- PAGE-SPECIFIC SCRIPTS ---
+    document.querySelectorAll('.main-content-box, .fade-in').forEach(el => observer.observe(el));
 
     // 1. DEBUT PAGE LOGIC
     const loginOverlay = document.getElementById('login-overlay');
@@ -225,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let currentIndex = -1;
             let isFocusMode = false;
 
-            dropdown.innerHTML = ''; 
+            dropdown.innerHTML = '';
             allChunks.forEach((chunk, index) => {
                 const header = chunk.querySelector('.section-header, .sub-section-header, h1, h2, h3');
                 const option = document.createElement('option');
@@ -278,4 +327,18 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.addEventListener('change', (e) => { if (isFocusMode) updateFocus(parseInt(e.target.value)) });
         }
     }
+});
+
+// Add this to the bottom of your existing main.js
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    // Target the new bootstrap grid wrappers
+    document.querySelectorAll('.fade-in, .content-section, .focusable-chunk').forEach(el => observer.observe(el));
 });

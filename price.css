@@ -1,211 +1,468 @@
-/* General Styling */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* --- THEME COLORS --- */
+:root {
+    --bg-dark: #050507;
+    --neon-cyan: #00f2ff;
+    --neon-green: #39ff14;
+    --accent-red: #ff003c;
+    --dark-teal: rgba(13, 51, 63, 0.85);
 }
 
 @font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-ExtraLight.ttf') format('truetype');
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-family: 'Conthrax';
+    src: url('Conthrax-SemiBold.otf') format('truetype');
     font-weight: 700;
 }
 
 body {
-    font-family: 'Nexa', sans-serif;
-    background-image: url("Assets/BG.jpg");
-    background-repeat: no-repeat;
+    background-color: var(--bg-dark);
+    background-image: linear-gradient(rgba(5, 5, 7, 0.2), rgba(5, 5, 7, 0.2)), url("Assets/BG.jpg");
     background-size: cover;
     background-attachment: fixed;
-    line-height: 1.6;
+    font-family: 'Conthrax', sans-serif;
     color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    overflow-x: hidden;
 }
 
-/* Main Body Section */
-.main-body {
-    width: 90%;
-    max-width: 1200px;
-    background-color: rgba(36, 46, 58, 0.85);
-    border-radius: 20px;
-    padding: 20px;
-    margin: 30px auto;
-    flex-grow: 1;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+/* --- SCANLINE OVERLAY --- */
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 9999;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
+/* --- MAIN WRAPPER --- */
+.main-body-wrapper {
+    background: var(--dark-teal);
+    backdrop-filter: blur(15px);
+    border: 2px solid var(--neon-cyan);
+    clip-path: polygon(0 1%, 100% 0, 99% 99%, 1% 100%);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+}
+
+/* --- PAGE TITLE --- */
 .section-title {
-    text-align: center;
-    font-weight: 700;
-    color: #E3E9F9;
-    font-size: 2.8em;
-    margin-bottom: 30px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    font-size: clamp(1.4rem, 4vw, 2.8rem);
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0px var(--accent-red);
+    letter-spacing: clamp(2px, 1vw, 5px);
+    word-break: break-word;
 }
 
-/* Scroll Animation Classes */
-.hidden {
+/* --- CATEGORY BOXES --- */
+.price-category-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: clamp(14px, 3vw, 20px);
+    border-left: 4px solid var(--neon-cyan);
+    transition: background 0.3s ease, border-left-color 0.3s ease, transform 0.3s ease;
+}
+
+.price-category-box:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-left-color: var(--neon-green);
+    transform: translateX(5px);
+}
+
+.category-header {
+    color: var(--neon-cyan);
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: clamp(1px, 0.5vw, 3px);
+    word-break: break-word;
+}
+
+/* --- BUNDLE HIGHLIGHT --- */
+.bundle-highlight {
+    border: 1px solid var(--neon-green);
+    box-shadow: inset 0 0 20px rgba(57, 255, 20, 0.1);
+}
+
+.bundle-highlight .category-header {
+    color: var(--neon-green);
+}
+
+/* =============================================
+   TABLE — BASE STYLES (Desktop)
+   ============================================= */
+.custom-table {
+    color: #fff !important;
+    border-color: rgba(0, 242, 255, 0.2);
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.custom-table thead th {
+    background: rgba(0, 242, 255, 0.1);
+    color: var(--neon-green);
+    border-bottom: 2px solid var(--neon-green);
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    padding: 12px 15px;
+}
+
+.custom-table tbody td {
+    padding: clamp(8px, 1.5vw, 15px) clamp(10px, 2vw, 15px);
+    font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+    vertical-align: middle;
+    transition: color 0.3s, background 0.3s;
+    border-color: rgba(0, 242, 255, 0.1);
+}
+
+.custom-table tbody tr:hover td {
+    color: var(--neon-cyan);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- NOTE BOX --- */
+.note-box {
+    border-top: 1px dashed var(--neon-cyan);
+    padding-top: 10px;
+}
+
+.note-box ul {
+    padding-left: 1.2rem;
+    margin-bottom: 0;
+}
+
+.note-box li {
+    font-size: clamp(0.68rem, 1.2vw, 0.85rem);
+    line-height: 1.6;
+    margin-bottom: 3px;
+}
+
+/* --- MISC --- */
+.text-cyan {
+    color: var(--neon-cyan);
+}
+
+.text-green {
+    color: var(--neon-green);
+}
+
+/* --- PAYMENT CARD --- */
+.payment-methods-card {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--neon-green);
+    clip-path: polygon(2% 0, 100% 0, 98% 100%, 0 100%);
+    animation: pulse-border 3s infinite;
+}
+
+.payment-methods-card h4 {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    letter-spacing: clamp(1px, 0.5vw, 3px);
+}
+
+.payment-methods-card p {
+    font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+    word-break: break-word;
+}
+
+@keyframes pulse-border {
+
+    0%,
+    100% {
+        border-color: var(--neon-green);
+    }
+
+    50% {
+        border-color: var(--neon-cyan);
+    }
+}
+
+/* --- FADE IN --- */
+.fade-in {
     opacity: 0;
-    transform: translateY(25px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.visible {
+.fade-in.visible {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
-/* Price Categories */
-.price-category {
-    margin-bottom: 40px;
-    background-color: rgba(56, 68, 94, 0.7);
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+/* =============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================= */
+
+/* --- TABLET LANDSCAPE (max 1199px) --- */
+@media (max-width: 1199px) {
+    .main-body-wrapper {
+        clip-path: polygon(0 0.8%, 100% 0, 99.2% 99.2%, 0.8% 100%);
+    }
+
+    .price-category-box:hover {
+        transform: translateX(3px);
+    }
 }
 
-.price-category h3 {
-    text-align: center;
-    font-weight: 700;
-    color: #A1B0CC;
-    font-size: 2em;
-    margin-bottom: 25px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-    border-bottom: 2px solid #A1B0CC;
-    display: inline-block;
-    padding-bottom: 5px;
+/* --- TABLET PORTRAIT (max 991px) --- */
+@media (max-width: 991px) {
+    .main-body-wrapper {
+        clip-path: polygon(0 0.5%, 100% 0, 99.5% 99.5%, 0.5% 100%);
+    }
+
+    .section-title {
+        font-size: clamp(1.3rem, 5vw, 2rem);
+        letter-spacing: 2px;
+    }
+
+    .category-header {
+        font-size: clamp(0.95rem, 3vw, 1.3rem);
+        margin-bottom: 15px;
+    }
+
+    .custom-table thead th {
+        font-size: 0.75rem;
+        padding: 10px 12px;
+    }
+
+    .custom-table tbody td {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+
+    .price-category-box:hover {
+        transform: translateX(2px);
+    }
 }
 
-/* Table Styling */
-.table-wrapper {
-    width: 100%;
-}
+/* --- MOBILE LANDSCAPE + LARGE PHONES (max 767px) --- */
+@media (max-width: 767px) {
+    body {
+        background-attachment: scroll;
+    }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    background-color: transparent;
-}
+    .main-body-wrapper {
+        clip-path: none;
+        border-radius: 4px;
+        padding: 1.2rem !important;
+    }
 
-th,
-td {
-    text-align: left;
-    padding: 12px 15px;
-    color: #E3E9F9;
-}
+    .section-title {
+        font-size: clamp(1.1rem, 6vw, 1.7rem);
+        letter-spacing: 1.5px;
+        text-shadow: 2px 2px 0px var(--accent-red);
+    }
 
-thead tr {
-    background-color: #38445E;
-    border-radius: 10px;
-}
+    .price-category-box {
+        padding: 14px 12px;
+        border-left-width: 3px;
+    }
 
-th {
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 1.1em;
-}
+    .price-category-box:hover {
+        transform: none;
+        /* skip translateX on mobile — feels laggy */
+    }
 
-tbody tr {
-    border-bottom: 1px solid rgba(161, 176, 204, 0.3);
-    transition: background-color 0.3s ease;
-}
+    .category-header {
+        font-size: clamp(0.85rem, 4vw, 1.1rem);
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+    }
 
-tbody tr:last-child {
-    border-bottom: none;
-}
-
-tbody tr:hover {
-    background-color: rgba(60, 92, 119, 0.5);
-}
-
-td {
-    font-size: 1.05em;
-    font-weight: 300;
-}
-
-/* Notes Section */
-.notes-list {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: rgba(36, 46, 58, 0.5);
-    border-radius: 10px;
-    color: #C0C0C0;
-}
-
-.note-heading {
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #E3E9F9;
-    font-size: 1.2em;
-}
-
-.notes-list ul {
-    list-style-position: inside;
-    padding-left: 0;
-}
-
-.notes-list li {
-    margin-bottom: 5px;
-}
-
-/* Payment Methods */
-.payment-methods {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1.2em;
-    font-weight: 300;
-    color: #E3E9F9;
-    padding: 20px;
-    background-color: rgba(36, 46, 58, 0.8);
-    border-radius: 15px;
-}
-
-/* --- Responsive Adjustments for Tables --- */
-
-/* On screens smaller than 768px */
-@media screen and (max-width: 768px) {
-    thead {
+    /* --- CARD-STYLE TABLE for mobile --- */
+    /* Hide standard thead */
+    .custom-table thead {
         display: none;
     }
 
-    tr {
+    /* Each row becomes a card */
+    .custom-table tbody tr {
         display: block;
-        margin-bottom: 15px;
-        border-radius: 10px;
-        background-color: rgba(56, 68, 94, 0.5);
-        border: 1px solid rgba(161, 176, 204, 0.2);
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(0, 242, 255, 0.2);
+        border-radius: 3px;
+        margin-bottom: 10px;
+        padding: 4px 0;
+        transition: background 0.3s;
     }
 
-    td {
-        display: block;
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
-        border-bottom: 1px solid rgba(161, 176, 204, 0.1);
+    .custom-table tbody tr:hover {
+        background: rgba(0, 242, 255, 0.05);
     }
 
-    td:last-child {
+    /* Each cell becomes a labeled row inside the card */
+    .custom-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        border: none;
+        border-bottom: 1px solid rgba(0, 242, 255, 0.08);
+    }
+
+    .custom-table tbody td:last-child {
         border-bottom: none;
     }
 
-    td::before {
+    /* Label from data-label attribute */
+    .custom-table tbody td::before {
         content: attr(data-label);
-        position: absolute;
-        left: 15px;
-        width: calc(50% - 30px);
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
         font-weight: 700;
-        color: #A1B0CC;
+        color: var(--neon-cyan);
+        font-size: 0.68rem;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding-top: 1px;
+    }
+
+    /* Value right-aligned */
+    .custom-table tbody td>*,
+    .custom-table tbody td {
+        text-align: right;
+    }
+
+    /* Override hover on individual tds since row handles it */
+    .custom-table tbody tr:hover td {
+        background: transparent;
+        color: #fff;
+    }
+
+    /* Service label (first td) gets cyan value text */
+    .custom-table tbody td:first-child {
+        color: var(--neon-green);
+        font-size: 0.78rem;
+    }
+
+    .payment-methods-card {
+        clip-path: none;
+        border-radius: 4px;
+        padding: 1rem !important;
+    }
+
+    .payment-methods-card h4 {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+
+    .payment-methods-card p {
+        font-size: 0.75rem;
+        line-height: 1.8;
+    }
+
+    .note-box li {
+        font-size: 0.72rem;
+    }
+}
+
+/* --- SMALL MOBILE (max 575px) --- */
+@media (max-width: 575px) {
+    .main-body-wrapper {
+        margin: 0 !important;
+        padding: 1rem !important;
+        border-left-width: 1px;
+        border-right-width: 1px;
+    }
+
+    .section-title {
+        font-size: clamp(1rem, 7vw, 1.4rem);
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .price-category-box {
+        padding: 12px 10px;
+        margin-bottom: 1.2rem !important;
+        border-left-width: 3px;
+    }
+
+    .category-header {
+        font-size: clamp(0.78rem, 5vw, 1rem);
+        margin-bottom: 10px;
+    }
+
+    .custom-table tbody td {
+        font-size: 0.72rem;
+        padding: 7px 10px;
+    }
+
+    .custom-table tbody td::before {
+        font-size: 0.62rem;
+    }
+
+    .custom-table tbody td:first-child {
+        font-size: 0.74rem;
+    }
+
+    .note-box {
+        padding-top: 8px;
+    }
+
+    .note-box p {
+        font-size: 0.68rem !important;
+    }
+
+    .note-box li {
+        font-size: 0.66rem;
+        line-height: 1.55;
+    }
+
+    .payment-methods-card {
+        padding: 0.8rem !important;
+    }
+
+    .payment-methods-card h4 {
+        font-size: 0.78rem;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .payment-methods-card p {
+        font-size: 0.68rem;
+        line-height: 2;
+    }
+}
+
+/* --- VERY SMALL (max 375px) --- */
+@media (max-width: 375px) {
+    .section-title {
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .category-header {
+        font-size: 0.75rem;
+    }
+
+    .custom-table tbody td {
+        font-size: 0.68rem;
+        padding: 6px 8px;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    /* on very small screens stack label above value */
+    .custom-table tbody td::before {
+        font-size: 0.58rem;
+    }
+
+    .custom-table tbody td:first-child {
+        font-size: 0.7rem;
+    }
+
+    .note-box li {
+        font-size: 0.62rem;
+    }
+
+    .payment-methods-card h4 {
+        font-size: 0.7rem;
+    }
+
+    .payment-methods-card p {
+        font-size: 0.62rem;
     }
 }

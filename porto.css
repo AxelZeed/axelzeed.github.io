@@ -1,283 +1,394 @@
-/* General Styling */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* --- THEME COLORS --- */
+:root {
+    --bg-dark: #050507;
+    --neon-cyan: #00f2ff;
+    --neon-green: #39ff14;
+    --accent-red: #ff003c;
+    --glow-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
 }
 
 @font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-ExtraLight.ttf') format('truetype');
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Nexa';
-    src: url('Nexa-Heavy.ttf') format('truetype');
+    font-family: 'Conthrax';
+    src: url('Conthrax-SemiBold.otf') format('truetype');
     font-weight: 700;
 }
 
 body {
-    font-family: 'Nexa', sans-serif;
-    background-image: url("Assets/BG.jpg");
-    background-repeat: no-repeat;
+    background-color: var(--bg-dark);
+    background-image: linear-gradient(rgba(5, 5, 7, 0.2), rgba(5, 5, 7, 0.2)), url("Assets/BG.jpg");
     background-size: cover;
     background-attachment: fixed;
-    line-height: 1.6;
+    font-family: 'Conthrax', sans-serif;
     color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    overflow-x: hidden;
 }
 
-/* Main Body Section */
-.main-body {
-    width: 95%;
-    max-width: 1200px;
-    margin: 20px auto 40px;
-    padding: 15px;
-    flex-grow: 1;
+/* --- SCANLINE OVERLAY --- */
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    z-index: 9999;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
+/* --- SECTION TITLE --- */
 .section-title {
-    text-align: center;
-    font-weight: 700;
-    color: #E3E9F9;
-    font-size: 2.5em;
-    margin: 40px auto 30px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    text-shadow: 2px 2px 0px var(--accent-red);
+    letter-spacing: clamp(1px, 0.5vw, 3px);
+    border-bottom: 2px solid var(--neon-cyan);
+    display: inline-block;
+    padding-bottom: 5px;
+    max-width: 100%;
+    word-break: break-word;
 }
 
-/* Scroll Animation Classes */
-.hidden {
+/* --- FADE IN --- */
+.fade-in {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.visible {
+.fade-in.visible {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
-/* Gallery Layout */
-.gallery-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -10px;
-}
-
-.gallery-column {
-    flex: 1 0 100%;
-    max-width: 100%;
-    padding: 10px;
+/* =============================================
+   GALLERY ITEMS
+   ============================================= */
+.gallery-item-wrapper {
     position: relative;
-}
-
-.gallery-column-hover {
-    position: relative;
-    display: block;
+    background: rgba(13, 51, 63, 0.4);
+    border: 1px solid var(--neon-cyan);
+    clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
     overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        border-color 0.3s, box-shadow 0.3s;
+    /* height follows image natural ratio — no forced sizing */
+    height: auto;
 }
 
-.gallery-column-hover:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-.gallery-column-hover img {
+.gallery-img {
+    transition: transform 0.6s ease, filter 0.4s ease;
+    filter: brightness(0.8) grayscale(0.2);
     width: 100%;
     height: auto;
+    /* let natural image height determine card height */
     display: block;
-    transition: transform 0.4s ease-in-out;
+    object-fit: unset;
+    /* don't crop — show full image at its natural ratio */
 }
 
-.gallery-column-hover:hover img {
-    transform: scale(1.1);
+.gallery-item-wrapper:hover {
+    transform: scale(1.04) skewX(-1.5deg);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+    z-index: 10;
 }
 
-.gallery-column-content {
+.gallery-item-wrapper:hover .gallery-img {
+    transform: scale(1.08);
+    filter: brightness(1.1) grayscale(0);
+}
+
+.gallery-label {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 0;
     width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(40, 52, 73, 0);
-    opacity: 0;
-    transition: background-color 0.4s ease, opacity 0.4s ease;
-}
-
-.gallery-column-hover:hover .gallery-column-content {
-    background-color: rgba(40, 52, 73, 0.8);
-    opacity: 1;
-}
-
-.gallery-column-content-text {
-    font-size: 1.5em;
-    font-weight: 700;
-    color: white;
+    background: linear-gradient(transparent, rgba(0, 242, 255, 0.85));
+    color: #000;
+    font-weight: 900;
+    font-size: clamp(0.6rem, 1.2vw, 0.78rem);
+    padding: 10px 8px 8px;
     text-align: center;
-    transform: translateY(15px);
-    opacity: 0;
-    transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
 }
 
-.gallery-column-hover:hover .gallery-column-content-text {
-    opacity: 1;
+.gallery-item-wrapper:hover .gallery-label {
     transform: translateY(0);
 }
 
-.video-container {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+/* =============================================
+   VIDEO CONTAINER
+   ============================================= */
+.video-container-wrapper {
+    padding: 5px;
+    border: 1px solid var(--neon-cyan);
+    background: rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0 5%, 95% 0, 100% 95%, 5% 100%);
+    transition: border-color 0.3s, box-shadow 0.3s;
     height: 100%;
-    border: none;
 }
 
-.main-review {
-    background-color: transparent;
-    /* Remove the old background */
-    padding: 0;
-    margin-top: 60px;
-    box-shadow: none;
-    text-align: left;
-    /* Reset text alignment */
+.video-container-wrapper:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green);
 }
 
-/* New container for the review cards */
-.review-container {
+/* =============================================
+   TESTIMONIALS
+   ============================================= */
+.review-card-modern {
     display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.review-card {
-    background-color: rgba(36, 46, 58, 0.85);
-    border: 1px solid #596888;
-    border-radius: 15px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background: rgba(13, 51, 63, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--neon-cyan);
+    clip-path: polygon(0 3%, 100% 0, 98.5% 97%, 1.5% 100%);
+    padding: 25px;
+    transition: border-color 0.3s, transform 0.3s;
+}
+
+.review-card-modern:hover {
+    border-color: var(--neon-green);
+    transform: translateX(8px);
 }
 
 .review-pfp {
-    width: 80px;
-    height: 80px;
+    width: clamp(55px, 8vw, 80px);
+    height: clamp(55px, 8vw, 80px);
     border-radius: 50%;
+    border: 2px solid var(--neon-cyan);
     object-fit: cover;
-    border: 2px solid #A1B0CC;
     flex-shrink: 0;
 }
 
-.review-content {
-    display: flex;
-    flex-direction: column;
+.review-body {
+    flex: 1;
+    min-width: 0;
+    /* prevents text overflow in flex child */
 }
 
-.review-text {
+.review-quote {
     font-style: italic;
-    font-size: 1.1em;
-    color: #E3E9F9;
-    margin-bottom: 10px;
-    position: relative;
-    padding-left: 25px;
+    color: #e0e0e0;
+    font-size: clamp(0.72rem, 1.5vw, 0.95rem);
+    line-height: 1.65;
+    border-left: 2px solid var(--neon-green);
+    padding-left: 15px;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
 }
 
-/* Adding quote marks */
-.review-text::before {
-    content: '“';
-    font-family: Georgia, serif;
-    font-size: 3em;
-    color: #596888;
-    position: absolute;
-    left: -5px;
-    top: -15px;
+.review-author {
+    font-size: clamp(0.7rem, 1.3vw, 0.9rem);
 }
 
-.review-name {
-    font-weight: 700;
-    color: #A1B0CC;
-    align-self: flex-end;
+.text-cyan {
+    color: var(--neon-cyan);
 }
 
-/* Responsive adjustment for testimonials */
-@media (max-width: 600px) {
-    .review-card {
+/* =============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================= */
+
+/* --- LARGE DESKTOP (1400px+) --- */
+@media (min-width: 1400px) {
+
+    /* 5-col illustrations on xxl — use auto columns via CSS grid override */
+    .grid-5-xxl {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* --- TABLET LANDSCAPE (max 1199px) --- */
+@media (max-width: 1199px) {
+    .gallery-item-wrapper:hover {
+        transform: scale(1.03) skewX(-1deg);
+    }
+}
+
+/* --- TABLET PORTRAIT (max 991px) --- */
+@media (max-width: 991px) {
+    .section-title {
+        font-size: clamp(1.1rem, 4vw, 1.6rem);
+        letter-spacing: 1.5px;
+    }
+
+    /* tighten row gaps on tablet */
+    .row.g-4 {
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
+    }
+
+    /* reduce hover scale — avoids overflow in tighter columns */
+    .gallery-item-wrapper:hover {
+        transform: scale(1.02) skewX(-1deg);
+    }
+
+    .review-card-modern {
+        clip-path: polygon(0 2%, 100% 0, 98.5% 98%, 1.5% 100%);
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .review-quote {
+        font-size: 0.82rem;
+    }
+}
+
+/* --- MOBILE LANDSCAPE + LARGE PHONES (max 767px) --- */
+@media (max-width: 767px) {
+    .section-title {
+        font-size: clamp(1rem, 5vw, 1.4rem);
+        letter-spacing: 1px;
+    }
+
+    /* gallery: 2 columns on mobile landscape */
+    /* HTML uses col-sm-6 so this is handled, but tighten gaps */
+    .row.g-4 {
+        --bs-gutter-x: 0.75rem;
+        --bs-gutter-y: 0.75rem;
+    }
+
+    /* soften clip-path — sharp polygons clip content on narrow cards */
+    .gallery-item-wrapper {
+        clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%);
+    }
+
+    .gallery-item-wrapper:hover {
+        transform: scale(1.02);
+        /* drop skew on mobile — too jumpy */
+    }
+
+    .gallery-label {
+        /* always visible on mobile — no hover */
+        transform: translateY(0);
+        font-size: 0.65rem;
+        padding: 6px;
+    }
+
+    .video-container-wrapper {
+        clip-path: polygon(0 3%, 97% 0, 100% 97%, 3% 100%);
+    }
+
+    .review-card-modern {
+        clip-path: none;
+        border-radius: 3px;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .review-card-modern:hover {
+        transform: translateX(4px);
+    }
+
+    .review-pfp {
+        width: 55px;
+        height: 55px;
+    }
+
+    .review-quote {
+        font-size: 0.78rem;
+        padding-left: 10px;
+    }
+}
+
+/* --- SMALL MOBILE (max 575px) --- */
+@media (max-width: 575px) {
+    .section-title {
+        font-size: clamp(0.9rem, 6vw, 1.2rem);
+        letter-spacing: 0.5px;
+        border-bottom-width: 1px;
+    }
+
+    /* single column on small phones — col-12 already handles this,
+       but tighten gaps so items fill width cleanly */
+    .row.g-4 {
+        --bs-gutter-x: 0.5rem;
+        --bs-gutter-y: 0.6rem;
+    }
+
+    /* full-width cards: remove clip-path entirely */
+    .gallery-item-wrapper {
+        clip-path: none;
+        border-radius: 3px;
+        border-width: 1px;
+    }
+
+    .gallery-item-wrapper:hover {
+        transform: scale(1.01);
+        box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    }
+
+    .gallery-label {
+        font-size: 0.6rem;
+        padding: 5px;
+        /* always show label on mobile touch devices */
+        transform: translateY(0);
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+        color: var(--neon-cyan);
+    }
+
+    .video-container-wrapper {
+        clip-path: none;
+        border-radius: 3px;
+    }
+
+    .review-card-modern {
         flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+        padding: 14px;
+        border-width: 1px;
+    }
+
+    .review-card-modern:hover {
+        transform: none;
+    }
+
+    .review-pfp {
+        width: 60px;
+        height: 60px;
+    }
+
+    .review-body {
+        width: 100%;
+    }
+
+    .review-quote {
+        border-left: none;
+        border-top: 2px solid var(--neon-green);
+        padding-left: 0;
+        padding-top: 10px;
+        font-size: 0.74rem;
+        text-align: left;
+    }
+
+    .review-author {
+        font-size: 0.68rem;
         text-align: center;
     }
-
-    .review-name {
-        align-self: center;
-    }
 }
 
-/* --- Responsive Adjustments --- */
-
-@media (min-width: 600px) {
-    .gallery-column {
-        flex-basis: 50%;
-        max-width: 50%;
-    }
-}
-
-@media (min-width: 900px) {
-    .gallery-column {
-        flex-basis: 33.333%;
-        max-width: 33.333%;
+/* --- VERY SMALL (max 375px) --- */
+@media (max-width: 375px) {
+    .section-title {
+        font-size: 0.88rem;
     }
 
-    /* Special layout for chibi on wider screens */
-    .gallery-row.chibi .gallery-column {
-        flex-basis: 25%;
-        max-width: 25%;
-    }
-}
-
-@media (min-width: 1200px) {
-    .gallery-column {
-        flex-basis: 25%;
-        max-width: 25%;
+    .review-quote {
+        font-size: 0.7rem;
     }
 
-    .gallery-row.emotes .gallery-column {
-        flex-basis: 50%;
-        max-width: 50%;
-    }
-
-    .gallery-row.models .gallery-column {
-        flex-basis: 33.333%;
-        max-width: 33.333%;
-    }
-
-    .gallery-row.overlay .gallery-column {
-        flex-basis: 50%;
-        max-width: 50%;
-    }
-
-    .gallery-row.video .gallery-column {
-        flex-basis: 33.333%;
-        max-width: 33.333%;
+    .review-pfp {
+        width: 50px;
+        height: 50px;
     }
 }
