@@ -45,7 +45,7 @@ b {
     font-weight: 700;
 }
 
-/* --- UTILITY CLASSES (Colors & Borders) --- */
+/* --- UTILITY CLASSES --- */
 .text-cyan {
     color: var(--neon-cyan) !important;
 }
@@ -102,7 +102,7 @@ body::before {
     opacity: 0.3;
 }
 
-/* --- LOGIN OVERLAY (Terminal Style) --- */
+/* --- LOGIN OVERLAY --- */
 .main-login {
     position: fixed;
     top: 0;
@@ -170,7 +170,6 @@ body::before {
     box-shadow: inset 0 0 10px var(--neon-cyan);
 }
 
-/* Buttons */
 .login-box button,
 .toggle-iframe-btn,
 .logout-button {
@@ -237,15 +236,15 @@ body::before {
 
 .main-body {
     display: flex;
-    width: 95%;
-    max-width: 1600px;
+    width: 100%;
+    max-width: 1500px;
     margin: 40px auto;
-    gap: 30px;
+    gap: 20px;
 }
 
 /* SIDEBAR */
 .main-sidebar {
-    width: 260px;
+    width: 300px;
     flex-shrink: 0;
     position: sticky;
     top: 90px;
@@ -292,6 +291,15 @@ body::before {
     min-width: 0;
 }
 
+.intro-pfp{
+    width : 500px;
+    height: auto;
+}
+
+.thank-you{
+    font-size: 1em;
+}
+
 /* CONTENT SECTIONS */
 .content-section {
     background-color: var(--dark-teal);
@@ -299,7 +307,7 @@ body::before {
     border: 1px solid var(--neon-cyan);
     padding: 30px;
     margin-bottom: 40px;
-    clip-path: polygon(0 1%, 100% 0, 99% 99%, 1% 100%);
+    clip-path: polygon(0 0, 100% 0, 99% 99%, 1% 100%);
     box-shadow: var(--glow-shadow);
 }
 
@@ -315,14 +323,14 @@ body::before {
 }
 
 .sub-section-header {
-    font-size: 1.f4em;
+    font-size: 1.4em;
     margin-top: 30px;
     margin-bottom: 20px;
     color: var(--neon-green);
     background: rgba(57, 255, 20, 0.1);
     display: inline-block;
     padding: 5px 15px;
-    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%);
 }
 
 /* WELCOME HEADER */
@@ -371,7 +379,7 @@ body::before {
     clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
 }
 
-/* --- COMPONENT CARDS (History, Models, Tech, Cars) --- */
+/* --- COMPONENT CARDS --- */
 .history-card,
 .model-card,
 .preference-box,
@@ -379,7 +387,8 @@ body::before {
 .tech-pref-col,
 .car-card,
 .community-box,
-.music-other-col {
+.music-other-col,
+.main-photo-session {
     background-color: rgba(0, 0, 0, 0.4);
     padding: 20px;
     border: 1px solid rgba(0, 242, 255, 0.3);
@@ -442,7 +451,7 @@ body::before {
     transform: scale(1.2);
 }
 
-/* --- SLIDERS (Anime, Games, Music) --- */
+/* --- SLIDERS --- */
 .slider-container {
     margin-bottom: 40px;
     position: relative;
@@ -465,9 +474,10 @@ body::before {
     scroll-behavior: smooth;
     padding-bottom: 20px;
     gap: 20px;
+    padding-left: 35px;
+    padding-right: 35px;
 }
 
-/* Custom Cyber Scrollbar */
 .slider::-webkit-scrollbar {
     height: 8px;
 }
@@ -502,9 +512,23 @@ body::before {
     width: 180px;
 }
 
+.atf-title {
+    margin-top: 15px;
+    font-size: 1em;
+}
+
+.text-start {
+    padding-left: 10px;
+}
+
 .games-card,
 .music-card {
     width: 240px;
+    padding-bottom: 15px;
+}
+
+.credit-card {
+    width: 160px;
     padding-bottom: 15px;
 }
 
@@ -519,6 +543,10 @@ body::before {
     transition: 0.3s;
 }
 
+.credit-card img {
+    height: 160px;
+}
+
 .atf-card:hover,
 .games-card:hover,
 .music-card:hover,
@@ -529,7 +557,8 @@ body::before {
 
 .atf-card:hover img,
 .games-card:hover img,
-.music-card:hover img {
+.music-card:hover img,
+.credit-card:hover img {
     filter: grayscale(0);
 }
 
@@ -543,7 +572,7 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
     cursor: pointer;
     z-index: 8;
     transition: 0.3s;
@@ -573,6 +602,16 @@ body::before {
 
 .pre-btn img {
     transform: rotate(180deg);
+}
+
+/* --- DYNAMIC IMAGES --- */
+.main-thank-you-img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid var(--neon-cyan);
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
 }
 
 /* --- LISTS & TYPOGRAPHY --- */
@@ -622,19 +661,57 @@ ul {
 }
 
 /* --- FOCUS MODE CONTROLS --- */
-#focus-mode-controls {
+#focus-mode-wrapper {
     position: fixed;
     bottom: 20px;
     left: 20px;
     z-index: 1010;
-    background-color: rgba(10, 10, 12, 0.9);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--neon-green);
-    padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.hud-toggle-btn {
+    background: var(--dark-teal);
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
+    padding: 6px 12px;
+    font-family: 'Conthrax';
+    font-size: 0.7rem;
+    cursor: pointer;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.hud-toggle-btn:hover {
+    background: var(--neon-cyan);
+    color: #000;
+}
+
+#focus-mode-controls {
+    background-color: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--neon-green);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: bottom left;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+    width: 220px;
+}
+
+#focus-mode-controls.minimized {
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
 }
 
 #focus-mode-controls button,
@@ -643,17 +720,29 @@ ul {
     background-color: var(--neon-cyan);
     color: #000;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 10px;
+    font-size: 0.75rem;
     cursor: pointer;
     font-weight: 900;
     clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
     transition: 0.3s;
     outline: none;
+    width: 100%;
 }
 
 #focus-mode-controls button:hover,
 #focus-mode-controls select:hover {
     background-color: var(--neon-green);
+}
+
+.focus-arrows {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.focus-arrows button {
+    flex: 1;
 }
 
 body.focus-mode-active .focusable-chunk {
@@ -671,14 +760,46 @@ body.focus-mode-active .focusable-chunk.focused {
     border: 1px solid var(--neon-green);
 }
 
-/* --- MOBILE RESPONSIVE --- */
+/* --- GLITCH ANIMATION --- */
+.glitch-text {
+    position: relative;
+    color: var(--neon-cyan);
+    text-shadow: 3px 3px 0px var(--accent-red);
+    letter-spacing: 5px;
+    animation: title-glitch 5s infinite;
+}
+
+@keyframes title-glitch {
+
+    0%,
+    90%,
+    100% {
+        transform: skew(0deg);
+        text-shadow: 3px 3px 0px var(--accent-red);
+    }
+
+    91% {
+        transform: skew(10deg);
+        text-shadow: -3px -3px 0px var(--neon-green);
+    }
+
+    93% {
+        transform: skew(-10deg);
+        color: #fff;
+    }
+
+    95% {
+        transform: skew(0deg);
+    }
+}
+
+/* --- MOBILE RESPONSIVE LAYOUT --- */
 #sidebar-toggle-btn {
     display: none;
     position: fixed;
     top: 100px;
     left: 20px;
     z-index: 1002;
-    /* Moved down slightly to avoid navbar */
     width: 45px;
     height: 45px;
     background-color: var(--neon-cyan);
@@ -715,40 +836,6 @@ body.focus-mode-active .focusable-chunk.focused {
     opacity: 1;
     visibility: visible;
 }
-
-/* GLITCH ANIMATION */
-.glitch-text {
-    position: relative;
-    color: var(--neon-cyan);
-    text-shadow: 3px 3px 0px var(--accent-red);
-    letter-spacing: 5px;
-    animation: title-glitch 5s infinite;
-}
-
-@keyframes title-glitch {
-
-    0%,
-    90%,
-    100% {
-        transform: skew(0deg);
-        text-shadow: 3px 3px 0px var(--accent-red);
-    }
-
-    91% {
-        transform: skew(10deg);
-        text-shadow: -3px -3px 0px var(--neon-green);
-    }
-
-    93% {
-        transform: skew(-10deg);
-        color: #fff;
-    }
-
-    95% {
-        transform: skew(0deg);
-    }
-}
-
 
 @media(max-width: 1200px) {
     .main-container {
@@ -789,20 +876,27 @@ body.focus-mode-active .focusable-chunk.focused {
 }
 
 @media(max-width: 768px) {
+    .main-body {
+        width: 100%;
+        padding: 0 15px;
+        margin: 20px auto;
+        gap: 15px;
+    }
+
     .main-welcome {
         height: 300px;
     }
-}
 
-@media(max-width: 600px) {
     .main-welcome h1 {
-        font-size: 2.2em;
+        font-size: 2.2rem;
     }
 
     .section-header {
-        font-size: 1.8em;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
     }
 
+    /* Remove clip-paths on mobile to prevent text cutoffs */
     .content-section,
     .history-card,
     .model-card,
@@ -811,7 +905,250 @@ body.focus-mode-active .focusable-chunk.focused {
     .tech-pref-col,
     .car-card,
     .community-box,
-    .music-other-col {
+    .music-other-col,
+    .main-photo-session {
         clip-path: none;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .intro-name {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #focus-mode-wrapper {
+        bottom: 10px;
+        left: 10px;
+        gap: 5px;
+    }
+
+    #focus-mode-controls {
+        width: 200px;
+        padding: 10px;
+    }
+
+    .hud-toggle-btn {
+        padding: 6px 10px;
+    }
+}
+
+@media(max-width: 575px) {
+    .main-welcome h1 {
+        font-size: 1.8rem;
+    }
+
+    .main-welcome h2 {
+        font-size: 1.1rem;
+    }
+
+    .slider {
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+
+    .atf-card {
+        width: 150px;
+    }
+
+    .games-card,
+    .music-card {
+        width: 200px;
+    }
+
+    .atf-card img,
+    .games-card img,
+    .music-card img {
+        height: 200px;
+    }
+}
+
+/* --- RESPONSIVE TYPOGRAPHY (Replace the old font sizes) --- */
+.main-welcome h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+}
+
+.main-welcome h2 {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.section-header {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.sub-section-header {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+}
+
+/* --- FIX IMAGE OVERFLOWS --- */
+.history-card img,
+.model-card img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* --- ENHANCED MOBILE RESPONSIVE LAYOUT (Replace your old @media blocks) --- */
+@media(max-width: 1200px) {
+    .main-container {
+        width: 100%;
+    }
+
+    .main-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 280px;
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: 0.4s;
+        padding-top: 100px;
+    }
+
+    .main-sidebar.active {
+        transform: translateX(0);
+    }
+
+    .intro-pfp{
+        width : 400px;
+        height: auto;
+    }
+
+    #sidebar-toggle-btn {
+        display: flex;
+    }
+
+    #sidebar-toggle-btn.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    #sidebar-toggle-btn.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #sidebar-toggle-btn.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+}
+
+@media(max-width: 768px) {
+    .main-body {
+        width: 100%;
+        padding: 0 15px;
+        margin: 20px auto;
+        gap: 15px;
+    }
+
+    .main-welcome {
+        height: 300px;
+    }
+
+    /* Remove clip-paths on mobile to prevent text cutoffs */
+    .content-section,
+    .history-card,
+    .model-card,
+    .preference-box,
+    .spec-card,
+    .tech-pref-col,
+    .car-card,
+    .community-box,
+    .music-other-col,
+    .main-photo-session {
+        clip-path: none;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .intro-name {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .intro-pfp {
+        width: 400px;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    #focus-mode-wrapper {
+        bottom: 10px;
+        left: 10px;
+        gap: 5px;
+    }
+
+    #focus-mode-controls {
+        width: 200px;
+        padding: 10px;
+    }
+
+    .hud-toggle-btn {
+        padding: 6px 10px;
+    }
+
+    /* New Grids and Flex adjustments for Mobile */
+    .pref-columns {
+        flex-direction: column;
+        gap: 20px !important;
+    }
+
+    .cars-grid {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    }
+
+    .iframe-wrapper iframe {
+        height: 60vh;
+    }
+
+    .history-timeline {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .history-card {
+        width: 100%;
+        max-width: 350px;
+    }
+}
+
+@media(max-width: 575px) {
+    .slider {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .section-header{
+        font-size: 1.2rem;
+    }
+    /* Scale down slider cards */
+    .atf-card {
+        width: 130px;
+    }
+
+    .games-card,
+    .music-card {
+        width: 160px;
+    }
+
+    .atf-card img,
+    .games-card img,
+    .music-card img {
+        height: 180px;
+    }
+
+    .credit-card {
+        width: 130px;
+    }
+
+    .credit-card img {
+        height: 130px;
+    }
+
+    /* Even smaller grid for tiny phones */
+    .cars-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .racing-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
 }

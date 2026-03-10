@@ -1,10 +1,9 @@
 // --- AXEL'S CUSTOM WEB COMPONENTS ---
-
 // 1. NAVBAR COMPONENT
 class AxelNavbar extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-       <nav class="navbar navbar-expand-lg sticky-top">
+        <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
                     <img src="Assets/Logo.png" alt="Axel Zeed Logo" width="50" height="50">
@@ -21,8 +20,7 @@ class AxelNavbar extends HTMLElement {
                     </ul>
                 </div>
             </div>
-        </nav>
-        `;
+        </nav>`;
     }
 }
 customElements.define('axel-navbar', AxelNavbar);
@@ -49,38 +47,26 @@ class AxelFooter extends HTMLElement {
                             <a href="https://www.youtube.com/live/cQinAv1I4to?si=qJamCfGLKZ_5kAHb" target="_blank">Debut</a>
                             <a href="https://youtu.be/fBEN56Y2MHg" target="_blank">Model Showcase</a>
                             <a href="price.html" target="_blank">Commission</a>
-                            <a href="https://youtube.com/playlist?list=PLvagROOJB7HcRekgGvNpmUSdctwBllQRx&si=2h8MWNaeYUzFxuhd"
-                                target="_blank">Shorts</a>
+                            <a href="https://youtube.com/playlist?list=PLvagROOJB7HeKy-GltBRrF5l5mw0ufhbl&si=8F1QetzwW475jlF3" target="_blank">Shorts</a>
                         </div>
                     </div>
                 </div>
                 <hr class="border-secondary my-4">
-                <div class="social-icons d-flex flex-wrap justify-content-center gap-3 gap-md-4"> 
-                    <a href="https://youtube.com/@axelzeed" target="_blank"><img src="Assets/Youtube.png" alt="Youtube"
-                            class="link-image" width="30"></a>
-                    <a href="https://www.instagram.com/axel_zeed/" target="_blank"><img src="Assets/Instagram.png"
-                            alt="Instagram" class="link-image" width="30"></a>
-                    <a href="https://twitter.com/axel_zeed" target="_blank"><img src="Assets/X.png" alt="X"
-                            class="link-image" width="30"></a>
-                    <a href="https://discord.gg/TQPCCM22pV" target="_blank"><img src="Assets/Discord.png" alt="Discord"
-                            class="link-image" width="30"></a>
-                    <a href="https://www.tiktok.com/@axelzeedd" target="_blank"><img src="Assets/Tiktok.png" alt="Tiktok"
-                            class="link-image" width="30"></a>
-                    <a href="https://www.threads.net/@axel_zeed" target="_blank"><img src="Assets/Threads.png" alt="Threads"
-                            class="link-image" width="30"></a>
-                    <a href="https://www.twitch.tv/axel_zeed" target="_blank"><img src="Assets/Twitch.png" alt="Twitch"
-                            class="link-image" width="30"></a>
-                    <a href="https://trello.com/b/AipZ6l9k/axel-zeed-commission-waiting-list" target="_blank"><img
-                            src="Assets/Trello.png" alt="Trello" class="link-image" width="30"></a>
-                    <a href="https://trakteer.id/axel-zeed" target="_blank"><img src="Assets/Trakteer.png" alt="Trakteer"
-                            class="link-image" width="30"></a>
-                    <a href="https://vgen.co/axel_zeed" target="_blank"><img src="Assets/VGen.png" alt="VGen"
-                            class="link-image" width="30"></a>
+                <div class="social-icons d-flex flex-wrap justify-content-center gap-3 gap-md-4">
+                    <a href="https://youtube.com/@axelzeed" target="_blank"><img src="Assets/Youtube.png" alt="Youtube" class="link-image" width="30"></a>
+                    <a href="https://www.instagram.com/axel_zeed/" target="_blank"><img src="Assets/Instagram.png" alt="Instagram" class="link-image" width="30"></a>
+                    <a href="https://twitter.com/axel_zeed" target="_blank"><img src="Assets/X.png" alt="X" class="link-image" width="30"></a>
+                    <a href="https://discord.gg/TQPCCM22pV" target="_blank"><img src="Assets/Discord.png" alt="Discord" class="link-image" width="30"></a>
+                    <a href="https://www.tiktok.com/@axelzeedd" target="_blank"><img src="Assets/Tiktok.png" alt="Tiktok" class="link-image" width="30"></a>
+                    <a href="https://www.threads.net/@axel_zeed" target="_blank"><img src="Assets/Threads.png" alt="Threads" class="link-image" width="30"></a>
+                    <a href="https://www.twitch.tv/axel_zeed" target="_blank"><img src="Assets/Twitch.png" alt="Twitch" class="link-image" width="30"></a>
+                    <a href="https://trello.com/b/AipZ6l9k/axel-zeed-commission-waiting-list" target="_blank"><img src="Assets/Trello.png" alt="Trello" class="link-image" width="30"></a>
+                    <a href="https://trakteer.id/axel-zeed" target="_blank"><img src="Assets/Trakteer.png" alt="Trakteer" class="link-image" width="30"></a>
+                    <a href="https://vgen.co/axel_zeed" target="_blank"><img src="Assets/VGen.png" alt="VGen" class="link-image" width="30"></a>
                 </div>
                 <p class="text-center mt-4 small">©2022-2026 Axel Zeed. All rights reserved.</p>
             </div>
-        </footer>
-        `;
+        </footer>`;
     }
 }
 customElements.define('axel-footer', AxelFooter);
@@ -95,12 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.main-content-box, .fade-in').forEach(el => observer.observe(el));
+    document.querySelectorAll('.main-content-box, .fade-in, .content-section, .focusable-chunk').forEach(el => observer.observe(el));
 
     // 1. DEBUT PAGE LOGIC
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) {
-
         const mainContent = document.getElementById('main-content');
         const loginButton = document.getElementById('login-button');
         const guestLogin = document.getElementById('guest-login');
@@ -130,38 +115,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('axelDebutPasscode', effectiveKey);
 
                 document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
-
                 const welcomeBg = document.querySelector('.main-welcome-bg');
                 if (welcomeBg) welcomeBg.src = userData.img;
 
-                if (thankYouSection) {
+                if (thankYouSection && thankYouBody) {
                     if (effectiveKey === 'prototype018') {
                         thankYouSection.style.display = 'none';
                     } else if (isGuest) {
                         thankYouSection.style.display = 'block';
                         thankYouBody.innerHTML = `
-                            <h4>Also you can take a selfie with me! Just save this template and use it however you like! You can post it, don't forget to tag me :3</h4>
+                            <h4 class="mt-3 thank-you">Also you can take a selfie with me! Just save this template and use it however you like! You can post it, don't forget to tag me :3</h4>
                             <img class="main-thank-you-img" src="Assets/Photocard_Debut.png" alt="Guest Photocard Template">
-                            <h4>Oh btw if you want my background you can download this too!</h4>
+                            <h4 class="mt-4 thank-you">Oh btw if you want my background you can download this too!</h4>
                             <img class="main-thank-you-img" src="Assets/Photocard_Debut_BG.png" alt="Photocard Background">
                         `;
                     } else {
                         thankYouSection.style.display = 'block';
                         thankYouBody.innerHTML = `
-                            <h4>Anyway, take this photocard. It's a souvenir! You can post it, don't forget to tag me :3</h4>
+                            <h4 class="mt-3">Anyway, take this photocard. It's a souvenir! You can post it, don't forget to tag me :3</h4>
                             <img class="main-thank-you-img" src="${userData.img}" alt="User Photocard">
                         `;
                     }
                 }
 
-                const focusControls = document.getElementById('focus-mode-controls');
-                if (focusControls) {
-                    focusControls.style.display = 'flex';
+                const focusWrapper = document.getElementById('focus-mode-wrapper');
+                if (focusWrapper) {
+                    focusWrapper.style.display = 'flex';
                 }
 
                 loginOverlay.style.display = 'none';
                 mainContent.style.display = 'flex';
                 generateSidebar();
+
             } catch (error) {
                 console.error("Failed to login. Clearing stored data and reloading.", error);
                 localStorage.removeItem('axelDebutPasscode');
@@ -177,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const generateSidebar = () => {
             if (!sidebar) return;
             const headers = document.querySelectorAll('.section-header');
-            let sidebarHTML = '<h3>Table of Contents</h3><ul>';
+            let sidebarHTML = '<h3>Table of Contents</h3><ul class="sidebar-list">';
             headers.forEach(header => {
                 const section = header.closest('section');
                 if (section && section.id) {
@@ -218,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleBtn.innerHTML = '<span></span><span></span><span></span>';
                 document.body.appendChild(toggleBtn);
             }
-
             let overlay = document.getElementById('sidebar-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
@@ -248,14 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (wrapper.classList.contains('active')) {
                     wrapper.classList.remove('active');
-                    button.textContent = `Show ${targetId.includes('valorant') ? 'Stats' : 'Playlist'}`;
+                    button.textContent = `Open ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
                     iframe.removeAttribute('src');
                 } else {
                     if (!iframe.getAttribute('src')) {
                         iframe.setAttribute('src', iframe.getAttribute('data-src'));
                     }
                     wrapper.classList.add('active');
-                    button.textContent = `Hide ${targetId.includes('valorant') ? 'Stats' : 'Playlist'}`;
+                    button.textContent = `Close ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
                 }
             });
         });
@@ -263,13 +247,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mainContainer = document.querySelector('.main-container');
     if (mainContainer) {
-        const focusControls = document.getElementById('focus-mode-controls');
+        const focusWrapper = document.getElementById('focus-mode-wrapper');
+        const hudToggle = document.getElementById('focus-hud-toggle');
+        const hudControls = document.getElementById('focus-mode-controls');
+
         const toggleBtn = document.getElementById('toggle-focus-btn');
         const nextBtn = document.getElementById('next-section-btn');
         const prevBtn = document.getElementById('prev-section-btn');
         const dropdown = document.getElementById('focus-nav-dropdown');
 
-        if (focusControls && toggleBtn && nextBtn && prevBtn && dropdown) {
+        if (hudToggle && hudControls) {
+            hudToggle.addEventListener('click', () => {
+                hudControls.classList.toggle('minimized');
+                hudToggle.textContent = hudControls.classList.contains('minimized') ? '_HUD [OFF]' : '_HUD [ON]';
+            });
+        }
+
+        if (focusWrapper && toggleBtn && nextBtn && prevBtn && dropdown) {
             const allChunks = Array.from(document.querySelectorAll('.focusable-chunk'));
             let currentIndex = -1;
             let isFocusMode = false;
@@ -287,18 +281,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentIndex > -1 && allChunks[currentIndex]) {
                     allChunks[currentIndex].classList.remove('focused');
                 }
-
                 if (newIndex >= allChunks.length) newIndex = 0;
                 if (newIndex < 0) newIndex = allChunks.length - 1;
-                currentIndex = newIndex;
 
+                currentIndex = newIndex;
                 const newChunk = allChunks[currentIndex];
+
                 if (newChunk) {
                     newChunk.classList.add('focused');
-                    newChunk.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                    newChunk.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     dropdown.value = currentIndex;
                 }
             };
@@ -308,12 +299,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.toggle('focus-mode-active', isFocusMode);
 
                 if (isFocusMode) {
-                    toggleBtn.textContent = 'Exit Focus';
+                    toggleBtn.textContent = 'Disengage Focus';
                     toggleBtn.style.backgroundColor = '#c94a4a';
                     updateFocus(0);
                 } else {
-                    toggleBtn.textContent = 'Focus Mode';
-                    toggleBtn.style.backgroundColor = '#3c5c77';
+                    toggleBtn.textContent = 'Engage Focus';
+                    toggleBtn.style.backgroundColor = '#00f2ff';
                     if (currentIndex > -1 && allChunks[currentIndex]) {
                         allChunks[currentIndex].classList.remove('focused');
                     }
@@ -327,18 +318,4 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.addEventListener('change', (e) => { if (isFocusMode) updateFocus(parseInt(e.target.value)) });
         }
     }
-});
-
-// Add this to the bottom of your existing main.js
-document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
-    
-    // Target the new bootstrap grid wrappers
-    document.querySelectorAll('.fade-in, .content-section, .focusable-chunk').forEach(el => observer.observe(el));
 });
