@@ -45,6 +45,47 @@ b {
     font-weight: 700;
 }
 
+/* --- UTILITY CLASSES (Colors & Borders) --- */
+.text-cyan {
+    color: var(--neon-cyan) !important;
+}
+
+.text-green {
+    color: var(--neon-green) !important;
+}
+
+.text-red {
+    color: var(--accent-red) !important;
+}
+
+.bg-dark-teal {
+    background-color: var(--dark-teal) !important;
+}
+
+.border-cyan {
+    border: 1px solid var(--neon-cyan) !important;
+}
+
+.border-green {
+    border: 1px solid var(--neon-green) !important;
+}
+
+.border-red {
+    border: 1px solid var(--accent-red) !important;
+}
+
+.border-cyan-left {
+    border-left: 3px solid var(--neon-cyan) !important;
+}
+
+.border-green-top {
+    border-top: 3px solid var(--neon-green) !important;
+}
+
+.border-cyan-top {
+    border-top: 3px solid var(--neon-cyan) !important;
+}
+
 /* --- SCANLINE OVERLAY --- */
 body::before {
     content: " ";
@@ -84,6 +125,20 @@ body::before {
     box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
     clip-path: polygon(0 5%, 100% 0, 95% 95%, 5% 100%);
     animation: border-pulse 4s infinite;
+}
+
+@keyframes border-pulse {
+
+    0%,
+    100% {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+    }
+
+    50% {
+        border-color: var(--neon-green);
+        box-shadow: 0 0 40px rgba(57, 255, 20, 0.4);
+    }
 }
 
 .login-box h1 {
@@ -260,7 +315,7 @@ body::before {
 }
 
 .sub-section-header {
-    font-size: 1.4em;
+    font-size: 1.f4em;
     margin-top: 30px;
     margin-bottom: 20px;
     color: var(--neon-green);
@@ -345,15 +400,6 @@ body::before {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-.history-card img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border: 2px solid var(--neon-cyan);
-    border-radius: 50%;
-    margin-bottom: 15px;
-}
-
 .model-card img,
 .car-card img {
     width: 100%;
@@ -369,17 +415,6 @@ body::before {
 }
 
 /* --- GRIDS --- */
-.preferences-grid,
-.main-tech-prefs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.full-width {
-    grid-column: 1 / -1;
-}
-
 .cars-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -410,6 +445,7 @@ body::before {
 /* --- SLIDERS (Anime, Games, Music) --- */
 .slider-container {
     margin-bottom: 40px;
+    position: relative;
 }
 
 .slider-container h3 {
@@ -433,16 +469,17 @@ body::before {
 
 /* Custom Cyber Scrollbar */
 .slider::-webkit-scrollbar {
-    height: 6px;
+    height: 8px;
 }
 
 .slider::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
 }
 
 .slider::-webkit-scrollbar-thumb {
     background: var(--neon-cyan);
-    border-radius: 0;
+    border-radius: 4px;
 }
 
 .slider::-webkit-scrollbar-thumb:hover {
@@ -500,7 +537,7 @@ body::before {
 .nxt-btn {
     border: none;
     width: 40px;
-    height: 100%;
+    height: calc(100% - 20px);
     position: absolute;
     top: 0;
     display: flex;
@@ -611,6 +648,7 @@ ul {
     font-weight: 900;
     clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
     transition: 0.3s;
+    outline: none;
 }
 
 #focus-mode-controls button:hover,
@@ -637,9 +675,10 @@ body.focus-mode-active .focusable-chunk.focused {
 #sidebar-toggle-btn {
     display: none;
     position: fixed;
-    top: 90px;
+    top: 100px;
     left: 20px;
     z-index: 1002;
+    /* Moved down slightly to avoid navbar */
     width: 45px;
     height: 45px;
     background-color: var(--neon-cyan);
@@ -676,6 +715,40 @@ body.focus-mode-active .focusable-chunk.focused {
     opacity: 1;
     visibility: visible;
 }
+
+/* GLITCH ANIMATION */
+.glitch-text {
+    position: relative;
+    color: var(--neon-cyan);
+    text-shadow: 3px 3px 0px var(--accent-red);
+    letter-spacing: 5px;
+    animation: title-glitch 5s infinite;
+}
+
+@keyframes title-glitch {
+
+    0%,
+    90%,
+    100% {
+        transform: skew(0deg);
+        text-shadow: 3px 3px 0px var(--accent-red);
+    }
+
+    91% {
+        transform: skew(10deg);
+        text-shadow: -3px -3px 0px var(--neon-green);
+    }
+
+    93% {
+        transform: skew(-10deg);
+        color: #fff;
+    }
+
+    95% {
+        transform: skew(0deg);
+    }
+}
+
 
 @media(max-width: 1200px) {
     .main-container {
@@ -716,23 +789,8 @@ body.focus-mode-active .focusable-chunk.focused {
 }
 
 @media(max-width: 768px) {
-
-    .preferences-grid,
-    .main-tech-prefs {
-        grid-template-columns: 1fr;
-    }
-
     .main-welcome {
         height: 300px;
-    }
-
-    .intro-name {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .intro-text {
-        width: 100%;
     }
 }
 
