@@ -1,16 +1,15 @@
-// --- AXEL'S CUSTOM WEB COMPONENTS ---
-// 1. NAVBAR COMPONENT
+const SUPABASE_URL = 'https://yvfqgagqyacoblooilgq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2ZnFnYWdxeWFjb2Jsb29pbGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzNzkwNzksImV4cCI6MjA4ODk1NTA3OX0.Fzdo7cfXzSIX6lX62gdbDwT0hS98HTdyKkl1RZtGt9M';
+
+const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
 class AxelNavbar extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
         <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
-                <a class="navbar-brand" href="index.html">
-                    <img src="Assets/Logo.png" alt="Axel Zeed Logo" width="50" height="50">
-                </a>
-                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <a class="navbar-brand" href="index.html"><img src="Assets/Logo.png" alt="Axel Zeed Logo" width="50" height="50"></a>
+                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto text-center">
                         <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
@@ -25,7 +24,6 @@ class AxelNavbar extends HTMLElement {
 }
 customElements.define('axel-navbar', AxelNavbar);
 
-// 2. FOOTER COMPONENT
 class AxelFooter extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
@@ -71,8 +69,9 @@ class AxelFooter extends HTMLElement {
 }
 customElements.define('axel-footer', AxelFooter);
 
-// 3. ANIMATION LOGIC
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- A. SCROLL ANIMATION OBSERVER ---
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -80,18 +79,124 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.main-content-box, .fade-in, .content-section, .focusable-chunk').forEach(el => observer.observe(el));
 
-    // 1. DEBUT PAGE LOGIC
+
+    // --- B. SUPABASE LOGIC (Fetch & Upload) ---
+    async function loadWishes() {
+        const container = document.getElementById('wishes-container');
+        if (!container || !supabaseClient) return;
+
+        const { data, error } = await supabaseClient
+            .from('wishes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Fetch Error:', error);
+            return;
+        }
+
+        container.innerHTML = data.length > 0 ? '' : '<p class="small text-muted">// No transmissions found.</p>';
+        data.forEach(item => {
+            const date = new Date(item.created_at).toLocaleDateString();
+            const imgHTML = item.image_url ? `<img src="${item.image_url}" class="img-fluid border-cyan mt-2" style="max-height: 200px;">` : '';
+            container.innerHTML += `
+                <div class="p-3 mb-3 border-cyan bg-dark-teal" style="border-left: 3px solid var(--neon-cyan)">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-green small fw-bold">> ${item.name}</span>
+                        <span class="text-muted small">${date}</span>
+                    </div>
+                    <p class="small mt-2 mb-0">${item.message}</p>
+                    ${imgHTML}
+                </div>
+            `;
+        });
+    }
+
+    // Attach function to global window so the HTML button can trigger it
+    window.loadWishes = loadWishes;
+
+    // Initial fetch
+    loadWishes();
+
+    // Form Submission Logic
+    const wishForm = document.getElementById('supabase-wish-form');
+    if (wishForm && supabaseClient) {
+        wishForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const status = document.getElementById('status-msg');
+            const name = document.getElementById('wish-name').value;
+            const message = document.getElementById('wish-message').value;
+            const imageFile = document.getElementById('wish-image').files[0];
+
+            // --- SIZE LIMIT CHECK (5MB) ---
+            if (imageFile && imageFile.size > 5 * 1024 * 1024) {
+                status.style.display = 'block';
+                status.textContent = '!! ERROR: VISUAL_DATA_EXCEEDS_5MB_LIMIT';
+                status.className = 'small mt-2 text-red';
+                return; // Kill the process
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'UPLOADING...';
+            status.style.display = 'block';
+            status.textContent = '>> ESTABLISHING_UPLINK...';
+            status.className = 'small mt-2 text-cyan';
+
+            let imageUrl = null;
+
+            if (imageFile) {
+                const fileExt = imageFile.name.split('.').pop();
+                const fileName = `${Date.now()}.${fileExt}`; // Using timestamp for unique files
+                const filePath = `uploads/${fileName}`;
+
+                let { error: uploadError } = await supabaseClient.storage
+                    .from('wish-images')
+                    .upload(filePath, imageFile);
+
+                if (uploadError) {
+                    status.textContent = '!! UPLOAD_REJECTED: STORAGE_FAILURE';
+                    status.className = 'small mt-2 text-red';
+                    btn.disabled = false;
+                    btn.textContent = 'UPLOAD_TO_MAINFRAME';
+                    return;
+                } else {
+                    const { data } = supabaseClient.storage.from('wish-images').getPublicUrl(filePath);
+                    imageUrl = data.publicUrl;
+                }
+            }
+
+            const { error } = await supabaseClient
+                .from('wishes')
+                .insert([{ name, message, image_url: imageUrl }]);
+
+            if (error) {
+                status.textContent = '!! SYNC_FAILED';
+                status.className = 'small mt-2 text-red';
+            } else {
+                status.textContent = '>> DATA_ARCHIVED_SUCCESSFULLY';
+                status.className = 'small mt-2 text-green';
+                wishForm.reset();
+                if (typeof loadWishes === "function") loadWishes();
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'UPLOAD_TO_MAINFRAME';
+        });
+    }
+    
+    // --- C. TERMINAL LOGIN SYSTEM (The part that broke) ---
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) {
         const mainContent = document.getElementById('main-content');
         const loginButton = document.getElementById('login-button');
         const guestLogin = document.getElementById('guest-login');
         const passcode_input = document.getElementById('passcode-input');
-        const thankYouSection = document.querySelector('.main-thank');
-        const thankYouBody = document.getElementById('thank-you-body');
+        const thankYouSection = document.querySelector('.main-thank'); // Container for thank you
+        const thankYouBody = document.getElementById('thank-you-body'); // Inside container
+
         const sidebar = document.getElementById('main-sidebar');
 
         const users = {
@@ -103,10 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'doll': { name: 'Sato', img: 'Assets/Photocard_Sato.jpg' },
             'lavender': { name: 'Ay', img: 'Assets/Chibi_Ay.jpg' },
             'assassin': { name: 'Keyla', img: 'Assets/FN_Keyla.jpg' },
-            'toilet': { name: 'Hanny', img: 'Assets/Placeholder.png' },
+            'toilet': { name: 'Hanny', img: 'Assets/Placeholder.png' }
         };
 
-        const login = (userKey) => {
+        const executeLogin = (userKey) => {
             try {
                 const isGuest = !users[userKey] || userKey === 'default';
                 const effectiveKey = isGuest ? 'default' : userKey;
@@ -114,13 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 localStorage.setItem('axelDebutPasscode', effectiveKey);
 
+                // Update names and images
                 document.querySelectorAll('.main-login-user').forEach(el => el.textContent = userData.name);
                 const welcomeBg = document.querySelector('.main-welcome-bg');
                 if (welcomeBg) welcomeBg.src = userData.img;
 
+                // Handle the Thank You section Safely
                 if (thankYouSection && thankYouBody) {
                     if (effectiveKey === 'prototype018') {
-                        thankYouSection.style.display = 'none';
+                        thankYouSection.style.display = 'none'; // Axel doesn't need a thank you
                     } else if (isGuest) {
                         thankYouSection.style.display = 'block';
                         thankYouBody.innerHTML = `
@@ -138,25 +245,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // Show Focus Mode Controls
                 const focusWrapper = document.getElementById('focus-mode-wrapper');
-                if (focusWrapper) {
-                    focusWrapper.style.display = 'flex';
-                }
+                if (focusWrapper) focusWrapper.style.display = 'flex';
 
+                // Hide Login, Show Main
                 loginOverlay.style.display = 'none';
-                mainContent.style.display = 'flex';
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Build Sidebar TOC
                 generateSidebar();
 
+                // Retrigger animations now that content is visible
+                document.querySelectorAll('.fade-in, .focusable-chunk').forEach(el => observer.observe(el));
+
             } catch (error) {
-                console.error("Failed to login. Clearing stored data and reloading.", error);
+                console.error("Login Execution Failed:", error);
                 localStorage.removeItem('axelDebutPasscode');
                 location.reload();
             }
-        };
-
-        const logout = () => {
-            localStorage.removeItem('axelDebutPasscode');
-            location.reload();
         };
 
         const generateSidebar = () => {
@@ -173,78 +280,66 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.innerHTML = sidebarHTML;
 
             const logoutBtn = document.createElement('button');
-            logoutBtn.textContent = 'Logout';
+            logoutBtn.textContent = 'Logout / End Session';
             logoutBtn.className = 'logout-button';
-            logoutBtn.addEventListener('click', logout);
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('axelDebutPasscode');
+                location.reload();
+            });
             sidebar.appendChild(logoutBtn);
         };
 
-        loginButton.addEventListener('click', () => login(passcode_input.value.trim().toLowerCase()));
+        // Event Listeners for Login Triggers
+        loginButton.addEventListener('click', () => executeLogin(passcode_input.value.trim().toLowerCase()));
         passcode_input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login(passcode_input.value.trim().toLowerCase());
+            if (e.key === 'Enter') executeLogin(passcode_input.value.trim().toLowerCase());
         });
-        guestLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            login('default');
-        });
+        if (guestLogin) {
+            guestLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                executeLogin('default');
+            });
+        }
 
+        // Auto-login if previously verified
         const savedPass = localStorage.getItem('axelDebutPasscode');
         if (savedPass) {
-            login(savedPass);
+            executeLogin(savedPass);
         } else {
             loginOverlay.style.display = 'flex';
         }
-
-        if (sidebar) {
-            let toggleBtn = document.getElementById('sidebar-toggle-btn');
-            if (!toggleBtn) {
-                toggleBtn = document.createElement('button');
-                toggleBtn.id = 'sidebar-toggle-btn';
-                toggleBtn.innerHTML = '<span></span><span></span><span></span>';
-                document.body.appendChild(toggleBtn);
-            }
-            let overlay = document.getElementById('sidebar-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'sidebar-overlay';
-                document.body.appendChild(overlay);
-            }
-
-            const toggleSidebar = () => {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-                toggleBtn.classList.toggle('active');
-            };
-
-            toggleBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleSidebar();
-            });
-            overlay.addEventListener('click', toggleSidebar);
-        }
-
-        const iframeToggleButtons = document.querySelectorAll('.toggle-iframe-btn');
-        iframeToggleButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetId = button.getAttribute('data-target');
-                const iframe = document.getElementById(targetId);
-                const wrapper = iframe.parentElement;
-
-                if (wrapper.classList.contains('active')) {
-                    wrapper.classList.remove('active');
-                    button.textContent = `Open ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
-                    iframe.removeAttribute('src');
-                } else {
-                    if (!iframe.getAttribute('src')) {
-                        iframe.setAttribute('src', iframe.getAttribute('data-src'));
-                    }
-                    wrapper.classList.add('active');
-                    button.textContent = `Close ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
-                }
-            });
-        });
     }
 
+    // --- D. IFRAME TOGGLE LOGIC ---
+    const iframeToggleButtons = document.querySelectorAll('.toggle-iframe-btn');
+    iframeToggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Ignore if this is the form submit button
+            if (button.id === 'submit-btn') return;
+
+            const targetId = button.getAttribute('data-target');
+            if (!targetId) return;
+
+            const iframe = document.getElementById(targetId);
+            if (!iframe) return;
+
+            const wrapper = iframe.parentElement;
+
+            if (wrapper.classList.contains('active')) {
+                wrapper.classList.remove('active');
+                button.textContent = `Open ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
+                iframe.removeAttribute('src'); // Stop rendering to save memory
+            } else {
+                if (!iframe.getAttribute('src')) {
+                    iframe.setAttribute('src', iframe.getAttribute('data-src'));
+                }
+                wrapper.classList.add('active');
+                button.textContent = `Close ${targetId.includes('valorant') ? 'StatsFetch' : 'Audio Node'}`;
+            }
+        });
+    });
+
+    // --- E. FOCUS MODE / HUD CONTROLS ---
     const mainContainer = document.querySelector('.main-container');
     if (mainContainer) {
         const focusWrapper = document.getElementById('focus-mode-wrapper');
