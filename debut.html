@@ -1513,11 +1513,12 @@
 
             <section id="feedback-relay" class="content-section fade-in">
                 <h1 class="section-header glitch-text">09_Feedback_Relay</h1>
+
                 <div class="focusable-chunk">
                     <div class="main-thank bg-dark-teal border-cyan p-4 p-md-5 text-center"
                         style="box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);">
-                        <h1 class="text-cyan mb-4 glitch-text" style="font-size: clamp(1.8rem, 4vw, 3rem);">Thank
-                            You For Coming, <br><span class="main-login-user text-white">User</span>!</h1>
+                        <h1 class="text-cyan mb-4 glitch-text" style="font-size: clamp(1.8rem, 4vw, 3rem);">Thank You
+                            For Coming, <br><span class="main-login-user text-white">User</span>!</h1>
                         <div id="thank-you-body"></div>
                     </div>
                 </div>
@@ -1528,9 +1529,10 @@
                     <div class="focusable-chunk">
                         <div class="preference-box bg-dark border-cyan p-4">
                             <h2 class="sub-section-header mt-0">TRANSMIT_DATA</h2>
-                            <h4 class="mt-4 thank-you">Also if you want to send me something, you can submit it below!
-                            </h4>
-                            <form id="supabase-wish-form" class="mt-3">
+                            <h4 class="mt-2 mb-4 h6 text-muted">If you want to send me something, you can submit it
+                                below!</h4>
+
+                            <form id="supabase-wish-form">
                                 <div class="mb-3">
                                     <label class="small text-cyan mb-1">SENDER_ID (Name)</label>
                                     <input type="text" id="wish-name"
@@ -1550,15 +1552,28 @@
                                 </div>
                                 <button type="submit" class="btn toggle-iframe-btn w-100"
                                     id="submit-btn">UPLOAD_TO_MAINFRAME</button>
-                                <p id="status-msg" class="small mt-2 text-center" style="display:none;"></p>
                             </form>
 
-                            <hr class="border-cyan my-4">
-                            <div class="text-center">
-                                <p class="small mb-2">// Mainframe Overloaded? Use Emergency Bypass:</p>
-                                <a href="https://forms.gle/h9pnYHYRGjJ973Jy8" target="_blank"
-                                    class="btn btn-outline-danger btn-sm w-100"
-                                    style="border-radius: 0; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);">EXTERNAL_GOOGLE_RELAY</a>
+                            <div id="status-container" class="mt-4 text-center" style="display:none;">
+                                <p id="status-msg" class="small mb-2"></p>
+
+                                <div id="rescue-box" class="bg-dark-teal p-3 border-red text-start mt-3"
+                                    style="display:none;">
+                                    <h4 class="h6 text-red glitch-text mb-2">!! TRANSMISSION_FAILED !!</h4>
+                                    <p class="small text-white mb-2">The Zeryuz database may be at capacity. Your
+                                        message has been saved below.</p>
+
+                                    <label class="small text-green mb-1">// RECOVERED_DATA (Copy to Clipboard)</label>
+                                    <textarea id="recovered-text" rows="3"
+                                        class="form-control bg-dark border-green text-white mb-2" readonly></textarea>
+
+                                    <button class="btn btn-sm btn-outline-info w-100 mb-3"
+                                        onclick="copyRescueText()">COPY_DATA</button>
+
+                                    <a href="https://forms.gle/h9pnYHYRGjJ973Jy8" target="_blank" class="btn w-100"
+                                        style="background-color: var(--accent-red); color: white; font-family: 'Conthrax'; font-size: 0.8rem;">USE
+                                        EXTERNAL GOOGLE RELAY</a>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -126,30 +126,37 @@ document.addEventListener('DOMContentLoaded', () => {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            const status = document.getElementById('status-msg');
+            const statusContainer = document.getElementById('status-container');
+            const statusMsg = document.getElementById('status-msg');
+            const rescueBox = document.getElementById('rescue-box');
+
             const name = document.getElementById('wish-name').value;
             const message = document.getElementById('wish-message').value;
             const imageFile = document.getElementById('wish-image').files[0];
 
-            // --- SIZE LIMIT CHECK (5MB) ---
+            // Reset UI
+            statusContainer.style.display = 'block';
+            rescueBox.style.display = 'none';
+            btn.disabled = true;
+
+            // --- 1. SIZE LIMIT CHECK (5MB) ---
             if (imageFile && imageFile.size > 5 * 1024 * 1024) {
-                status.style.display = 'block';
-                status.textContent = '!! ERROR: VISUAL_DATA_EXCEEDS_5MB_LIMIT';
-                status.className = 'small mt-2 text-red';
-                return; // Kill the process
+                triggerRescue(message, '!! ERROR: VISUAL_DATA_EXCEEDS_5MB_LIMIT');
+                btn.disabled = false;
+                return;
             }
 
-            btn.disabled = true;
             btn.textContent = 'UPLOADING...';
-            status.style.display = 'block';
-            status.textContent = '>> ESTABLISHING_UPLINK...';
-            status.className = 'small mt-2 text-cyan';
+            statusMsg.textContent = '>> ESTABLISHING_UPLINK...';
+            statusMsg.className = 'small mb-2 text-cyan';
 
             let imageUrl = null;
+            let uploadFailed = false;
 
+            // --- 2. UPLOAD IMAGE ---
             if (imageFile) {
                 const fileExt = imageFile.name.split('.').pop();
-                const fileName = `${Date.now()}.${fileExt}`; // Using timestamp for unique files
+                const fileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.${fileExt}`;
                 const filePath = `uploads/${fileName}`;
 
                 let { error: uploadError } = await supabaseClient.storage
@@ -157,27 +164,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     .upload(filePath, imageFile);
 
                 if (uploadError) {
-                    status.textContent = '!! UPLOAD_REJECTED: STORAGE_FAILURE';
-                    status.className = 'small mt-2 text-red';
-                    btn.disabled = false;
-                    btn.textContent = 'UPLOAD_TO_MAINFRAME';
-                    return;
+                    console.error('Storage Error:', uploadError);
+                    uploadFailed = true;
                 } else {
                     const { data } = supabaseClient.storage.from('wish-images').getPublicUrl(filePath);
                     imageUrl = data.publicUrl;
                 }
             }
 
-            const { error } = await supabaseClient
-                .from('wishes')
-                .insert([{ name, message, image_url: imageUrl }]);
+            // --- 3. UPLOAD DATA TO TABLE ---
+            let dbError = null;
+            if (!uploadFailed) {
+                btn.textContent = 'SYNCING_DATABASE...';
+                const res = await supabaseClient
+                    .from('wishes')
+                    .insert([{ name: name, message: message, image_url: imageUrl }]);
+                dbError = res.error;
+            }
 
-            if (error) {
-                status.textContent = '!! SYNC_FAILED';
-                status.className = 'small mt-2 text-red';
+            // --- 4. SUCCESS OR RESCUE ---
+            if (uploadFailed || dbError) {
+                console.error("Database/Storage Error:", dbError || "Image failed to upload.");
+                triggerRescue(message, '!! TRANSMISSION_FAILED: SYSTEM_LIMIT_REACHED');
             } else {
-                status.textContent = '>> DATA_ARCHIVED_SUCCESSFULLY';
-                status.className = 'small mt-2 text-green';
+                statusMsg.textContent = '>> DATA_ARCHIVED_SUCCESSFULLY';
+                statusMsg.className = 'small mb-2 text-green';
                 wishForm.reset();
                 if (typeof loadWishes === "function") loadWishes();
             }
@@ -186,7 +197,28 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = 'UPLOAD_TO_MAINFRAME';
         });
     }
-    
+
+    // Helper Function to trigger the rescue box
+    function triggerRescue(savedMessage, errorText) {
+        const statusMsg = document.getElementById('status-msg');
+        const rescueBox = document.getElementById('rescue-box');
+
+        statusMsg.textContent = errorText;
+        statusMsg.className = 'small mb-2 text-red';
+
+        rescueBox.style.display = 'block';
+        document.getElementById('recovered-text').value = savedMessage;
+    }
+
+    // Global copy function for the rescue button
+    window.copyRescueText = () => {
+        const copyText = document.getElementById('recovered-text');
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile
+        navigator.clipboard.writeText(copyText.value);
+        alert("Data Packet Copied! Proceed to External Relay.");
+    };
+
     // --- C. TERMINAL LOGIN SYSTEM (The part that broke) ---
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) {
