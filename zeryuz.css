@@ -1,0 +1,146 @@
+/* ==========================================
+   ZERYUZ CORP - MAIN PAGE STYLES
+   ========================================== */
+
+body {
+    background-color: var(--z-black);
+    background-image: url("Assets/Zeryuz_BG.jpg");
+    color: var(--z-white);
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif; /* Sterile, corporate body font */
+    font-weight: bold;
+    line-height: 1.6;
+    transition: background-color 1s ease;
+}
+
+/* --- LAYER 1: CORPORATE PUBLIC FACE --- */
+.z-hero {
+    /* Uses your provided banner as a background */
+    background: linear-gradient(rgba(6,10,15,0.7), rgba(6,10,15,0.9)), url('Assets/Zeryuz_Banner_X.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 150px 0;
+    border-bottom: 2px solid var(--z-corp-blue);
+}
+
+.z-heading {
+    font-family: 'Ethnocentric', sans-serif;
+    color: var(--z-white);
+    letter-spacing: 2px;
+}
+
+.z-subheading {
+    color: var(--z-neon-blue);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+.z-card {
+    background: var(--z-dark-blue);
+    border: 1px solid #112233;
+    padding: 30px;
+    height: 100%;
+    transition: 0.3s;
+}
+
+.z-card:hover {
+    border-color: var(--z-neon-blue);
+    box-shadow: 0 5px 20px rgba(0, 242, 255, 0.1);
+}
+
+.z-card-title {
+    font-family: 'Ethnocentric', sans-serif;
+    font-size: 1.1rem;
+    color: var(--z-neon-blue);
+    margin-bottom: 15px;
+}
+
+.z-profile-img {
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid var(--z-corp-blue);
+    filter: grayscale(0.5); /* Corporate, serious look */
+}
+
+/* --- LAYER 2: THE UNDERGROUND (ARG) --- */
+#layer-2-underground {
+    display: none; /* Hidden by default */
+}
+
+body.arg-unlocked {
+    background-color: #0a0000;
+    background-image: none;
+    font-family: 'Courier New', Courier, monospace; /* Terminal font */
+}
+
+.arg-header {
+    font-family: 'Ethnocentric', sans-serif;
+    color: #ff003c;
+    text-shadow: 3px 3px 0 #4a0000;
+    border-bottom: 2px dashed #ff003c;
+    padding-bottom: 15px;
+}
+
+.arg-log-box {
+    background: rgba(20, 0, 0, 0.8);
+    border-left: 4px solid #ff003c;
+    padding: 20px;
+    margin-bottom: 30px;
+    color: #ffcccc;
+}
+
+.arg-meta {
+    color: #ff003c;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.glitch-red {
+    animation: text-glitch-red 3s infinite;
+}
+
+@keyframes text-glitch-red {
+    0%, 95%, 100% { transform: skew(0deg); }
+    96% { transform: skew(5deg); color: #fff; }
+    98% { transform: skew(-5deg); color: #ff003c; }
+}
+
+/* --- ARG LOGIN MODAL --- */
+#arg-auth-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 10000;
+    display: none; justify-content: center; align-items: center;
+}
+
+.arg-auth-box {
+    background: #060a0f;
+    border: 1px solid #333;
+    padding: 40px;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%; max-width: 400px;
+}
+
+.arg-auth-box input {
+    background: #000;
+    border: 1px solid #555;
+    color: #00f2ff;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    margin: 20px 0;
+    font-family: 'Courier New', Courier, monospace;
+    outline: none;
+    text-transform: uppercase;
+}
+
+.arg-auth-box input:focus { border-color: #00f2ff; }
+.arg-auth-box button {
+    background: #112233; color: #00f2ff; border: 1px solid #007799;
+    padding: 10px 20px; width: 100%; cursor: pointer; transition: 0.3s;
+}
+.arg-auth-box button:hover { background: #00f2ff; color: #000; }

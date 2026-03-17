@@ -1,0 +1,80 @@
+/* ==========================================
+   ZERYUZ CORP - HEADER & FOOTER STYLES
+   ========================================== */
+
+@font-face {
+    font-family: 'Ethnocentric';
+    src: url('Ethnocentric-Regular.otf') format('opentype');
+    font-weight: normal;
+}
+
+:root {
+    --z-black: #060a0f;
+    --z-dark-blue: #091a28;
+    --z-corp-blue: #007799;
+    --z-neon-blue: #00f2ff;
+    --z-white: #f0f4f8;
+}
+
+/* NAVBAR */
+.z-navbar {
+    background-color: rgba(6, 10, 15, 0.95);
+    border-bottom: 1px solid var(--z-corp-blue);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+}
+
+.z-brand-text {
+    font-family: 'Ethnocentric', sans-serif;
+    color: var(--z-white);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.z-link {
+    font-family: 'Ethnocentric', sans-serif;
+    color: var(--z-corp-blue) !important;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.z-link:hover {
+    color: var(--z-neon-blue) !important;
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+}
+
+.z-toggler {
+    border-color: var(--z-corp-blue);
+}
+
+/* FOOTER */
+.z-footer {
+    background-color: var(--z-black);
+    border-top: 1px solid #112233;
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.z-footer-text {
+    font-family: 'Arial', sans-serif;
+    color: #6688aa;
+    letter-spacing: 1px;
+}
+
+/* OVERRIDE FOR ARG UNLOCKED MODE */
+body.arg-unlocked .z-navbar {
+    background-color: #1a0000;
+    border-bottom: 1px solid #ff003c;
+}
+body.arg-unlocked .z-brand-text {
+    color: #ff003c;
+    text-shadow: 2px 2px 0 #4a0000;
+}
+body.arg-unlocked .z-link {
+    color: #880000 !important;
+}
+body.arg-unlocked .z-footer {
+    display: none; /* Hide corporate footer in ARG mode */
+}
