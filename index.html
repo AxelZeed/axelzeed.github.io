@@ -13,8 +13,8 @@
 
 <body class="d-flex flex-column min-vh-100">
     <axel-navbar></axel-navbar>
-    <main class="container my-auto py-5">
-        <div class="row align-items-center main-content-box p-4 p-md-5">
+    <main class="container my-5 py-4">
+        <div class="row align-items-center main-content-box p-4 p-md-5 mb-5">
             <div class="col-lg-6 mb-4 mb-lg-0 text-center">
                 <img src="Assets/Main-Page-Intro.jpg" alt="Axel" class="img-fluid main-img">
             </div>
@@ -26,30 +26,25 @@
                     I specialize in HMV technology and digital soul virtualization.
                 </p>
                 <div class="row g-3">
-                    <div class="col-12 col-m-1">
+                    <div class="col-12 col-md-6">
                         <a href="porto.html" class="btn btn-custom w-100">PORTFOLIO</a>
                     </div>
-                    <div class="col-12 col-m-1">
-                        <a href="https://vgen.co/axel_zeed" class="btn btn-custom w-100 bg-light">VGEN</a>
+                    <div class="col-12 col-md-6">
+                        <a href="https://vgen.co/axel_zeed" target="_blank"
+                            class="btn btn-custom w-100 bg-light">VGEN</a>
                     </div>
-                    <div class="col-12 col-m-1">
-                        <a href="#" class="btn btn-custom w-100 bg-success text-white">DEBUT FORM</a>
+                    <div class="col-12 col-md-6">
+                        <a href="debut.html" class="btn btn-custom w-100 bg-success text-white">DEBUT PAGE</a>
                     </div>
-                    <div class="col-12 col-m-1">
-                        <a href="#" class="btn btn-custom w-100 bg-danger text-white">???</a>
+                    <div class="col-12 col-md-6">
+                        <a href="zeryuz.html" class="btn btn-custom w-100 bg-danger text-white">ZERYUZ_CORP</a>
                     </div>
-                    <div class="col-12 col-m-1 trakteer-wrapper">
+                    <div class="col-12 trakteer-wrapper text-center">
                         <script type='text/javascript'
                             src='https://edge-cdn.trakteer.id/js/embed/trbtn.min.js?v=14-05-2025'></script>
                         <script type='text/javascript'>
                             (function () {
-                                var trbtnId = trbtn.init(
-                                    'Find Me in Trakteer',
-                                    '#058F8B',
-                                    'https://trakteer.id/axel-zeed',
-                                    'https://mirror-uploads.trakteer.id/images/units/uic-SWpH0zd6mkJfiwOfSWMkzMNITxjxEWv41774500402.png',
-                                    '40'
-                                );
+                                var trbtnId = trbtn.init('Find Me in Trakteer', '#058F8B', 'https://trakteer.id/axel-zeed', 'https://mirror-uploads.trakteer.id/images/units/uic-SWpH0zd6mkJfiwOfSWMkzMNITxjxEWv41774500402.png', '40');
                                 trbtn.draw(trbtnId);
                             })();
                         </script>
@@ -57,6 +52,15 @@
                 </div>
             </div>
         </div>
+
+        <section class="char-sheet-section fade-in">
+            <h2 class="section-header-tech mb-4">00_SUBJECT_REF_SHEET</h2>
+            <div class="char-sheet-frame">
+                <div class="scanline-effect"></div>
+                <img src="Assets/Vtuber_Axel_3_5.jpg" alt="Axel Zeed 3.5 Ref Sheet" class="img-fluid ref-sheet-img">
+                <div class="frame-label">MODEL_DESIGNATION: PROTOTYPE_018</div>
+            </div>
+        </section>
     </main>
     <axel-footer></axel-footer>
 
