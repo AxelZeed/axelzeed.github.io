@@ -64,6 +64,43 @@ body {
     filter: grayscale(0.5); /* Corporate, serious look */
 }
 
+.z-heading {
+    font-family: 'Ethnocentric', sans-serif;
+    color: var(--z-white);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    border-bottom: 2px solid var(--z-corp-blue);
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+#about p {
+    color: #a0aec0;
+    line-height: 2;
+    text-align: justify;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.z-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-top: 4px solid var(--z-corp-blue); /* Distinct corporate accent */
+    transition: all 0.4s ease;
+}
+
+.z-card:hover {
+    border-top-color: var(--z-neon-blue);
+    transform: translateY(-10px);
+}
+
+/* Make the Underground feel DIRTY and BROKEN compared to the top */
+body.arg-unlocked .arg-log-box {
+    border: 1px solid #ff003c;
+    box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.2);
+    background: rgba(10, 0, 0, 0.9);
+}
+
 /* --- LAYER 2: THE UNDERGROUND (ARG) --- */
 #layer-2-underground {
     display: none; /* Hidden by default */

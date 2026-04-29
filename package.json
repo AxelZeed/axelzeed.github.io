@@ -1,0 +1,7 @@
+{
+  "name": "axel-zeed-mainframe",
+  "version": "1.0.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.42.7"
+  }
+}

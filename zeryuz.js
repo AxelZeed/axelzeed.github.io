@@ -38,7 +38,7 @@ class ZeryuzFooter extends HTMLElement {
                 <p class="z-footer-text mb-2">Bridging the gap between the biological mind and the digital world.</p>
                 <p class="z-footer-text small text-muted mb-0">
                     © 2020-2026 Zeryuz Corporation. All rights reserved. 
-                    <span id="arg-trigger" style="opacity: 30; cursor: pointer; padding: 5px;">π</span>
+                    <span id="arg-trigger" style="opacity: 0.06; cursor: pointer; padding: 5px;">π</span>
                 </p>
             </div>
         </footer>`;
