@@ -12,10 +12,7 @@ const Navbar = () => {
     { name: 'PORTFOLIO', href: '/portfolio' },
     { name: 'PRICE', href: '/price' },
     { name: 'TERMS', href: '/terms' },
-    { name: 'DEBUT', href: '/debut' },
     { name: 'ZERYUZ', href: '/zeryuz' },
-    { name: 'FORM', href: '/form' },
-    { name: 'REVIEW', href: '/review' },
   ];
 
   return (
