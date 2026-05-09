@@ -43,11 +43,11 @@ export const Lightbox: React.FC<LightboxProps> = ({
   return (
     <div 
       onClick={onClose}
-      className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+      className="fixed inset-0 z-[99999] bg-black/98 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
     >
       <button 
         onClick={onClose}
-        className="absolute top-8 right-8 text-white hover:text-neon-cyan transition-colors z-10"
+        className="absolute top-6 right-6 md:top-8 md:right-8 text-white hover:text-neon-cyan transition-colors z-[100000] p-3 bg-black/40 rounded-full"
       >
         <X size={32} />
       </button>

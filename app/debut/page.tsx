@@ -23,7 +23,7 @@ import {
 const AttributeCard: React.FC<{ src: string; title: string; description: string; onClick: () => void }> = ({ src, title, description, onClick }) => (
   <div 
     onClick={onClick}
-    className="group flex-fill flex flex-col border border-white/10 bg-dark-teal/20 p-6 min-w-[280px] max-w-[320px] transition-all hover:border-neon-cyan hover:-translate-y-2 cursor-pointer"
+    className="group flex-fill flex flex-col border border-white/10 bg-dark-teal/20 p-6 w-full sm:w-[320px] transition-all hover:border-neon-cyan hover:-translate-y-2 cursor-pointer"
   >
     <div className="relative overflow-hidden mb-6 aspect-square shrink-0">
       <img src={src} alt={title} className="w-full h-full object-cover border border-white/5 group-hover:scale-110 transition-transform duration-500" />
@@ -37,7 +37,7 @@ const AttributeCard: React.FC<{ src: string; title: string; description: string;
 const HistoryCard: React.FC<{ src: string; version: string; description: string; isNew?: boolean; onClick: () => void }> = ({ src, version, description, isNew, onClick }) => (
   <div 
     onClick={onClick}
-    className={`group text-center border ${isNew ? 'border-neon-green/30' : 'border-white/10'} bg-black/40 p-5 w-[280px] transition-all hover:border-neon-cyan hover:scale-105 cursor-pointer`}
+    className={`group text-center border ${isNew ? 'border-neon-green/30' : 'border-white/10'} bg-black/40 p-5 w-full sm:w-[280px] transition-all hover:border-neon-cyan hover:scale-105 cursor-pointer`}
   >
     <div className="relative aspect-[3/4] mb-4 overflow-hidden border border-white/5">
       <img src={src} alt={version} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -63,17 +63,17 @@ export default function DebutPage() {
   const [showSpotify, setShowSpotify] = useState(false);
 
   const sections = [
-    { id: 'about', title: '01_ABOUT_AXEL' },
-    { id: 'archive', title: '02_ARCHIVE' },
-    { id: 'attributes', title: '03_ATTRIBUTES' },
-    { id: 'preferences', title: '04_PERSONAL_PREFERENCES' },
-    { id: 'media', title: '05_MEDIA_CONSUMPTION' },
-    { id: 'games', title: '06_GAMING_INDEX' },
-    { id: 'audio', title: '07_AUDIO_NODE' },
-    { id: 'hardware', title: '08_HARDWARE_&_SOFTWARE' },
-    { id: 'cars', title: '09_COMBUSTION_ENGINES' },
-    { id: 'credits', title: '10_CREDIT_SEQUENCE' },
-    { id: 'relay', title: '11_FEEDBACK_RELAY' },
+    { id: 'about', title: '01 ABOUT AXEL' },
+    { id: 'archive', title: '02 ARCHIVE' },
+    { id: 'attributes', title: '03 ATTRIBUTES' },
+    { id: 'preferences', title: '04 PERSONAL PREFERENCES' },
+    { id: 'media', title: '05 MEDIA CONSUMPTION' },
+    { id: 'games', title: '06 GAMING INDEX' },
+    { id: 'audio', title: '07 AUDIO NODE' },
+    { id: 'hardware', title: '08 HARDWARE & SOFTWARE' },
+    { id: 'cars', title: '09 COMBUSTION ENGINES' },
+    { id: 'credits', title: '10 CREDIT SEQUENCE' },
+    { id: 'relay', title: '11 FEEDBACK RELAY' },
   ];
 
   useEffect(() => {
@@ -164,7 +164,7 @@ export default function DebutPage() {
                <span className="text-[10px] font-mono text-neon-cyan tracking-[0.5em] uppercase">Sector_Verified_v3.5</span>
             </div>
             
-            <h1 className="glitch-text text-5xl md:text-9xl font-ethnocentric text-white mb-4 tracking-tighter leading-none" data-text={`WELCOME_${userData?.name.toUpperCase()}`}>
+            <h1 className="glitch-text text-3xl sm:text-5xl md:text-9xl font-ethnocentric text-white mb-4 tracking-tighter leading-none" data-text={`WELCOME_${userData?.name.toUpperCase()}`}>
               WELCOME<br />
               <span className="text-neon-cyan">{userData?.name.toUpperCase()}</span>
             </h1>
@@ -187,9 +187,9 @@ export default function DebutPage() {
           
           {/* 01 ABOUT */}
           <section id="about" className="scroll-mt-32 focusable-chunk">
-            <div className="flex items-center gap-4 mb-16">
-               <div className="w-2 h-10 bg-neon-cyan"></div>
-               <h2 className="text-3xl md:text-6xl font-ethnocentric tracking-tighter">01_ABOUT_AXEL</h2>
+            <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <div className="w-2 h-8 md:h-10 bg-neon-cyan"></div>
+               <h2 className="text-2xl md:text-6xl font-ethnocentric tracking-tighter uppercase">01 ABOUT AXEL</h2>
             </div>
             
             <div className="bg-dark-teal/20 border-l-4 border-neon-cyan p-8 md:p-12 flex flex-col lg:flex-row gap-12 items-center relative overflow-hidden group">
@@ -276,9 +276,9 @@ export default function DebutPage() {
 
           {/* 02 ARCHIVE */}
           <section id="archive" className="scroll-mt-32 focusable-chunk">
-            <div className="text-center mb-20">
-               <h2 className="font-ethnocentric text-3xl md:text-5xl mb-4 tracking-tighter">ARCHIVE_LOGS</h2>
-               <div className="w-32 h-1 bg-neon-cyan mx-auto"></div>
+            <div className="text-center mb-12 md:mb-20">
+               <h2 className="font-ethnocentric text-2xl md:text-5xl mb-4 tracking-tighter uppercase">02 ARCHIVE LOGS</h2>
+               <div className="w-24 md:w-32 h-1 bg-neon-cyan mx-auto"></div>
             </div>
             <div className="flex flex-wrap justify-center gap-10">
               <HistoryCard onClick={() => openLightbox({ src: "/Assets/Axel_Ver1.png", title: "Axel v1.0 (2022)" }, 0, [])} src="/Assets/Axel_Ver1.png" version="v1.0 (2022)" description="Young human baseline form that started it all." />
@@ -290,9 +290,9 @@ export default function DebutPage() {
 
           {/* 03 ATTRIBUTES */}
           <section id="attributes" className="scroll-mt-32 focusable-chunk">
-            <div className="text-center mb-20">
-              <h2 className="font-ethnocentric text-3xl md:text-5xl mb-4 tracking-tighter">AUGMENTED_ATTRIBUTES</h2>
-              <p className="text-[10px] text-neon-cyan font-mono tracking-[0.5em] uppercase opacity-50">Hardware_Augmentations_Report</p>
+            <div className="text-center mb-12 md:mb-20">
+              <h2 className="font-ethnocentric text-2xl md:text-5xl mb-4 tracking-tighter uppercase">03 AUGMENTED ATTRIBUTES</h2>
+              <p className="text-[8px] md:text-[10px] text-neon-cyan font-mono tracking-[0.3em] md:tracking-[0.5em] uppercase opacity-50">Hardware Augmentations Report</p>
             </div>
             <div className="flex flex-wrap justify-center gap-10">
               <AttributeCard 
@@ -330,9 +330,9 @@ export default function DebutPage() {
 
           {/* 04 PREFERENCES */}
           <section id="preferences" className="scroll-mt-32 focusable-chunk">
-             <div className="flex items-center gap-4 mb-16">
-               <div className="w-1.5 h-10 bg-neon-cyan"></div>
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">04_Personal_Preferences</h2>
+             <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <div className="w-1.5 h-8 md:h-10 bg-neon-cyan"></div>
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">04 Personal Preferences</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -440,9 +440,9 @@ export default function DebutPage() {
 
           {/* 05 MEDIA */}
           <section id="media" className="scroll-mt-32 focusable-chunk">
-            <div className="flex items-center gap-4 mb-16">
-               <div className="w-1.5 h-10 bg-neon-cyan"></div>
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">05_MEDIA_CONSUMPTION</h2>
+            <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <div className="w-1.5 h-8 md:h-10 bg-neon-cyan"></div>
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">05 MEDIA CONSUMPTION</h2>
             </div>
             
             <MediaSlider title="Anime_Database" items={ANIME} onItemClick={(it, idx) => openLightbox(it, idx, ANIME)} />
@@ -452,8 +452,8 @@ export default function DebutPage() {
 
           {/* 06 GAMING */}
           <section id="games" className="scroll-mt-32 focusable-chunk">
-            <div className="flex justify-between items-center mb-16">
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">06_Gaming_Index</h2>
+            <div className="flex justify-between items-center mb-12 md:mb-16">
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">06 Gaming Index</h2>
                <div className="hidden md:flex items-center gap-3 text-neon-green/40">
                   <Zap size={16} />
                   <span className="text-[10px] font-mono uppercase tracking-widest">Realtime_Stats_Active</span>
@@ -509,9 +509,9 @@ export default function DebutPage() {
 
           {/* 07 AUDIO */}
           <section id="audio" className="scroll-mt-32 focusable-chunk">
-             <div className="flex items-center gap-4 mb-16">
-               <Music className="text-neon-cyan" size={32} />
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">07_Audio_Frequency_DB</h2>
+             <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <Music className="text-neon-cyan w-6 h-6 md:w-8 md:h-8" />
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">07 Audio Frequency DB</h2>
             </div>
 
             <MediaSlider title="Region_01: J-Pop" items={MUSIC_JPOP} onItemClick={(it, idx) => openLightbox(it, idx, MUSIC_JPOP)} cardWidth="w-[220px]" />
@@ -563,9 +563,9 @@ export default function DebutPage() {
 
           {/* 08 HARDWARE */}
           <section id="hardware" className="scroll-mt-32 focusable-chunk">
-            <div className="flex items-center gap-4 mb-16">
-               <Cpu className="text-neon-cyan" size={32} />
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">08_Hardware_&_Software</h2>
+            <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <Cpu className="text-neon-cyan w-6 h-6 md:w-8 md:h-8" />
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">08 Hardware & Software</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -603,9 +603,9 @@ export default function DebutPage() {
 
           {/* 09 CARS */}
           <section id="cars" className="scroll-mt-32 focusable-chunk">
-             <div className="flex items-center gap-4 mb-16">
-               <Car className="text-neon-cyan" size={32} />
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">09_Combustion_Engines</h2>
+             <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <Car className="text-neon-cyan w-6 h-6 md:w-8 md:h-8" />
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">09 Combustion Engines</h2>
             </div>
             <p className="text-xs text-gray-400 font-mono mb-8 uppercase tracking-[0.5em]">// OH BOY, HERE WE GO.</p>
 
@@ -630,9 +630,9 @@ export default function DebutPage() {
 
           {/* 10 CREDITS */}
           <section id="credits" className="scroll-mt-32 focusable-chunk">
-             <div className="flex items-center gap-4 mb-16">
-               <Award className="text-neon-cyan" size={32} />
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">10_Credit_Sequence</h2>
+             <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <Award className="text-neon-cyan w-6 h-6 md:w-8 md:h-8" />
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">10 Credit Sequence</h2>
             </div>
 
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20">
@@ -694,9 +694,9 @@ export default function DebutPage() {
 
           {/* 11 RELAY */}
           <section id="relay" className="scroll-mt-32 focusable-chunk">
-            <div className="flex items-center gap-4 mb-16">
-               <Send className="text-neon-cyan" size={32} />
-               <h2 className="text-2xl md:text-4xl font-ethnocentric tracking-tighter uppercase">11_Feedback_Relay</h2>
+            <div className="flex items-center gap-4 mb-12 md:mb-16">
+               <Send className="text-neon-cyan w-6 h-6 md:w-8 md:h-8" />
+               <h2 className="text-xl md:text-4xl font-ethnocentric tracking-tighter uppercase">11 Feedback Relay</h2>
             </div>
 
             {/* Thank You Box */}

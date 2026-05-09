@@ -72,7 +72,7 @@ const GalleryItem: React.FC<{
     <div
       onClick={onClick}
       className="gallery-item-wrapper group relative overflow-hidden border border-neon-cyan bg-dark-teal/40 transition-all duration-300 hover:scale-[1.02] hover:-skew-x-1 hover:border-neon-green hover:shadow-[0_0_20px_rgba(57,255,20,0.3)] cursor-pointer mb-4 break-inside-avoid"
-      style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}
+      style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}
     >
       <img
         src={image.src}
@@ -92,7 +92,7 @@ const GalleryItem: React.FC<{
 
 const VideoCard: React.FC<{ src: string; title: string }> = ({ src, title }) => (
   <div className="p-1 border border-neon-cyan bg-black/50 transition-all duration-300 hover:border-neon-green hover:shadow-[0_0_15px_rgba(57,255,20,0.5)] h-full mb-4 break-inside-avoid"
-    style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
+    style={{ clipPath: 'polygon(0 8px, 100% 0, 100% calc(100% - 8px), 0 100%)' }}>
     <div className="aspect-video relative overflow-hidden">
       <iframe
         src={src}
@@ -107,7 +107,7 @@ const VideoCard: React.FC<{ src: string; title: string }> = ({ src, title }) => 
 
 const TestimonialCard: React.FC<{ src: string; author: string; quote: string }> = ({ src, author, quote }) => (
   <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 bg-dark-teal/85 backdrop-blur-md border-2 border-neon-cyan p-4 sm:p-6 transition-all duration-300 hover:border-neon-green hover:translate-x-2 mb-6"
-    style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
+    style={{ clipPath: 'polygon(0 12px, 100% 0, 100% calc(100% - 12px), 0 100%)' }}>
     <img src={src} alt={author} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-2 border-neon-cyan object-cover shrink-0" />
     <div className="flex-1 min-w-0">
       <p className="italic text-gray-200 text-sm md:text-base border-l-2 border-neon-green pl-4 mb-3 leading-relaxed">
@@ -161,10 +161,10 @@ export default function Portfolio() {
   }, [selectedImage, nextImage, prevImage]);
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative z-10">
+    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative overflow-x-hidden">
       {/* Illustrations */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">01_ILLUSTRATIONS</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">01 ILLUSTRATIONS</h2>
         <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 md:gap-6 space-y-4 md:space-y-6">
           {illustrations.map((img, idx) => (
             <GalleryItem key={idx} image={img} onClick={() => openLightbox(idx, illustrations)} />
@@ -174,7 +174,7 @@ export default function Portfolio() {
 
       {/* Chibi */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">02_CHIBI</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">02 CHIBI</h2>
         <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 md:gap-6 space-y-4 md:space-y-6">
           {chibis.map((img, idx) => (
             <GalleryItem key={idx} image={img} onClick={() => openLightbox(idx, chibis)} />
@@ -184,7 +184,7 @@ export default function Portfolio() {
 
       {/* Emotes */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">03_EMOTES</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">03 EMOTES</h2>
         <div className="columns-1 md:columns-2 gap-6 space-y-6">
           {emotes.map((img, idx) => (
             <GalleryItem key={idx} image={img} onClick={() => openLightbox(idx, emotes)} />
@@ -194,7 +194,7 @@ export default function Portfolio() {
 
       {/* Live2D Models */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">04_LIVE2D_MODELS</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">04 LIVE2D MODELS</h2>
         <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 md:gap-6 space-y-4 md:space-y-6">
           {live2dModels.map((img, idx) => (
             <GalleryItem key={idx} image={img} onClick={() => openLightbox(idx, live2dModels)} />
@@ -204,7 +204,7 @@ export default function Portfolio() {
 
       {/* Live2D Rigging */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">05_LIVE2D_RIGGING_SHOWCASE</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">05 LIVE2D RIGGING SHOWCASE</h2>
         <div className="columns-1 md:columns-2 gap-8 space-y-8">
           <VideoCard src="https://www.youtube.com/embed/AAvkUHuw-oQ?si=Omupp7B4Z-osGgpc" title="Axel Zeed 3.5 Showcase" />
           <VideoCard src="https://www.youtube.com/embed/fBEN56Y2MHg" title="Axel Zeed 3.0 Showcase" />
@@ -219,7 +219,7 @@ export default function Portfolio() {
 
       {/* Stream Overlays */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">06_STREAM_OVERLAYS</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">06 STREAM OVERLAYS</h2>
         <div className="columns-1 md:columns-2 gap-6 space-y-6">
           {overlays.map((img, idx) => (
             <GalleryItem key={idx} image={img} onClick={() => openLightbox(idx, overlays)} />
@@ -229,7 +229,7 @@ export default function Portfolio() {
 
       {/* Testimonials */}
       <section className="mb-20 animate-fade-in">
-        <h2 className="section-header-tech mb-8">07_TESTIMONIALS</h2>
+        <h2 className="section-header-tech mb-8 text-base sm:text-xl md:text-2xl">07 TESTIMONIALS</h2>
         <div className="max-w-4xl mx-auto space-y-8">
           <TestimonialCard
             src="/Assets/Testimonial_1.jpg"
@@ -252,12 +252,12 @@ export default function Portfolio() {
       {/* Lightbox */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 md:p-10 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/98 backdrop-blur-xl p-4 sm:p-8 md:p-12 animate-in fade-in duration-300"
           onClick={closeLightbox}
         >
           <button 
             onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
-            className="absolute top-4 right-4 md:top-6 md:right-6 text-white/70 hover:text-neon-cyan transition-colors z-10"
+            className="absolute top-6 right-6 md:top-8 md:right-8 text-white/70 hover:text-neon-cyan transition-colors z-[100000] p-3 bg-black/40 rounded-full"
           >
             <X size={32} className="md:w-10 md:h-10" />
           </button>

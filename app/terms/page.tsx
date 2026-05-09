@@ -5,9 +5,9 @@ import React from 'react';
 const TermsSection: React.FC<{ title: string; children: React.ReactNode; borderColor?: string }> = ({ title, children, borderColor }) => (
   <section
     className={`mb-8 md:mb-12 p-4 sm:p-6 md:p-8 bg-black/40 border-2 ${borderColor || 'border-neon-cyan/30'} transition-all hover:bg-black/60 hover:border-neon-cyan relative`}
-    style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}
+    style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}
   >
-    <h2 className="section-header-tech mb-8 inline-block">{title.toUpperCase()}</h2>
+    <h2 className="section-header-tech mb-8 inline-block text-xs sm:text-sm md:text-base">{title.toUpperCase()}</h2>
     <div className="text-gray-300 space-y-4">
       {children}
     </div>
@@ -29,14 +29,14 @@ const ProtocolList: React.FC<{ items: string[]; type?: 'accept' | 'restrict' }> 
 
 export default function TermsPage() {
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative z-10 max-w-6xl">
-      <div className="main-content-box p-4 sm:p-6 md:p-12 animate-fade-in" style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 100%, 1% 99%)' }}>
-        <h1 className="glitch-text text-2xl sm:text-3xl md:text-5xl font-ethnocentric mb-8 md:mb-12 text-center tracking-tighter">
+    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative max-w-6xl overflow-x-hidden">
+      <div className="main-content-box p-4 sm:p-6 md:p-12 animate-fade-in" style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}>
+        <h1 className="glitch-text text-xl sm:text-3xl md:text-5xl font-ethnocentric mb-8 md:mb-12 text-center tracking-tighter">
           TERMS OF SERVICE
         </h1>
 
         {/* 01 GENERAL INFORMATION */}
-        <TermsSection title="01_General_Information">
+        <TermsSection title="01 General Information">
           <div className="text-neon-cyan font-bold leading-relaxed mb-6 space-y-2 text-sm">
             <p>// By commissioning Me, you agree to these neural-binding terms. Violations result in immediate blacklisting from future commission.</p>
             <p>// Base prices are starting points. Final complexity dictates total credit consumption.</p>
@@ -70,7 +70,7 @@ export default function TermsPage() {
         </TermsSection>
 
         {/* 02 ILLUSTRATION USAGE */}
-        <TermsSection title="02_Illustration_Usage">
+        <TermsSection title="02 Illustration Usage">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div>
               <h3 className="text-neon-green font-bold mb-4 text-sm uppercase">Terms of Use</h3>
@@ -116,7 +116,7 @@ export default function TermsPage() {
         </TermsSection>
 
         {/* 03 LIVE2D MODEL & RIGGING */}
-        <TermsSection title="03_Live2D_Model_Rigging" borderColor="border-neon-cyan">
+        <TermsSection title="03 Live2D Model Rigging" borderColor="border-neon-cyan">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div>
               <h3 className="text-neon-green font-bold mb-4 text-sm uppercase">Terms of Use</h3>
@@ -152,7 +152,7 @@ export default function TermsPage() {
         </TermsSection>
 
         {/* 04 STREAM OVERLAY */}
-        <TermsSection title="04_Stream_Overlay" borderColor="border-neon-cyan">
+        <TermsSection title="04 Stream Overlay" borderColor="border-neon-cyan">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <h3 className="text-neon-green font-bold mb-4 text-sm uppercase">Terms of Use & Payment</h3>
@@ -181,8 +181,8 @@ export default function TermsPage() {
 
         {/* 05 REFUND POLICY */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <section className="p-8 border-2 border-neon-red bg-neon-red/5" style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
-            <h2 className="section-header-tech mb-6 !bg-neon-red/20 inline-block">05_REFUND_POLICY</h2>
+          <section className="p-8 border-2 border-neon-red bg-neon-red/5" style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}>
+            <h2 className="section-header-tech mb-6 !bg-neon-red/20 inline-block text-xs sm:text-sm md:text-base">05 REFUND POLICY</h2>
             <ProtocolList type="restrict" items={[
               "Full refund is only available if the sketching/production phase has not yet begun.",
               "Deposits are non-refundable once work begins.",
@@ -190,7 +190,7 @@ export default function TermsPage() {
               "I reserve right to terminate if TOS is breached."
             ]} />
           </section>
-          <div className="p-8 border-2 border-neon-green bg-neon-green/5 flex flex-col justify-center items-center text-center" style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
+          <div className="p-8 border-2 border-neon-green bg-neon-green/5 flex flex-col justify-center items-center text-center" style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}>
             <h4 className="text-neon-green font-ethnocentric text-2xl mb-4 glitch-text">SYSTEM_READY</h4>
             <p className="text-gray-400 text-sm mb-2">Feel free to contact me.</p>
             <p className="text-neon-cyan font-mono text-xs">axelzeed // 2026</p>
@@ -198,11 +198,11 @@ export default function TermsPage() {
         </div>
 
         {/* 06 CONTACT */}
-        <TermsSection title="06_Contact_Communication">
+        <TermsSection title="06 Contact Communication">
           <div className="flex flex-wrap gap-4 mt-2">
-            <a href="https://twitter.com/axel_zeed" target="_blank" className="btn-custom text-xs !py-2">X_@AXEL_ZEED</a>
-            <a href="https://www.instagram.com/axel_zeed/" target="_blank" className="btn-custom text-xs !py-2">IG_@AXEL_ZEED</a>
-            <a href="#" className="btn-custom text-xs !py-2">DC_AXELZEED</a>
+            <a href="https://twitter.com/axel_zeed" target="_blank" className="btn-custom text-[10px] sm:text-xs !py-2">X @AXEL ZEED</a>
+            <a href="https://www.instagram.com/axel_zeed/" target="_blank" className="btn-custom text-[10px] sm:text-xs !py-2">IG @AXEL ZEED</a>
+            <a href="#" className="btn-custom text-[10px] sm:text-xs !py-2">DC AXELZEED</a>
           </div>
           <p className="text-xs text-gray-500 mt-6">// Please review these terms carefully before commissioning. Contact me if you have any questions.</p>
         </TermsSection>

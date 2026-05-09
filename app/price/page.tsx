@@ -16,7 +16,7 @@ interface PriceRow {
 const PriceTable: React.FC<{ title: string; rows: PriceRow[]; noteGroups?: NoteGroup[]; isBundle?: boolean }> = ({ title, rows, noteGroups, isBundle }) => (
   <section className={`mb-12 p-6 border-l-4 ${isBundle ? 'border-neon-green bg-neon-green/5' : 'border-neon-cyan bg-black/30'} transition-all hover:translate-x-2`}
   >
-    <h2 className={`text-xl font-ethnocentric mb-6 ${isBundle ? 'text-neon-green' : 'text-neon-cyan'}`}>{title.toUpperCase()}</h2>
+    <h2 className={`text-base sm:text-lg md:text-xl font-ethnocentric mb-6 ${isBundle ? 'text-neon-green' : 'text-neon-cyan'}`}>{title.toUpperCase()}</h2>
     <div className="overflow-x-auto mb-4">
       <table className="w-full text-left border-collapse">
         <thead>
@@ -55,9 +55,9 @@ const PriceTable: React.FC<{ title: string; rows: PriceRow[]; noteGroups?: NoteG
 
 export default function PricePage() {
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative z-10 max-w-5xl">
-      <div className="main-content-box p-4 sm:p-6 md:p-12 animate-fade-in" style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
-        <h1 className="glitch-text text-2xl sm:text-3xl md:text-5xl font-ethnocentric mb-8 md:mb-12 text-center tracking-tighter">
+    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative max-w-5xl overflow-x-hidden">
+      <div className="main-content-box p-4 sm:p-6 md:p-12 animate-fade-in" style={{ clipPath: 'polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%)' }}>
+        <h1 className="glitch-text text-xl sm:text-3xl md:text-5xl font-ethnocentric mb-8 md:mb-12 text-center tracking-tighter">
           SERVICE PRICING
         </h1>
 
@@ -247,8 +247,8 @@ export default function PricePage() {
         />
 
         <div className="mt-12 p-8 bg-black/50 border border-neon-green text-center" style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}>
-          <h4 className="text-neon-green font-ethnocentric mb-4 tracking-widest">ACCEPTED_PAYMENT_CHANNELS</h4>
-          <p className="text-gray-300 text-sm tracking-[0.2em]">
+          <h4 className="text-neon-green font-ethnocentric mb-4 tracking-widest text-xs sm:text-sm">ACCEPTED PAYMENT CHANNELS</h4>
+          <p className="text-gray-300 text-[10px] sm:text-sm tracking-[0.1em] sm:tracking-[0.2em]">
             PAYPAL // GOPAY // DANA // OVO // SHOPEEPAY // TRAKTEERID
           </p>
         </div>

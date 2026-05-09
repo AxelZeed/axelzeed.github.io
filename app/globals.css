@@ -110,13 +110,13 @@ body {
 
 .btn-custom {
   @apply px-6 py-3 bg-neon-cyan text-black font-black tracking-widest transition-all duration-300 hover:bg-neon-green hover:translate-x-2 hover:scale-105 active:scale-95;
-  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
   box-shadow: -5px 5px 0 #ff003c;
 }
 
 .main-content-box {
   @apply bg-[#0d333f]/85 backdrop-blur-md border-2 border-neon-cyan shadow-[0_0_20px_rgba(0,242,255,0.2)];
-  clip-path: polygon(0 2%, 100% 0, 98% 98%, 2% 100%);
+  clip-path: polygon(0 10px, 100% 0, 100% calc(100% - 10px), 0 100%);
   animation: floating-box 6s ease-in-out infinite, border-pulse 4s infinite;
 }
 
@@ -125,7 +125,7 @@ body {
 }
 
 .section-header-tech {
-  @apply text-xl md:text-2xl font-ethnocentric text-neon-cyan mb-6 flex items-center gap-3;
+  @apply text-lg sm:text-xl md:text-2xl font-ethnocentric text-neon-cyan mb-6 flex items-center gap-3 break-all whitespace-normal leading-tight;
 }
 
 @keyframes floating-box {

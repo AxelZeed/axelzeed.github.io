@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative z-10">
+    <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative">
 
       {/* Intro Section */}
       <section className="main-content-box p-4 sm:p-6 md:p-12 mb-12 md:mb-20 animate-fade-in max-w-6xl mx-auto">
@@ -15,7 +15,7 @@ export default function Home() {
                 src="/Assets/Main-Page-Intro.jpg"
                 alt="Axel Zeed"
                 className="relative w-full max-w-md shadow-[0_0_30px_rgba(0,242,255,0.15)] transition-transform duration-500 hover:scale-105"
-                style={{ clipPath: 'polygon(0 1%, 100% 0, 99% 99%, 1% 100%)' }}
+                style={{ clipPath: 'polygon(0 8px, 100% 0, 100% calc(100% - 8px), 0 100%)' }}
               />
             </div>
           </div>
@@ -45,7 +45,7 @@ export default function Home() {
                 DEBUT PAGE
               </Link>
               <Link href="/zeryuz" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs">
-                ZERYUZ_CORP
+                ZERYUZ CORP
               </Link>
             </div>
 
@@ -72,7 +72,7 @@ export default function Home() {
 
       {/* Ref Sheet Section */}
       <section className="animate-fade-in max-w-6xl mx-auto" style={{ animationDelay: '0.2s' }}>
-        <h2 className="section-header-tech">00_SUBJECT_REF_SHEET</h2>
+        <h2 className="section-header-tech text-base sm:text-xl md:text-2xl">00 SUBJECT REF SHEET</h2>
 
         <div className="relative group overflow-hidden border-2 border-neon-cyan/30 bg-dark-teal/80 p-2 shadow-[0_0_40px_rgba(0,242,255,0.1)]">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-50"></div>
@@ -82,7 +82,7 @@ export default function Home() {
             className="w-full h-auto opacity-95 group-hover:opacity-100 transition-opacity duration-500"
           />
           <div className="bg-[#05161a] border-t border-neon-cyan/20 p-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span className="text-xs md:text-sm text-neon-cyan font-ethnocentric tracking-[0.2em]">MODEL_DESIGNATION: PROTOTYPE_018</span>
+            <span className="text-[10px] sm:text-xs md:text-sm text-neon-cyan font-ethnocentric tracking-[0.1em] sm:tracking-[0.2em]">MODEL DESIGNATION: PROTOTYPE 018</span>
             <span className="text-[10px] md:text-xs text-neon-green/60 font-mono tracking-widest bg-neon-green/5 px-3 py-1 border border-neon-green/10">
               STABLE_BUILD_REV_3.5.0
             </span>
