@@ -2,7 +2,7 @@ import { Shield } from 'lucide-react';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import AdminSidebar from '@/components/AdminSidebar';
-import { discoverRoutes } from '@/utils/routeDiscovery';
+import { publicLinks, adminLinks } from './routes';
 
 export default async function AdminLayout({
   children,
@@ -15,10 +15,6 @@ export default async function AdminLayout({
   if (!user) {
     redirect('/login');
   }
-
-  // Auto-discover routes
-  const publicLinks = discoverRoutes('', '', ['admin', 'api', 'auth', 'login']);
-  const adminLinks = discoverRoutes('admin', '/admin', ['dashboard']); // Exclude dashboard as it's the main link
 
   return (
     <div className="min-h-screen bg-[#020a0c] text-white flex">
