@@ -1,6 +1,11 @@
+"use client";
+
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
   const socialLinks = [
     { name: 'Youtube', icon: '/Assets/Youtube.png', href: 'https://youtube.com/@axelzeed' },
     { name: 'Instagram', icon: '/Assets/Instagram.png', href: 'https://www.instagram.com/axel_zeed/' },
@@ -22,7 +27,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-dark-teal border-t border-neon-cyan/20 py-12 mt-auto relative z-10">
+    <footer className={`bg-dark-teal border-t border-neon-cyan/20 py-12 mt-auto relative z-10 ${isAdmin ? 'lg:pl-64' : ''}`}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 mb-8">
           <div className="flex items-center gap-4">

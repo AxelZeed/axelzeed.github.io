@@ -3,9 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
 
   const navLinks = [
     { name: 'HOME', href: '/' },
@@ -16,7 +19,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-[40] bg-[#05161a]/90 backdrop-blur-md border-b border-neon-cyan/20">
+    <nav className={`sticky top-0 z-[40] bg-[#05161a]/90 backdrop-blur-md border-b border-neon-cyan/20 ${isAdmin ? 'lg:pl-64' : ''}`}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <img src="/Assets/Logo.png" alt="Axel Zeed Logo" className="w-10 h-10 md:w-12 md:h-12" />
