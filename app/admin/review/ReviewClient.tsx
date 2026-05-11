@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Shield, LayoutGrid, Square, ChevronLeft, ChevronRight, Hash, Lock } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import { Shield, LayoutGrid, Square, ChevronLeft, ChevronRight, Hash, Lock, Trash2 } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface Wish {
   id: string;
@@ -17,12 +16,14 @@ const WishCard = ({
   wish,
   index,
   isRevealed,
-  onToggle
+  onToggle,
+  onDelete
 }: {
   wish: Wish;
   index: number;
   isRevealed: boolean;
-  onToggle: (id: string) => void
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
 }) => {
   return (
     <div className="bg-[#05161a] border-2 border-neon-cyan/20 p-8 relative overflow-hidden group hover:border-neon-cyan/50 transition-all animate-fade-in">
@@ -31,12 +32,21 @@ const WishCard = ({
           <span className="text-[10px] text-neon-green font-mono uppercase tracking-widest block mb-2">// SENDER_IDENTIFIED</span>
           <h3 className="text-xl font-ethnocentric text-white tracking-tighter">{wish.name}</h3>
         </div>
-        <div className="text-right">
-          <div className="flex items-center gap-2 justify-end mb-2 text-neon-cyan">
-            <Hash size={14} />
-            <span className="text-sm font-ethnocentric">NODE_{index + 1}</span>
+        <div className="text-right flex items-center gap-6">
+          <div>
+            <div className="flex items-center gap-2 justify-end mb-2 text-neon-cyan">
+              <Hash size={14} />
+              <span className="text-sm font-ethnocentric">NODE_{index + 1}</span>
+            </div>
+            <p className="text-[10px] text-gray-500 font-mono">{new Date(wish.created_at).toLocaleString()}</p>
           </div>
-          <p className="text-[10px] text-gray-500 font-mono">{new Date(wish.created_at).toLocaleString()}</p>
+          <button 
+            onClick={() => onDelete(wish.id)}
+            className="p-3 border border-neon-red/30 text-neon-red/50 hover:text-neon-red hover:bg-neon-red/10 transition-all rounded"
+            title="Delete Entry"
+          >
+            <Trash2 size={18} />
+          </button>
         </div>
       </div>
 
@@ -71,33 +81,12 @@ const WishCard = ({
   );
 };
 
-export default function ReviewPage() {
-  const [wishes, setWishes] = useState<Wish[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ReviewClient({ initialWishes }: { initialWishes: Wish[] }) {
+  const [wishes, setWishes] = useState<Wish[]>(initialWishes);
   const [viewMode, setViewMode] = useState<'single' | 'list'>('single');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealedImages, setRevealedImages] = useState<Set<string>>(new Set());
-
-  const fetchWishes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('wishes')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (!error && data) {
-        setWishes(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    fetchWishes();
-  }, [fetchWishes]);
+  const supabase = createClient();
 
   const toggleImage = (id: string) => {
     setRevealedImages(prev => {
@@ -117,27 +106,32 @@ export default function ReviewPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center font-mono text-neon-cyan">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-neon-cyan border-t-transparent animate-spin rounded-full"></div>
-          <p className="animate-pulse tracking-[0.5em]">SYNCING_NEURAL_FEED...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleDelete = async (id: string) => {
+    if (!confirm('REALLY_DELETE_THIS_TRANSMISSION?')) return;
+
+    const { error } = await supabase
+      .from('wishes')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setWishes(prev => prev.filter(w => w.id !== id));
+      if (currentIndex >= wishes.length - 1 && currentIndex > 0) {
+        setCurrentIndex(prev => prev - 1);
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#05161a] text-white p-6 md:p-12 font-mono">
+    <div className="space-y-12">
       {/* HUD Header */}
-      <div className="max-w-6xl mx-auto mb-16 flex flex-col md:flex-row justify-between items-end md:items-center gap-8 border-b border-neon-cyan/30 pb-12">
+      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-8 border-b border-neon-cyan/30 pb-12">
         <div>
           <div className="flex items-center gap-4 mb-4">
             <Shield className="text-neon-cyan" size={32} />
-            <h1 className="text-3xl md:text-5xl font-ethnocentric tracking-tighter glitch-text" data-text="NEURAL_FEED">NEURAL_FEED</h1>
+            <h1 className="text-3xl md:text-5xl font-ethnocentric tracking-tighter text-white">COMM_LINK</h1>
           </div>
-          <p className="text-xs text-gray-500 font-mono tracking-widest uppercase">// ZERYUZ_ADMINISTRATOR_ACCESS_ONLY</p>
+          <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">// DEBUT_WISHES_INCOMING_BUFFER</p>
         </div>
 
         <div className="flex bg-black/40 border border-white/10 p-1">
@@ -168,6 +162,7 @@ export default function ReviewPage() {
                   index={currentIndex}
                   isRevealed={revealedImages.has(wishes[currentIndex].id)}
                   onToggle={toggleImage}
+                  onDelete={handleDelete}
                 />
 
                 {/* Navigation Bar */}
@@ -213,23 +208,18 @@ export default function ReviewPage() {
           </div>
         ) : (
           <div className="space-y-12">
-            {[...wishes].reverse().map((wish, idx) => (
+            {[...wishes].map((wish, idx) => (
               <WishCard
                 key={wish.id}
                 wish={wish}
-                index={wishes.length - 1 - idx}
+                index={idx}
                 isRevealed={revealedImages.has(wish.id)}
                 onToggle={toggleImage}
+                onDelete={handleDelete}
               />
             ))}
           </div>
         )}
-      </div>
-
-      <div className="mt-20 text-center">
-        <Link href="/debut" className="text-[10px] font-ethnocentric text-gray-600 hover:text-neon-cyan transition-colors uppercase tracking-[0.4em]">
-          [ TERMINATE_SESSION_AND_LOGOUT ]
-        </Link>
       </div>
     </div>
   );
