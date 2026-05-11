@@ -21,7 +21,14 @@ export const generateCSS = (state: any) => {
     modText,
     memberBg,
     memberText,
+    superchatBg,
+    superchatText,
     customBgImage,
+    bgImageOpacity,
+    bgImagePositionX,
+    bgImagePositionY,
+    bgImageSkewX,
+    bgImageSkewY,
     brandIcon,
   } = state;
 
@@ -42,9 +49,16 @@ export const generateCSS = (state: any) => {
   --mod-text: ${modText};
   --member-bg: ${memberBg};
   --member-text: ${memberText};
+  --superchat-bg: ${superchatBg};
+  --superchat-text: ${superchatText};
   --font-main: '${fontFamily}', sans-serif;
   --skew-angle: ${skewAngle}deg;
   --skew-reverse: ${skewReverse}deg;
+}
+
+/* Hide Scrollbar & ENGAGEMENT UI */
+::-webkit-scrollbar {
+  display: none !important;
 }
 
 body {
@@ -54,6 +68,20 @@ body {
 
 yt-live-chat-renderer {
   background-color: transparent !important;
+}
+
+#item-scroller {
+    overflow: hidden !important;
+}
+
+yt-live-chat-viewer-engagement-message-renderer,
+yt-live-chat-restricted-participation-renderer,
+yt-live-chat-header-renderer,
+yt-live-chat-message-input-renderer,
+yt-live-chat-mode-change-message-renderer,
+#action-buttons,
+#timestamp {
+  display: none !important;
 }
 
 yt-live-chat-text-message-renderer {
@@ -68,27 +96,55 @@ yt-live-chat-text-message-renderer {
   position: relative !important;
 }
 
-/* Brand Icon Implementation */
-${brandIcon ? `
+/* Fix background image for OBS */
+yt-live-chat-text-message-renderer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: inherit;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+${customBgImage ? `
 yt-live-chat-text-message-renderer::after {
   content: '';
   position: absolute;
+  inset: 0;
+  background-image: url('${customBgImage}');
+  background-size: cover;
+  background-position: ${bgImagePositionX}% ${bgImagePositionY}%;
+  opacity: ${bgImageOpacity};
+  z-index: 0;
+  border-radius: inherit;
+  transform: skew(${bgImageSkewX}deg, ${bgImageSkewY}deg);
+  pointer-events: none;
+}
+` : ''}
+
+/* Brand Icon Implementation */
+${brandIcon ? `
+.brand-icon-layer {
+  position: absolute;
   top: -5px;
   right: -5px;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background: url('${brandIcon}') no-repeat center;
   background-size: contain;
   transform: skewX(var(--skew-reverse));
-  z-index: 10;
+  z-index: 20;
   filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5));
 }
 ` : ''}
 
 /* Counter-skew content */
 yt-live-chat-text-message-renderer #author-photo,
-yt-live-chat-text-message-renderer #content {
+yt-live-chat-text-message-renderer #content,
+yt-live-chat-text-message-renderer #author-name {
   transform: skewX(var(--skew-reverse)) !important;
+  position: relative;
+  z-index: 10;
 }
 
 yt-live-chat-text-message-renderer #author-photo {
@@ -143,26 +199,14 @@ yt-live-chat-text-message-renderer[author-type="member"] #message {
   text-shadow: none !important;
 }
 
-${customBgImage ? `
-yt-live-chat-text-message-renderer::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('${customBgImage}');
-  background-size: cover;
-  opacity: 0.2;
-  z-index: -1;
-  border-radius: ${bubbleRadius}px;
-}
-` : ''}
-
-/* Hide Unnecessary UI */
-yt-live-chat-header-renderer,
-yt-live-chat-message-input-renderer,
-yt-live-chat-mode-change-message-renderer,
-#action-buttons,
-#timestamp {
-  display: none !important;
+/* Superchat Implementation */
+yt-live-chat-paid-message-renderer {
+  background: var(--superchat-bg) !important;
+  margin: ${messageSpacing}px 12px !important;
+  padding: 10px 16px !important;
+  border-radius: ${bubbleRadius}px !important;
+  transform: skewX(var(--skew-angle)) !important;
+  color: var(--superchat-text) !important;
 }
   `.trim();
 };

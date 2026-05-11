@@ -29,38 +29,58 @@ interface ChatState {
   modText: string;
   memberBg: string;
   memberText: string;
+  superchatBg: string;
+  superchatText: string;
   
-  // Assets
-  customBgImage: string | null; // Base64
-  brandIcon: string | null; // Base64
+  // Assets & Image Customization
+  customBgImage: string | null;
+  bgImageOpacity: number;
+  bgImagePositionX: number;
+  bgImagePositionY: number;
+  bgImageSkewX: number;
+  bgImageSkewY: number;
+  brandIcon: string | null;
+  liveChatAssetIndex: number; // 0-5 for livechat_n.png
+  
+  // App State
+  isLivePreviewEnabled: boolean;
   
   // Actions
   setField: (field: keyof ChatState, value: any) => void;
   reset: () => void;
 }
 
-const initialState = {
+const initialState: Omit<ChatState, 'setField' | 'reset'> = {
   direction: 'vertical',
-  messageSpacing: 8,
-  bubbleRadius: 4,
-  skewAngle: -4,
+  messageSpacing: 12,
+  bubbleRadius: 40,
+  skewAngle: -5,
   fontFamily: 'Rubik',
-  fontSizeName: 15,
-  fontSizeMessage: 15,
-  lineHeight: 1.3,
-  bgColor: 'rgba(0, 0, 0, 0.8)',
+  fontSizeName: 16,
+  fontSizeMessage: 16,
+  lineHeight: 1.2,
+  bgColor: 'rgba(0, 242, 255, 0.8)',
   textColor: '#FFFFFF',
-  neonGlow: false,
+  neonGlow: true,
   showAvatar: true,
-  avatarSize: 36,
+  avatarSize: 40,
   ownerBg: 'rgba(255, 230, 70, 1.0)',
   ownerText: '#1A1A2E',
   modBg: 'rgba(99, 31, 255, 1.0)',
   modText: '#FFFFFF',
   memberBg: 'rgba(0, 255, 173, 1.0)',
   memberText: '#1A1A2E',
+  superchatBg: 'rgba(255, 115, 0, 1.0)',
+  superchatText: '#FFFFFF',
   customBgImage: null,
+  bgImageOpacity: 0.3,
+  bgImagePositionX: 50,
+  bgImagePositionY: 50,
+  bgImageSkewX: 0,
+  bgImageSkewY: 0,
   brandIcon: null,
+  liveChatAssetIndex: 0,
+  isLivePreviewEnabled: true,
 };
 
 export const useChatStore = create<ChatState>((set) => ({
