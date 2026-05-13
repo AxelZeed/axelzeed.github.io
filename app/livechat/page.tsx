@@ -10,7 +10,7 @@ import { Copy, Check, ExternalLink, Code, Terminal } from 'lucide-react';
 export default function LiveChatGenerator() {
   const state = useChatStore();
   const [copied, setCopied] = useState(false);
-  
+
   const cssOutput = generateCSS(state);
 
   const handleCopy = () => {
@@ -37,15 +37,15 @@ export default function LiveChatGenerator() {
             </p>
           </div>
           <div className="flex gap-8">
-             <div className="text-right">
-               <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Target_Platform</p>
-               <p className="text-[10px] text-white font-mono uppercase">YouTube_Live_Chat</p>
-             </div>
-             <div className="w-[1px] h-10 bg-white/10 hidden md:block"></div>
-             <div className="text-right">
-               <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Build_Version</p>
-               <p className="text-[10px] text-neon-green font-mono uppercase">v3.2.0-PUBLIC</p>
-             </div>
+            <div className="text-right">
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Target_Platform</p>
+              <p className="text-[10px] text-white font-mono uppercase">YouTube_Live_Chat</p>
+            </div>
+            <div className="w-[1px] h-10 bg-white/10 hidden md:block"></div>
+            <div className="text-right">
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Build_Version</p>
+              <p className="text-[10px] text-neon-green font-mono uppercase">v3.2.0-PUBLIC</p>
+            </div>
           </div>
         </div>
 
@@ -61,19 +61,19 @@ export default function LiveChatGenerator() {
             <div className="bg-black/40 border border-white/5 rounded-lg relative overflow-hidden group">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,242,255,0.03),transparent_70%)] pointer-events-none"></div>
               <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
-                 <div className="w-2.5 h-2.5 bg-neon-green rounded-full animate-pulse shadow-[0_0_10px_#00ff00]"></div>
-                 <span className="text-[10px] font-ethnocentric text-gray-500 tracking-widest uppercase">LIVE_RENDER_UPLINK</span>
+                <div className="w-2.5 h-2.5 bg-neon-green rounded-full animate-pulse shadow-[0_0_10px_#00ff00]"></div>
+                <span className="text-[10px] font-ethnocentric text-gray-500 tracking-widest uppercase">LIVE_RENDER_UPLINK</span>
               </div>
-              
+
               <div className="p-12">
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-2xl mx-auto">
                   <MockChat />
                 </div>
               </div>
 
               {/* Decorative Corner */}
               <div className="absolute bottom-6 right-6 pointer-events-none opacity-10">
-                 <Code size={160} className="text-white" />
+                <Code size={160} className="text-white" />
               </div>
             </div>
 
@@ -85,11 +85,10 @@ export default function LiveChatGenerator() {
                   <span className="text-[10px] font-ethnocentric tracking-[0.2em] text-white">COMPILED_CSS_BUFFER</span>
                 </div>
                 <div className="flex gap-4">
-                  <button 
+                  <button
                     onClick={handleCopy}
-                    className={`flex items-center gap-2 px-6 py-3 text-[10px] font-ethnocentric transition-all ${
-                      copied ? 'bg-neon-green text-black' : 'bg-neon-cyan text-black hover:scale-105 active:scale-95'
-                    }`}
+                    className={`flex items-center gap-2 px-6 py-3 text-[10px] font-ethnocentric transition-all ${copied ? 'bg-neon-green text-black' : 'bg-neon-cyan text-black hover:scale-105 active:scale-95'
+                      }`}
                   >
                     {copied ? <Check size={14} /> : <Copy size={14} />}
                     {copied ? 'UPLINK_SUCCESS' : 'COPY_TO_CLIPBOARD'}
@@ -97,23 +96,23 @@ export default function LiveChatGenerator() {
                 </div>
               </div>
               <div className="flex-1 p-5 bg-black/60 relative group">
-                <textarea 
+                <textarea
                   readOnly
                   value={cssOutput}
                   className="w-full h-full bg-transparent font-mono text-[11px] text-neon-cyan/70 resize-none outline-none custom-scrollbar leading-relaxed"
                 />
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <p className="text-[8px] font-mono text-gray-600 bg-black/80 px-2 py-1 border border-white/5 uppercase">Read_Only_Stream</p>
+                  <p className="text-[8px] font-mono text-gray-600 bg-black/80 px-2 py-1 border border-white/5 uppercase">Read_Only_Stream</p>
                 </div>
               </div>
             </div>
 
             {/* Footer Hint */}
             <div className="flex items-center gap-4 text-gray-600 bg-white/5 p-4 rounded border border-white/5">
-               <ExternalLink size={16} />
-               <p className="text-[10px] font-mono uppercase tracking-[0.2em] leading-relaxed">
-                 Usage Instruction: Copy the Compiled Buffer &gt; Open OBS Browser Source &gt; Properties &gt; Paste into &quot;Custom CSS&quot; box. Restart cache if needed.
-               </p>
+              <ExternalLink size={16} />
+              <p className="text-[10px] font-mono uppercase tracking-[0.2em] leading-relaxed">
+                Usage Instruction: Copy the Compiled Buffer &gt; Open OBS Browser Source &gt; Properties &gt; Paste into &quot;Custom CSS&quot; box. Restart cache if needed.
+              </p>
             </div>
           </div>
         </div>

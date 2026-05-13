@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 export type ShapePreset = 'rectangle' | 'skewed' | 'rounded' | 'irregular' | 'cute' | 'custom_mask';
+export type ChatPresetName = 'custom' | 'neon_command' | 'ghost_glass' | 'hazard_core' | 'signal_bars' | 'cyberpunk_red' | 'midnight_vapor' | 'frost_archive' | 'bio_synth' | 'vintage_terminal' | 'royal_guard';
 
 export interface ExtraAsset {
   id: string;
@@ -43,14 +44,27 @@ export const GOOGLE_FONTS = [
 ];
 
 interface ChatState {
+  activePreset: ChatPresetName;
   // Layout
   direction: 'vertical' | 'horizontal';
   messageSpacing: number;
+  bubbleMaxWidthPercent: number;
   bubbleRadius: number;
   skewAngle: number;
   shapePreset: ShapePreset;
   customMaskImage: string | null;
   useMaxWidth: boolean;
+  chatboxPadding: number;
+  chatboxScale: number;
+  previewBgEnabled: boolean;
+  chatboxBgColor: string;
+  chatboxBgOpacity: number;
+  chatboxBgRadius: number;
+  chatboxBgEnabled: boolean;
+  chatboxBgImage: string | null;
+  chatboxBgScale: number;
+  chatboxBgPosX: number;
+  chatboxBgPosY: number;
   
   // Typography — Names
   fontFamilyName: string;
@@ -90,6 +104,7 @@ interface ChatState {
   // Visuals
   bgColor: string;
   textColor: string;
+  previewBgColor: string;
   showAvatar: boolean;
   avatarSize: number;
   
@@ -167,38 +182,379 @@ interface ChatState {
   setField: (field: keyof ChatState, value: any) => void;
   setSimRole: (role: string, enabled: boolean) => void;
   setSimFreq: (role: string, freq: number) => void;
+  applyPreset: (preset: ChatPresetName) => void;
   addExtraAsset: (src: string) => void;
   updateExtraAsset: (id: string, updates: Partial<ExtraAsset>) => void;
   removeExtraAsset: (id: string) => void;
-  applyPreset: (presetName: string) => void;
   reset: () => void;
 }
 
-const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | 'addExtraAsset' | 'updateExtraAsset' | 'removeExtraAsset' | 'applyPreset' | 'reset'> = {
+export const CHAT_PRESETS: Record<Exclude<ChatPresetName, 'custom'>, { label: string; values: Partial<ChatState> }> = {
+  neon_command: {
+    label: 'Neon Command',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      bubbleMaxWidthPercent: 88,
+      shapePreset: 'rounded',
+      bubbleRadius: 16,
+      bgColor: '#102b36',
+      textColor: '#d9f7ff',
+      fontFamilyName: 'Orbitron',
+      fontFamilyMessage: 'Rajdhani',
+      fontWeightName: 800,
+      letterSpacing: 0.25,
+      neonGlow: true,
+      glowColor: '#10e6ff',
+      glowIntensity: 14,
+      showTextShadow: true,
+      textShadowColor: 'rgba(0,0,0,0.35)',
+      textShadowIntensity: 6,
+      textShadowX: 0,
+      textShadowY: 1,
+      borderWidth: 1,
+      borderColor: '#1e5d73',
+      ownerBg: '#2c3944',
+      ownerText: '#f2f7ff',
+      ownerNameColor: '#ffd54a',
+      modBg: '#202f5f',
+      modText: '#eff4ff',
+      modNameColor: '#72a8ff',
+      memberBg: '#123942',
+      memberText: '#ecffff',
+      memberNameColor: '#44f2d1',
+      superchatBg: '#1a3d56',
+      superchatText: '#f6fbff',
+      superchatHeaderBg: '#25b8dc',
+      superchatHeaderText: '#03131a',
+      superchatBorderColor: '#7cecff',
+      superchatBorderWidth: 2,
+      superstickerBg: '#4d1d6c',
+      superstickerText: '#ffe8ff',
+      membershipGradientStart: '#0d7d7d',
+      membershipGradientEnd: '#4cf0d2',
+      membershipBorderColor: '#9afcff',
+      membershipBorderWidth: 1,
+    }
+  },
+  ghost_glass: {
+    label: 'Ghost Glass',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      bubbleMaxWidthPercent: 84,
+      shapePreset: 'rounded',
+      bubbleRadius: 24,
+      bgColor: '#e7f7fb',
+      textColor: '#18343d',
+      fontFamilyName: 'Space Mono',
+      fontFamilyMessage: 'IBM Plex Mono',
+      fontWeightName: 700,
+      letterSpacing: 0,
+      neonGlow: true,
+      glowColor: '#7ff0ff',
+      glowIntensity: 8,
+      showTextShadow: false,
+      borderWidth: 1,
+      borderColor: '#8dd9eb',
+      ownerBg: '#f7efe3',
+      ownerText: '#3b2f19',
+      ownerNameColor: '#b07a12',
+      modBg: '#edf2ff',
+      modText: '#213153',
+      modNameColor: '#5970d8',
+      memberBg: '#e8fbf3',
+      memberText: '#18392f',
+      memberNameColor: '#2ca77e',
+      superchatBg: '#fff1d4',
+      superchatText: '#4f3200',
+      superchatHeaderBg: '#f2b84b',
+      superchatHeaderText: '#2b1800',
+      superchatBorderColor: '#e4c88d',
+      superchatBorderWidth: 1,
+      superstickerBg: '#ffd7ea',
+      superstickerText: '#67284c',
+      membershipGradientStart: '#d9fff4',
+      membershipGradientEnd: '#9de7d0',
+      membershipBorderColor: '#7ccdb4',
+      membershipBorderWidth: 1,
+    }
+  },
+  hazard_core: {
+    label: 'Hazard Core',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      bubbleMaxWidthPercent: 86,
+      shapePreset: 'skewed',
+      skewAngle: -8,
+      bgColor: '#2b2c31',
+      textColor: '#fff5c2',
+      fontFamilyName: 'Teko',
+      fontFamilyMessage: 'Barlow',
+      fontWeightName: 900,
+      letterSpacing: 0.35,
+      neonGlow: true,
+      glowColor: '#ffd400',
+      glowIntensity: 12,
+      showTextShadow: true,
+      textShadowColor: 'rgba(0,0,0,0.45)',
+      textShadowIntensity: 5,
+      textShadowX: 0,
+      textShadowY: 1,
+      borderWidth: 1,
+      borderColor: '#5d5b4d',
+      ownerBg: '#584600',
+      ownerText: '#fff8d6',
+      ownerNameColor: '#ffe45e',
+      modBg: '#2f3446',
+      modText: '#f0f3ff',
+      modNameColor: '#8fb0ff',
+      memberBg: '#213631',
+      memberText: '#e9fff4',
+      memberNameColor: '#5ff3b8',
+      superchatBg: '#4e2c00',
+      superchatText: '#fff1da',
+      superchatHeaderBg: '#ff9f1c',
+      superchatHeaderText: '#251100',
+      superchatBorderColor: '#ffcf73',
+      superchatBorderWidth: 2,
+      superstickerBg: '#6b1414',
+      superstickerText: '#ffe5d6',
+      membershipGradientStart: '#4b531c',
+      membershipGradientEnd: '#a0be3b',
+      membershipBorderColor: '#d5f26a',
+      membershipBorderWidth: 1,
+    }
+  },
+  signal_bars: {
+    label: 'Signal Bars',
+    values: {
+      useBars: true,
+      useMaxWidth: false,
+      bubbleMaxWidthPercent: 72,
+      shapePreset: 'rectangle',
+      bubbleRadius: 0,
+      bgColor: '#09161c',
+      textColor: '#dffbff',
+      fontFamilyName: 'Audiowide',
+      fontFamilyMessage: 'Exo 2',
+      fontWeightName: 700,
+      letterSpacing: 0,
+      neonGlow: true,
+      glowColor: '#00f2ff',
+      glowIntensity: 10,
+      showTextShadow: false,
+      borderWidth: 0,
+      ownerBg: '#0f1a1f',
+      ownerText: '#fef7d7',
+      ownerNameColor: '#ffd54a',
+      modBg: '#111a2c',
+      modText: '#f1f4ff',
+      modNameColor: '#69a7ff',
+      memberBg: '#0a1f1f',
+      memberText: '#e8fffb',
+      memberNameColor: '#37eac6',
+      superchatBg: '#1b2f38',
+      superchatText: '#f5fbff',
+      superchatHeaderBg: '#0fd3ff',
+      superchatHeaderText: '#041319',
+      superchatBorderColor: '#7feeff',
+      superchatBorderWidth: 0,
+      superstickerBg: '#2f173d',
+      superstickerText: '#fce8ff',
+      membershipGradientStart: '#0e5d64',
+      membershipGradientEnd: '#00d8a4',
+      membershipBorderColor: '#6bffdf',
+      membershipBorderWidth: 0,
+    }
+  },
+  cyberpunk_red: {
+    label: 'Cyberpunk Red',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      shapePreset: 'skewed',
+      skewAngle: -10,
+      bgColor: '#080000',
+      textColor: '#ff2a2a',
+      fontFamilyName: 'Orbitron',
+      fontFamilyMessage: 'Barlow',
+      fontWeightName: 900,
+      letterSpacing: 0.5,
+      neonGlow: true,
+      glowColor: '#ff0000',
+      glowIntensity: 15,
+      showTextShadow: true,
+      borderWidth: 2,
+      borderColor: '#3a0000',
+      ownerBg: '#330000',
+      ownerText: '#ff9999',
+      ownerNameColor: '#ff0000',
+      modBg: '#000000',
+      modText: '#ff2a2a',
+      modNameColor: '#ff5555',
+    }
+  },
+  midnight_vapor: {
+    label: 'Midnight Vapor',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      shapePreset: 'rounded',
+      bubbleRadius: 20,
+      bgColor: '#1a0b2e',
+      textColor: '#ff00ff',
+      fontFamilyName: 'Audiowide',
+      fontFamilyMessage: 'Rajdhani',
+      fontWeightName: 700,
+      letterSpacing: 0.2,
+      neonGlow: true,
+      glowColor: '#bc13fe',
+      glowIntensity: 12,
+      showTextShadow: true,
+      borderWidth: 1,
+      borderColor: '#4a148c',
+      ownerBg: '#2e004f',
+      ownerText: '#ffccff',
+      ownerNameColor: '#e040fb',
+      modBg: '#0d001a',
+      modText: '#ff00ff',
+      modNameColor: '#d500f9',
+    }
+  },
+  frost_archive: {
+    label: 'Frost Archive',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      shapePreset: 'rounded',
+      bubbleRadius: 12,
+      bgColor: '#e0f7fa',
+      textColor: '#006064',
+      fontFamilyName: 'Space Mono',
+      fontFamilyMessage: 'IBM Plex Mono',
+      fontWeightName: 700,
+      letterSpacing: 0,
+      neonGlow: true,
+      glowColor: '#b2ebf2',
+      glowIntensity: 10,
+      showTextShadow: false,
+      borderWidth: 1,
+      borderColor: '#80deea',
+      ownerBg: '#ffffff',
+      ownerText: '#004d40',
+      ownerNameColor: '#00838f',
+    }
+  },
+  bio_synth: {
+    label: 'Bio-Synth',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      shapePreset: 'skewed',
+      skewAngle: -5,
+      bgColor: '#0a1a0a',
+      textColor: '#39ff14',
+      fontFamilyName: 'Teko',
+      fontFamilyMessage: 'Ubuntu',
+      fontWeightName: 600,
+      letterSpacing: 0.1,
+      neonGlow: true,
+      glowColor: '#39ff14',
+      glowIntensity: 15,
+      showTextShadow: true,
+      borderWidth: 1,
+      borderColor: '#1a3a1a',
+      ownerBg: '#003300',
+      ownerText: '#ccffcc',
+      ownerNameColor: '#76ff03',
+    }
+  },
+  vintage_terminal: {
+    label: 'Vintage Terminal',
+    values: {
+      useBars: true,
+      useMaxWidth: true,
+      shapePreset: 'rectangle',
+      bgColor: '#000000',
+      textColor: '#ffb000',
+      fontFamilyName: 'Fira Code',
+      fontFamilyMessage: 'JetBrains Mono',
+      fontWeightName: 400,
+      letterSpacing: 0,
+      neonGlow: true,
+      glowColor: '#ffb000',
+      glowIntensity: 8,
+      showTextShadow: false,
+      borderWidth: 0,
+      ownerNameColor: '#ffffff',
+    }
+  },
+  royal_guard: {
+    label: 'Royal Guard',
+    values: {
+      useBars: false,
+      useMaxWidth: true,
+      shapePreset: 'rounded',
+      bubbleRadius: 15,
+      bgColor: '#0a0a0a',
+      textColor: '#ffd700',
+      fontFamilyName: 'Playfair Display',
+      fontFamilyMessage: 'Montserrat',
+      fontWeightName: 700,
+      letterSpacing: 0.1,
+      neonGlow: true,
+      glowColor: '#ffd700',
+      glowIntensity: 10,
+      showTextShadow: true,
+      borderWidth: 1,
+      borderColor: '#333333',
+      ownerBg: '#1a1a1a',
+      ownerText: '#ffffff',
+      ownerNameColor: '#ffcc00',
+    }
+  }
+};
+
+const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | 'applyPreset' | 'addExtraAsset' | 'updateExtraAsset' | 'removeExtraAsset' | 'reset'> = {
+  activePreset: 'custom',
   direction: 'vertical',
   messageSpacing: 12,
+  bubbleMaxWidthPercent: 86,
   bubbleRadius: 10,
   skewAngle: -5,
   shapePreset: 'rectangle',
   customMaskImage: null,
   useMaxWidth: true,
+  chatboxPadding: 24,
+  chatboxScale: 100,
+  previewBgEnabled: true,
+  chatboxBgColor: '#041215',
+  chatboxBgOpacity: 0,
+  chatboxBgRadius: 28,
+  chatboxBgEnabled: false,
+  chatboxBgImage: null,
+  chatboxBgScale: 100,
+  chatboxBgPosX: 50,
+  chatboxBgPosY: 50,
   
   // Names
-  fontFamilyName: 'Rubik',
+  fontFamilyName: 'Orbitron',
   customFontName: '',
   fontSizeName: 16,
   lineHeightName: 0,
-  fontWeightName: 900,
+  fontWeightName: 800,
   showBadges: true,
   showColonAfterName: false,
   nameOnNewLine: false,
   
   // Messages
-  fontFamilyMessage: 'Rubik',
+  fontFamilyMessage: 'Rajdhani',
   customFontMessage: '',
   fontSizeMessage: 16,
-  lineHeight: 1.2,
-  letterSpacing: 0,
+  lineHeight: 1.25,
+  letterSpacing: 0.2,
   textAlign: 'left',
   
   // Outline
@@ -209,17 +565,18 @@ const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | '
   // Glow
   neonGlow: true,
   glowColor: '#00f2ff',
-  glowIntensity: 10,
+  glowIntensity: 12,
   
   // Shadow
   showTextShadow: true,
-  textShadowColor: '#000000',
-  textShadowIntensity: 2,
-  textShadowX: 2,
-  textShadowY: 2,
+  textShadowColor: 'rgba(0,0,0,0.35)',
+  textShadowIntensity: 6,
+  textShadowX: 0,
+  textShadowY: 1,
   
-  bgColor: '#00f2ff',
-  textColor: '#FFFFFF',
+  bgColor: '#102b36',
+  textColor: '#d9f7ff',
+  previewBgColor: '#020a0c',
   showAvatar: true,
   avatarSize: 40,
   
@@ -229,8 +586,8 @@ const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | '
   timestampColor: '#999999',
   
   // Border
-  borderWidth: 0,
-  borderColor: '#000000',
+  borderWidth: 1,
+  borderColor: '#1e5d73',
   
   // Backgrounds
   useBars: false,
@@ -243,27 +600,27 @@ const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | '
   fadeOutTime: 200,
   slideDirection: 'none',
   
-  ownerBg: '#ffe646',
-  ownerText: '#1A1A2E',
-  ownerNameColor: '#ffe646',
-  modBg: '#631fff',
-  modText: '#FFFFFF',
-  modNameColor: '#5e84fd',
-  memberBg: '#00ffad',
-  memberText: '#1A1A2E',
-  memberNameColor: '#00ffad',
-  superchatBg: '#ff7300',
-  superchatText: '#FFFFFF',
-  superchatHeaderBg: '#1A1A2E',
-  superchatHeaderText: '#FFFFFF',
-  superchatBorderColor: '#1A1A2E',
-  superchatBorderWidth: 4,
-  superstickerBg: '#ff3c3c',
-  superstickerText: '#FFFFFF',
+  ownerBg: '#2c3944',
+  ownerText: '#f2f7ff',
+  ownerNameColor: '#ffd54a',
+  modBg: '#202f5f',
+  modText: '#eff4ff',
+  modNameColor: '#72a8ff',
+  memberBg: '#123942',
+  memberText: '#ecffff',
+  memberNameColor: '#44f2d1',
+  superchatBg: '#1a3d56',
+  superchatText: '#f6fbff',
+  superchatHeaderBg: '#25b8dc',
+  superchatHeaderText: '#03131a',
+  superchatBorderColor: '#7cecff',
+  superchatBorderWidth: 2,
+  superstickerBg: '#4d1d6c',
+  superstickerText: '#ffe8ff',
   
-  membershipGradientStart: '#00C853',
-  membershipGradientEnd: '#5AE1A0',
-  membershipBorderColor: '#000000',
+  membershipGradientStart: '#0d7d7d',
+  membershipGradientEnd: '#4cf0d2',
+  membershipBorderColor: '#9afcff',
   membershipBorderWidth: 1,
   
   customBgImage: null,
@@ -304,80 +661,31 @@ const initialState: Omit<ChatState, 'setField' | 'setSimRole' | 'setSimFreq' | '
   }
 };
 
-export const PRESETS: { [key: string]: Partial<ChatState> } = {
-  'Cyber_Neon': {
-    fontFamilyName: 'Orbitron',
-    fontFamilyMessage: 'Rajdhani',
-    bgColor: 'rgba(0, 242, 255, 0.2)',
-    textColor: '#ffffff',
-    neonGlow: true,
-    glowColor: '#00f2ff',
-    glowIntensity: 15,
-    shapePreset: 'skewed',
-    skewAngle: -10,
-    ownerNameColor: '#ff00ff',
-    modNameColor: '#00f2ff',
-    memberNameColor: '#00ffad',
-    bubbleRadius: 4,
-    borderWidth: 1,
-    borderColor: '#00f2ff',
-  },
-  'Retro_Terminal': {
-    fontFamilyName: 'Press Start 2P',
-    fontFamilyMessage: 'Share Tech Mono',
-    bgColor: '#000000',
-    textColor: '#00ff00',
-    neonGlow: false,
-    shapePreset: 'rectangle',
-    showAvatar: false,
-    fontSizeName: 12,
-    fontSizeMessage: 14,
-    showBadges: false,
-    borderWidth: 2,
-    borderColor: '#00ff00',
-    messageSpacing: 2,
-  },
-  'Kawaii_Bubble': {
-    fontFamilyName: 'Fredoka',
-    fontFamilyMessage: 'Quicksand',
-    bgColor: '#ffe6f2',
-    textColor: '#ff66b2',
-    neonGlow: true,
-    glowColor: '#ff66b2',
-    glowIntensity: 5,
-    shapePreset: 'rounded',
-    bubbleRadius: 25,
-    ownerNameColor: '#ff1a8c',
-    modNameColor: '#ff1a8c',
-    memberNameColor: '#ff1a8c',
-    borderWidth: 3,
-    borderColor: '#ffb3d9',
-  },
-  'Glass_Minimalist': {
-    fontFamilyName: 'Inter',
-    fontFamilyMessage: 'Inter',
-    bgColor: 'rgba(255, 255, 255, 0.1)',
-    textColor: '#ffffff',
-    neonGlow: false,
-    shapePreset: 'rectangle',
-    bubbleRadius: 0,
-    borderWidth: 0,
-    messageSpacing: 10,
-    showTextShadow: true,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowIntensity: 4,
-  }
-};
-
 export const useChatStore = create<ChatState>((set) => ({
   ...initialState,
-  setField: (field, value) => set((state) => ({ ...state, [field]: value })),
+  setField: (field, value) => set((state) => ({
+    ...state,
+    [field]: value,
+    ...(field === 'activePreset' ? {} : { activePreset: 'custom' })
+  })),
   setSimRole: (role, enabled) => set((state) => ({
-    simEnabledRoles: { ...state.simEnabledRoles, [role]: enabled }
+    simEnabledRoles: { ...state.simEnabledRoles, [role]: enabled },
+    activePreset: 'custom'
   })),
   setSimFreq: (role, freq) => set((state) => ({
-    simRoleFrequencies: { ...state.simRoleFrequencies, [role]: freq }
+    simRoleFrequencies: { ...state.simRoleFrequencies, [role]: freq },
+    activePreset: 'custom'
   })),
+  applyPreset: (preset) => set((state) => {
+    if (preset === 'custom') {
+      return { ...state, activePreset: 'custom' };
+    }
+    return {
+      ...state,
+      ...CHAT_PRESETS[preset].values,
+      activePreset: preset
+    };
+  }),
   addExtraAsset: (src) => set((state) => ({
     extraAssets: [
       ...state.extraAssets,
@@ -390,14 +698,16 @@ export const useChatStore = create<ChatState>((set) => ({
         rotate: 0,
         scale: 100,
       }
-    ]
+    ],
+    activePreset: 'custom'
   })),
   updateExtraAsset: (id, updates) => set((state) => ({
-    extraAssets: state.extraAssets.map(a => a.id === id ? { ...a, ...updates } : a)
+    extraAssets: state.extraAssets.map(a => a.id === id ? { ...a, ...updates } : a),
+    activePreset: 'custom'
   })),
   removeExtraAsset: (id) => set((state) => ({
-    extraAssets: state.extraAssets.filter(a => a.id !== id)
+    extraAssets: state.extraAssets.filter(a => a.id !== id),
+    activePreset: 'custom'
   })),
-  applyPreset: (presetName) => set((state) => ({ ...state, ...PRESETS[presetName] })),
   reset: () => set(initialState),
 }));

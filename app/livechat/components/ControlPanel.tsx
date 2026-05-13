@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { useChatStore, ShapePreset, GOOGLE_FONTS, PRESETS } from '../store';
+import { useChatStore, ShapePreset, GOOGLE_FONTS, CHAT_PRESETS } from '../store';
 import { Type, Layout, Palette, Image as ImageIcon, ChevronDown, ChevronUp, RefreshCcw, Sparkles, Plus, Trash2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Eye, EyeOff, Film } from 'lucide-react';
 
 const Acc: React.FC<{ t: string; icon: any; children: React.ReactNode; open?: boolean }> = ({ t, icon: I, children, open = false }) => {
@@ -13,7 +13,7 @@ const Tog = ({ l, v, fn }: { l: string; v: boolean; fn: () => void }) => (<div c
 
 export const ControlPanel = () => {
   const s = useChatStore();
-  const up = (e: React.ChangeEvent<HTMLInputElement>, f: 'customBgImage' | 'brandIcon' | 'customMaskImage') => { const file = e.target.files?.[0]; if (file) { const r = new FileReader(); r.onloadend = () => s.setField(f, r.result); r.readAsDataURL(file); } };
+  const up = (e: React.ChangeEvent<HTMLInputElement>, f: 'customBgImage' | 'brandIcon' | 'customMaskImage' | 'chatboxBgImage') => { const file = e.target.files?.[0]; if (file) { const r = new FileReader(); r.onloadend = () => s.setField(f, r.result); r.readAsDataURL(file); } };
   const upX = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const r = new FileReader(); r.onloadend = () => s.addExtraAsset(r.result as string); r.readAsDataURL(file); } };
   const hex = (v: string | undefined | null) => { if (!v) return '#000000'; if (v.startsWith('#')) return v; return '#000000'; };
   const sel = "w-full bg-black/40 border border-white/10 p-3 text-xs font-mono outline-none focus:border-neon-cyan text-white";
@@ -24,21 +24,14 @@ export const ControlPanel = () => {
         <h2 className="text-sm font-ethnocentric tracking-tighter text-neon-cyan flex items-center gap-2"><Sparkles size={16} />CONFIG_TERMINAL</h2>
         <button onClick={() => s.reset()} className="p-2 hover:bg-white/5 rounded text-gray-500 hover:text-white"><RefreshCcw size={14} /></button>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-1 space-y-4">
-        
-        {/* ═══ PRESETS ═══ */}
-        <div className="p-4 bg-gradient-to-br from-neon-cyan/20 to-transparent border border-neon-cyan/30 rounded-lg space-y-3">
-          <div className="flex items-center gap-2 text-neon-cyan">
-            <Sparkles size={16} />
-            <span className="text-[10px] font-ethnocentric tracking-wider uppercase">Style Presets</span>
-          </div>
-          <select 
-            onChange={(e) => e.target.value && s.applyPreset(e.target.value)}
-            className="w-full bg-black/60 border border-white/10 rounded p-2 text-xs text-white outline-none focus:border-neon-cyan transition-colors"
-          >
-            <option value="">SELECT A PRESET...</option>
-            {Object.keys(PRESETS).map(p => (
-              <option key={p} value={p}>{p.replace(/_/g, ' ')}</option>
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+
+        <div className="p-5 border-b border-white/5 bg-black/20">
+          <p className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest mb-3">// PRESETS</p>
+          <select value={s.activePreset} onChange={e => s.applyPreset(e.target.value as any)} className={sel}>
+            <option value="custom">CUSTOM_CURRENT</option>
+            {Object.entries(CHAT_PRESETS).map(([key, preset]) => (
+              <option key={key} value={key}>{preset.label.toUpperCase().replace(/ /g, '_')}</option>
             ))}
           </select>
         </div>
@@ -48,12 +41,21 @@ export const ControlPanel = () => {
           <div className="space-y-4">
             <Tog l="Always_Max_Width" v={s.useMaxWidth} fn={() => s.setField('useMaxWidth', !s.useMaxWidth)} />
             <Tog l="Use_Bars_Style" v={s.useBars} fn={() => s.setField('useBars', !s.useBars)} />
+            <Tog l="Chatbox_BG_Enabled" v={s.chatboxBgEnabled} fn={() => s.setField('chatboxBgEnabled', !s.chatboxBgEnabled)} />
+            <Rng l="Bubble_Max_Width_%" v={s.bubbleMaxWidthPercent} mn={40} mx={100} fn={n => s.setField('bubbleMaxWidthPercent', n)} />
             <div><Lbl c="Shape_Preset" /><select value={s.shapePreset} onChange={e => s.setField('shapePreset', e.target.value as ShapePreset)} className={sel}><option value="rectangle">RECTANGLE</option><option value="skewed">SKEWED</option><option value="rounded">ROUNDED</option><option value="irregular">IRREGULAR</option><option value="cute">CUTE_BUBBLE</option><option value="custom_mask">CUSTOM_MASK</option></select></div>
             <Rng l="Message_Spacing" v={s.messageSpacing} mn={0} mx={100} fn={n => s.setField('messageSpacing', n)} />
+            <Rng l="Chatbox_Padding" v={s.chatboxPadding} mn={0} mx={80} fn={n => s.setField('chatboxPadding', n)} />
+            <Rng l="Chatbox_Scale_%" v={s.chatboxScale} mn={50} mx={150} fn={n => s.setField('chatboxScale', n)} />
+            <Rng l="Chatbox_Radius" v={s.chatboxBgRadius} mn={0} mx={60} fn={n => s.setField('chatboxBgRadius', n)} />
             {(s.shapePreset === 'rounded' || s.shapePreset === 'rectangle') && <Rng l="Border_Radius" v={s.bubbleRadius} mn={0} mx={100} fn={n => s.setField('bubbleRadius', n)} />}
             {s.shapePreset === 'skewed' && <Rng l="Skew_Angle" v={s.skewAngle} mn={-45} mx={45} fn={n => s.setField('skewAngle', n)} />}
             <Rng l="Border_Width" v={s.borderWidth} mn={0} mx={20} fn={n => s.setField('borderWidth', n)} />
             {s.borderWidth > 0 && <div><Lbl c="Border_Color" /><input type="color" value={hex(s.borderColor)} onChange={e => s.setField('borderColor', e.target.value)} className="w-full h-8 bg-transparent cursor-pointer" /></div>}
+            <div className="grid grid-cols-2 gap-3">
+              <div><Lbl c="Chatbox_BG" /><input type="color" value={hex(s.chatboxBgColor)} onChange={e => s.setField('chatboxBgColor', e.target.value)} className="w-full h-8 bg-transparent cursor-pointer" /></div>
+              <Rng l="BG_Opacity" v={s.chatboxBgOpacity} mn={0} mx={1} s={0.05} fn={n => s.setField('chatboxBgOpacity', n)} />
+            </div>
           </div>
         </Acc>
 
@@ -162,6 +164,11 @@ export const ControlPanel = () => {
         {/* ═══ ASSETS ═══ */}
         <Acc t="Asset Manager" icon={ImageIcon}>
           <div className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// CHATBOX_BACKGROUND</span><button onClick={() => { s.setField('chatboxBgImage', null); const el = document.getElementById('chatbox-bg-input') as HTMLInputElement; if(el) el.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div>
+              <input id="chatbox-bg-input" type="file" accept="image/*" onChange={e => up(e, 'chatboxBgImage')} className="text-xs text-gray-400" />
+              {s.chatboxBgImage && <div className="p-3 bg-white/5 border border-white/10 rounded space-y-3"><div className="grid grid-cols-2 gap-3"><Rng l="Opacity" v={s.chatboxBgOpacity} mn={0} mx={1} s={0.05} fn={n => s.setField('chatboxBgOpacity', n)} /><Rng l="Scale" v={s.chatboxBgScale} mn={20} mx={250} fn={n => s.setField('chatboxBgScale', n)} /></div><div className="grid grid-cols-2 gap-3"><Rng l="Pos_X" v={s.chatboxBgPosX} mn={0} mx={100} fn={n => s.setField('chatboxBgPosX', n)} /><Rng l="Pos_Y" v={s.chatboxBgPosY} mn={0} mx={100} fn={n => s.setField('chatboxBgPosY', n)} /></div></div>}
+            </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// BG_TEXTURE</span><div className="flex gap-2"><button onClick={() => s.setField('bgTextureEnabled', !s.bgTextureEnabled)}>{s.bgTextureEnabled ? <Eye size={14} className="text-neon-cyan" /> : <EyeOff size={14} className="text-gray-600" />}</button><button onClick={() => { s.setField('customBgImage', null); const el = document.getElementById('bg-input') as HTMLInputElement; if(el) el.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div></div>
               <input id="bg-input" type="file" accept="image/*" onChange={e => up(e, 'customBgImage')} className="text-xs text-gray-400" />
