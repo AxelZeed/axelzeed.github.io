@@ -202,7 +202,7 @@ export default function TermsPage() {
           <div className="flex flex-wrap gap-4 mt-2">
             <a href="https://twitter.com/axel_zeed" target="_blank" className="btn-custom text-[10px] sm:text-xs !py-2">X @AXEL ZEED</a>
             <a href="https://www.instagram.com/axel_zeed/" target="_blank" className="btn-custom text-[10px] sm:text-xs !py-2">IG @AXEL ZEED</a>
-            <a href="#" className="btn-custom text-[10px] sm:text-xs !py-2">DC AXELZEED</a>
+            <a href="https://discord.com/invite/TQPCCM22pV" className="btn-custom text-[10px] sm:text-xs !py-2">DC AXELZEED</a>
           </div>
           <p className="text-xs text-gray-500 mt-6">// Please review these terms carefully before commissioning. Contact me if you have any questions.</p>
         </TermsSection>
