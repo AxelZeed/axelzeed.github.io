@@ -64,15 +64,15 @@ export default function PricePage() {
         <PriceTable
           title="Illustrations"
           rows={[
-            { service: "Headshot", idr: "120K - 180K", usd: "$10 - $12" },
-            { service: "Bust Up", idr: "180K - 240K", usd: "$12 - $15" },
-            { service: "Half Body", idr: "240K - 270K", usd: "$15 - $17" },
-            { service: "Upper Thigh", idr: "280K - 320K", usd: "$18 - $20" },
-            { service: "Full Body", idr: "330K - 380K", usd: "$20 - $24" },
-            { service: "Extra Character (Full Body Only)", idr: "300K - 360K each", usd: "$18 - $24 each" },
-            { service: "Character Sheet", idr: "380K - 440K", usd: "$24 - $28" },
-            { service: "Additional Assets", idr: "30K - 120K", usd: "$2 - $8" },
-            { service: "Simple Background", idr: "50K - 120K", usd: "$4 - $8" },
+            { service: "Headshot", idr: "90K - 120K", usd: "$10 - $12" },
+            { service: "Bust Up", idr: "120K - 150K", usd: "$12 - $15" },
+            { service: "Half Body", idr: "150K - 180K", usd: "$15 - $17" },
+            { service: "Upper Thigh", idr: "180K - 200K", usd: "$18 - $20" },
+            { service: "Full Body", idr: "200K - 250K", usd: "$20 - $24" },
+            { service: "Extra Character (Full Body Only)", idr: "180K - 230K each", usd: "$18 - $24 each" },
+            { service: "Character Sheet", idr: "100K - 120K", usd: "$24 - $28" },
+            { service: "Additional Assets", idr: "15K - 80K", usd: "$2 - $8" },
+            { service: "Simple Background", idr: "25K - 70K", usd: "$4 - $8" },
           ]}
           noteGroups={[
             {
@@ -88,9 +88,9 @@ export default function PricePage() {
         <PriceTable
           title="Emotes"
           rows={[
-            { service: "1 Emote", idr: "40K", usd: "$3" },
-            { service: "6 Emotes", idr: "220K", usd: "$15" },
-            { service: "12 Emotes", idr: "450K", usd: "$30" },
+            { service: "1 Emote", idr: "25K", usd: "$3" },
+            { service: "6 Emotes", idr: "140K", usd: "$15" },
+            { service: "12 Emotes", idr: "250K", usd: "$30" },
           ]}
           noteGroups={[
             {
@@ -106,15 +106,15 @@ export default function PricePage() {
         <PriceTable
           title="Live2D Models (Art Only)"
           rows={[
-            { service: "Bust Up", idr: "300K - 500K", usd: "$20 - $35" },
-            { service: "Half Body", idr: "550K - 800K", usd: "$35 - $50" },
-            { service: "Full Body", idr: "850K - 1100K", usd: "$50 - $65" },
-            { service: "Extra Character Sheet", idr: "220K - 380K each", usd: "$15 - $25 each" },
-            { service: "Extra Expression", idr: "80K each", usd: "$6 each" },
-            { service: "Arm Toggle", idr: "140K each", usd: "$10 each" },
-            { service: "Additional Assets", idr: "70K each", usd: "$5 each" },
-            { service: "Extra Outfit", idr: "150K - 280K each", usd: "$10 - $16 each" },
-            { service: "Extra Hair", idr: "160K - 310K each", usd: "$10 - $18 each" },
+            { service: "Bust Up", idr: "200K - 300K", usd: "$20 - $35" },
+            { service: "Half Body", idr: "300K - 400K", usd: "$35 - $50" },
+            { service: "Full Body", idr: "500K - 700K", usd: "$50 - $65" },
+            { service: "Extra Character Sheet", idr: "100K - 180K each", usd: "$15 - $25 each" },
+            { service: "Extra Expression", idr: "50K each", usd: "$6 each" },
+            { service: "Arm Toggle", idr: "80K each", usd: "$10 each" },
+            { service: "Additional Assets", idr: "30K each", usd: "$5 each" },
+            { service: "Extra Outfit", idr: "100K - 200K each", usd: "$10 - $16 each" },
+            { service: "Extra Hair", idr: "100K - 200K each", usd: "$10 - $18 each" },
           ]}
           noteGroups={[
             {
@@ -131,14 +131,14 @@ export default function PricePage() {
         <PriceTable
           title="Live2D Rigging"
           rows={[
-            { service: "Bust Up", idr: "300K - 500K", usd: "$20 - $35" },
-            { service: "Half Body", idr: "550K - 800K", usd: "$35 - $50" },
-            { service: "Full Body", idr: "850K - 1100K", usd: "$50 - $65" },
-            { service: "Extra Expression", idr: "80K each", usd: "$6 each" },
-            { service: "Arm Toggle", idr: "140K each", usd: "$10 each" },
-            { service: "Additional Assets", idr: "70K each", usd: "$5 each" },
-            { service: "Extra Outfit", idr: "150K - 280K each", usd: "$10 - $16 each" },
-            { service: "Extra Hair", idr: "160K - 310K each", usd: "$10 - $18 each" },
+            { service: "Bust Up", idr: "200K - 300K", usd: "$20 - $35" },
+            { service: "Half Body", idr: "300K - 400K", usd: "$35 - $50" },
+            { service: "Full Body", idr: "500K - 700K", usd: "$50 - $65" },
+            { service: "Extra Expression", idr: "50K each", usd: "$6 each" },
+            { service: "Arm Toggle", idr: "80K each", usd: "$10 each" },
+            { service: "Additional Assets", idr: "30K each", usd: "$5 each" },
+            { service: "Extra Outfit", idr: "100K - 200K each", usd: "$10 - $16 each" },
+            { service: "Extra Hair", idr: "100K - 200K each", usd: "$10 - $18 each" },
           ]}
           noteGroups={[
             {
@@ -177,15 +177,15 @@ export default function PricePage() {
           isBundle
           title="Full Bundle (Art + Rig)"
           rows={[
-            { service: "Bust Up Bundle", idr: "1100K - 1350K", usd: "$70 - $85" },
-            { service: "Half Body Bundle", idr: "1400K - 1600K", usd: "$90 - $105" },
-            { service: "Full Body Bundle", idr: "1700K - 2100K", usd: "$110 - $140" },
-            { service: "Extra Character Sheet", idr: "220K - 380K", usd: "$20 - $30" },
-            { service: "Extra Expression", idr: "150K each", usd: "$11 each" },
-            { service: "Arm Toggle", idr: "250K each", usd: "$18 each" },
-            { service: "Additional Assets", idr: "140K each", usd: "$12 each" },
-            { service: "Extra Outfit", idr: "250K - 400K each", usd: "$18 - $28 each" },
-            { service: "Extra Hair", idr: "300K - 420K each", usd: "$20 - $30 each" },
+            { service: "Bust Up Bundle", idr: "400K - 500K", usd: "$70 - $85" },
+            { service: "Half Body Bundle", idr: "600K - 750K", usd: "$90 - $105" },
+            { service: "Full Body Bundle", idr: "800K - 1000K", usd: "$110 - $140" },
+            { service: "Extra Character Sheet", idr: "100K - 180K each", usd: "$15 - $25 each" },
+            { service: "Extra Expression", idr: "90K each", usd: "$11 each" },
+            { service: "Arm Toggle", idr: "150K each", usd: "$18 each" },
+            { service: "Additional Assets", idr: "80K each", usd: "$12 each" },
+            { service: "Extra Outfit", idr: "150K - 200K each", usd: "$18 - $28 each" },
+            { service: "Extra Hair", idr: "150K - 200K each", usd: "$20 - $30 each" },
           ]}
           noteGroups={[
             {
@@ -213,10 +213,10 @@ export default function PricePage() {
         <PriceTable
           title="Stream Overlay (Static)"
           rows={[
-            { service: "1 Overlay", idr: "150K - 200K", usd: "$9 - $12" },
-            { service: "Package #1 (Opening + Ending)", idr: "270K - 370K", usd: "$16 - $22" },
-            { service: "Package #2 (Freetalk + Gaming)", idr: "270K - 370K", usd: "$16 - $22" },
-            { service: "Package #3 (All Four)", idr: "480K - 650K", usd: "$28 - $38" },
+            { service: "1 Overlay", idr: "70K - 120K", usd: "$9 - $12" },
+            { service: "Package #1 (Opening + Ending)", idr: "150K - 180K", usd: "$16 - $22" },
+            { service: "Package #2 (Freetalk + Gaming)", idr: "180K - 220K", usd: "$16 - $22" },
+            { service: "Package #3 (All Four)", idr: "250K - 300K", usd: "$28 - $38" },
           ]}
           noteGroups={[
             {
@@ -232,8 +232,8 @@ export default function PricePage() {
         <PriceTable
           title="Editing (Shorts / MV)"
           rows={[
-            { service: "30 Second (Minimum)", idr: "60K", usd: "$6" },
-            { service: "1 Minute", idr: "110K", usd: "$11" }
+            { service: "30 Second (Minimum)", idr: "45K", usd: "$6" },
+            { service: "1 Minute", idr: "85K", usd: "$11" }
           ]}
           noteGroups={[
             {

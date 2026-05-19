@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useChatStore, ShapePreset, GOOGLE_FONTS, CHAT_PRESETS } from '../store';
 import { Type, Layout, Palette, Image as ImageIcon, ChevronDown, ChevronUp, RefreshCcw, Sparkles, Plus, Trash2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Eye, EyeOff, Film } from 'lucide-react';
 
@@ -13,8 +13,37 @@ const Tog = ({ l, v, fn }: { l: string; v: boolean; fn: () => void }) => (<div c
 
 export const ControlPanel = () => {
   const s = useChatStore();
-  const up = (e: React.ChangeEvent<HTMLInputElement>, f: 'customBgImage' | 'brandIcon' | 'customMaskImage' | 'chatboxBgImage') => { const file = e.target.files?.[0]; if (file) { const r = new FileReader(); r.onloadend = () => s.setField(f, r.result); r.readAsDataURL(file); } };
-  const upX = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const r = new FileReader(); r.onloadend = () => s.addExtraAsset(r.result as string); r.readAsDataURL(file); } };
+  const chatboxBgInputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const up = (e: React.ChangeEvent<HTMLInputElement>, f: 'customBgImage' | 'brandIcon' | 'customMaskImage' | 'chatboxBgImage') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2.5 * 1024 * 1024) {
+        alert("⚠️ FILE OVERSIZE EXCEEDED: Limit images to under 2.5MB to prevent OBS performance lag.");
+        if (e.target) e.target.value = '';
+        return;
+      }
+      const r = new FileReader();
+      r.onloadend = () => { if (typeof r.result === 'string') s.setField(f, r.result); };
+      r.readAsDataURL(file);
+    }
+  };
+  const upX = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2.5 * 1024 * 1024) {
+        alert("⚠️ FILE OVERSIZE EXCEEDED: Limit images to under 2.5MB to prevent OBS performance lag.");
+        if (e.target) e.target.value = '';
+        return;
+      }
+      const r = new FileReader();
+      r.onloadend = () => s.addExtraAsset(r.result as string);
+      r.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
   const hex = (v: string | undefined | null) => { if (!v) return '#000000'; if (v.startsWith('#')) return v; return '#000000'; };
   const sel = "w-full bg-black/40 border border-white/10 p-3 text-xs font-mono outline-none focus:border-neon-cyan text-white";
 
@@ -48,7 +77,7 @@ export const ControlPanel = () => {
             <Rng l="Chatbox_Padding" v={s.chatboxPadding} mn={0} mx={80} fn={n => s.setField('chatboxPadding', n)} />
             <Rng l="Chatbox_Scale_%" v={s.chatboxScale} mn={50} mx={150} fn={n => s.setField('chatboxScale', n)} />
             <Rng l="Chatbox_Radius" v={s.chatboxBgRadius} mn={0} mx={60} fn={n => s.setField('chatboxBgRadius', n)} />
-            {(s.shapePreset === 'rounded' || s.shapePreset === 'rectangle') && <Rng l="Border_Radius" v={s.bubbleRadius} mn={0} mx={100} fn={n => s.setField('bubbleRadius', n)} />}
+            {s.shapePreset !== 'skewed' && s.shapePreset !== 'irregular' && s.shapePreset !== 'cute' && s.shapePreset !== 'custom_mask' && <Rng l="Border_Radius" v={s.bubbleRadius} mn={0} mx={100} fn={n => s.setField('bubbleRadius', n)} />}
             {s.shapePreset === 'skewed' && <Rng l="Skew_Angle" v={s.skewAngle} mn={-45} mx={45} fn={n => s.setField('skewAngle', n)} />}
             <Rng l="Border_Width" v={s.borderWidth} mn={0} mx={20} fn={n => s.setField('borderWidth', n)} />
             {s.borderWidth > 0 && <div><Lbl c="Border_Color" /><input type="color" value={hex(s.borderColor)} onChange={e => s.setField('borderColor', e.target.value)} className="w-full h-8 bg-transparent cursor-pointer" /></div>}
@@ -83,7 +112,7 @@ export const ControlPanel = () => {
               <Rng l="Line_Height" v={s.lineHeight} mn={0.8} mx={3} s={0.1} fn={n => s.setField('lineHeight', n)} />
             </div>
             <Rng l="Letter_Spacing" v={s.letterSpacing} mn={-5} mx={20} s={0.5} fn={n => s.setField('letterSpacing', n)} />
-            <div><Lbl c="Text_Alignment" /><div className="flex bg-black/40 border border-white/10 rounded overflow-hidden">{[{ id: 'left', I: AlignLeft }, { id: 'center', I: AlignCenter }, { id: 'right', I: AlignRight }, { id: 'justify', I: AlignJustify }].map(b => <button key={b.id} onClick={() => s.setField('textAlign', b.id)} className={`flex-1 p-3 flex justify-center transition-colors ${s.textAlign === b.id ? 'bg-neon-cyan text-black' : 'text-gray-500 hover:text-white'}`}><b.I size={16} /></button>)}</div></div>
+            <div><Lbl c="Text_Alignment" /><div className="flex bg-black/40 border border-white/10 rounded overflow-hidden">{[{ id: 'left', I: AlignLeft }, { id: 'center', I: AlignCenter }, { id: 'right', I: AlignRight }, { id: 'justify', I: AlignJustify }].map(b => <button key={b.id} onClick={() => s.setField('textAlign', b.id as any)} className={`flex-1 p-3 flex justify-center transition-colors ${s.textAlign === b.id ? 'bg-neon-cyan text-black' : 'text-gray-500 hover:text-white'}`}><b.I size={16} /></button>)}</div></div>
 
             <div className="border-t border-white/5 pt-4" />
             <p className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// TIMESTAMPS</p>
@@ -123,7 +152,7 @@ export const ControlPanel = () => {
             {s.animateIn && <Rng l="Fade_In_Time_ms" v={s.fadeInTime} mn={50} mx={2000} s={50} fn={n => s.setField('fadeInTime', n)} />}
             <Tog l="Animate_Out" v={s.animateOut} fn={() => s.setField('animateOut', !s.animateOut)} />
             {s.animateOut && <><Rng l="Wait_Time_sec" v={s.waitTime} mn={1} mx={120} fn={n => s.setField('waitTime', n)} /><Rng l="Fade_Out_ms" v={s.fadeOutTime} mn={50} mx={2000} s={50} fn={n => s.setField('fadeOutTime', n)} /></>}
-            <div><Lbl c="Slide_Direction" /><select value={s.slideDirection} onChange={e => s.setField('slideDirection', e.target.value)} className={sel}><option value="none">NONE</option><option value="left">LEFT</option><option value="right">RIGHT</option><option value="top">TOP</option><option value="bottom">BOTTOM</option></select></div>
+            <div><Lbl c="Slide_Direction" /><select value={s.slideDirection} onChange={e => s.setField('slideDirection', e.target.value as any)} className={sel}><option value="none">NONE</option><option value="left">LEFT</option><option value="right">RIGHT</option><option value="top">TOP</option><option value="bottom">BOTTOM</option></select></div>
           </div>
         </Acc>
 
@@ -165,18 +194,18 @@ export const ControlPanel = () => {
         <Acc t="Asset Manager" icon={ImageIcon}>
           <div className="space-y-6">
             <div className="space-y-3">
-              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// CHATBOX_BACKGROUND</span><button onClick={() => { s.setField('chatboxBgImage', null); const el = document.getElementById('chatbox-bg-input') as HTMLInputElement; if(el) el.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div>
-              <input id="chatbox-bg-input" type="file" accept="image/*" onChange={e => up(e, 'chatboxBgImage')} className="text-xs text-gray-400" />
+              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// CHATBOX_BACKGROUND</span><button onClick={() => { s.setField('chatboxBgImage', null); if(chatboxBgInputRef.current) chatboxBgInputRef.current.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div>
+              <input ref={chatboxBgInputRef} type="file" accept="image/*" onChange={e => up(e, 'chatboxBgImage')} className="text-xs text-gray-400" />
               {s.chatboxBgImage && <div className="p-3 bg-white/5 border border-white/10 rounded space-y-3"><div className="grid grid-cols-2 gap-3"><Rng l="Opacity" v={s.chatboxBgOpacity} mn={0} mx={1} s={0.05} fn={n => s.setField('chatboxBgOpacity', n)} /><Rng l="Scale" v={s.chatboxBgScale} mn={20} mx={250} fn={n => s.setField('chatboxBgScale', n)} /></div><div className="grid grid-cols-2 gap-3"><Rng l="Pos_X" v={s.chatboxBgPosX} mn={0} mx={100} fn={n => s.setField('chatboxBgPosX', n)} /><Rng l="Pos_Y" v={s.chatboxBgPosY} mn={0} mx={100} fn={n => s.setField('chatboxBgPosY', n)} /></div></div>}
             </div>
             <div className="space-y-3">
-              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// BG_TEXTURE</span><div className="flex gap-2"><button onClick={() => s.setField('bgTextureEnabled', !s.bgTextureEnabled)}>{s.bgTextureEnabled ? <Eye size={14} className="text-neon-cyan" /> : <EyeOff size={14} className="text-gray-600" />}</button><button onClick={() => { s.setField('customBgImage', null); const el = document.getElementById('bg-input') as HTMLInputElement; if(el) el.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div></div>
-              <input id="bg-input" type="file" accept="image/*" onChange={e => up(e, 'customBgImage')} className="text-xs text-gray-400" />
+              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// BG_TEXTURE</span><div className="flex gap-2"><button onClick={() => s.setField('bgTextureEnabled', !s.bgTextureEnabled)}>{s.bgTextureEnabled ? <Eye size={14} className="text-neon-cyan" /> : <EyeOff size={14} className="text-gray-600" />}</button><button onClick={() => { s.setField('customBgImage', null); if(bgInputRef.current) bgInputRef.current.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div></div>
+              <input ref={bgInputRef} type="file" accept="image/*" onChange={e => up(e, 'customBgImage')} className="text-xs text-gray-400" />
               {s.customBgImage && <div className="p-3 bg-white/5 border border-white/10 rounded space-y-3"><div className="grid grid-cols-2 gap-3"><Rng l="Opacity" v={s.bgOpacity} mn={0} mx={1} s={0.1} fn={n => s.setField('bgOpacity', n)} /><Rng l="Scale" v={s.bgScale} mn={10} mx={200} fn={n => s.setField('bgScale', n)} /></div><div className="grid grid-cols-2 gap-3"><Rng l="Pos_X" v={s.bgPosX} mn={0} mx={100} fn={n => s.setField('bgPosX', n)} /><Rng l="Pos_Y" v={s.bgPosY} mn={0} mx={100} fn={n => s.setField('bgPosY', n)} /></div></div>}
             </div>
             <div className="space-y-3">
-              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// BRAND_LOGO</span><div className="flex gap-2"><button onClick={() => s.setField('logoEnabled', !s.logoEnabled)}>{s.logoEnabled ? <Eye size={14} className="text-neon-cyan" /> : <EyeOff size={14} className="text-gray-600" />}</button><button onClick={() => { s.setField('brandIcon', null); const el = document.getElementById('logo-input') as HTMLInputElement; if(el) el.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div></div>
-              <input id="logo-input" type="file" accept="image/*" onChange={e => up(e, 'brandIcon')} className="text-xs text-gray-400" />
+              <div className="flex justify-between items-center"><span className="text-[9px] text-neon-cyan font-bold uppercase tracking-widest">// BRAND_LOGO</span><div className="flex gap-2"><button onClick={() => s.setField('logoEnabled', !s.logoEnabled)}>{s.logoEnabled ? <Eye size={14} className="text-neon-cyan" /> : <EyeOff size={14} className="text-gray-600" />}</button><button onClick={() => { s.setField('brandIcon', null); if(logoInputRef.current) logoInputRef.current.value=''; }} className="text-neon-red"><Trash2 size={14} /></button></div></div>
+              <input ref={logoInputRef} type="file" accept="image/*" onChange={e => up(e, 'brandIcon')} className="text-xs text-gray-400" />
               {s.brandIcon && <div className="p-3 bg-white/5 border border-white/10 rounded space-y-3"><div className="grid grid-cols-2 gap-3"><Rng l="Opacity" v={s.logoOpacity} mn={0} mx={1} s={0.1} fn={n => s.setField('logoOpacity', n)} /><Rng l="Scale" v={s.logoScale} mn={10} mx={200} fn={n => s.setField('logoScale', n)} /></div><div className="grid grid-cols-2 gap-3"><Rng l="Pos_X" v={s.logoPosX} mn={0} mx={100} fn={n => s.setField('logoPosX', n)} /><Rng l="Pos_Y" v={s.logoPosY} mn={0} mx={100} fn={n => s.setField('logoPosY', n)} /></div><Rng l="Rotation" v={s.logoRotate} mn={0} mx={360} fn={n => s.setField('logoRotate', n)} /></div>}
             </div>
             <div className="space-y-3 border-t border-white/5 pt-4">

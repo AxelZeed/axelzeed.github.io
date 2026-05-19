@@ -1,8 +1,21 @@
 export const generateCSS = (state: any) => {
   const s = state;
-  const nameFont = s.customFontName || s.fontFamilyName;
-  const msgFont = s.customFontMessage || s.fontFamilyMessage;
+  const isValidFont = (font: string) => {
+    if (!font || typeof font !== 'string') return false;
+    // Allow alphanumeric characters, spaces, hyphens, and underscores. Prevent CSS injection.
+    return /^[a-zA-Z0-9\s\-_]+$/.test(font.trim());
+  };
+
+  const sanitizeFont = (font: string, fallback: string) => {
+    const trimmed = font?.trim();
+    return isValidFont(trimmed) ? trimmed : fallback;
+  };
+
+  const nameFont = sanitizeFont(s.customFontName, s.fontFamilyName);
+  const msgFont = sanitizeFont(s.customFontMessage, s.fontFamilyMessage);
+
   const hexToRgba = (hex: string, opacity: number) => {
+    if (!hex || typeof hex !== 'string') return `rgba(0, 0, 0, ${opacity})`; // <-- FIX: Safe fallback
     const clean = hex.replace('#', '');
     const normalized = clean.length === 3
       ? clean.split('').map((c: string) => c + c).join('')
@@ -12,10 +25,11 @@ export const generateCSS = (state: any) => {
     const b = parseInt(normalized.slice(4, 6), 16) || 0;
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
-  
-  // Build font imports
+
+  // Build font imports - validate each to protect the stylesheet import block
   const fonts = new Set([nameFont, msgFont]);
   const fontImports = Array.from(fonts)
+    .filter(f => isValidFont(f))
     .map(f => `@import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(f).replace(/%20/g, '+')}&display=swap');`)
     .join('\n');
 
@@ -51,7 +65,7 @@ export const generateCSS = (state: any) => {
 
   return `
 /* ══════════════════════════════════════════
-   AXEL ZEED CUSTOM LIVE CHAT GENERATOR v3.2
+   AXEL ZEED CUSTOM LIVE CHAT GENERATOR v1.1
    ══════════════════════════════════════════ */
 ${fontImports}
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
@@ -77,8 +91,8 @@ ${animCSS}
   --superchat-border: ${s.superchatBorderColor};
   --supersticker-bg: ${s.superstickerBg};
   --supersticker-text: ${s.superstickerText};
-  --font-name: '${nameFont}', sans-serif;
-  --font-msg: '${msgFont}', sans-serif;
+  --font-name: '${nameFont}', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-msg: '${msgFont}', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* ── Transparent Background ── */
@@ -529,13 +543,13 @@ yt-live-chat-paid-sticker-renderer #content::after {
 
 /* ══════ Extra Assets ══════ */
 ${s.extraAssets?.map((a: any, i: number) => {
-  // Map up to 4 extra assets to available unused pseudo-elements
-  const pseudo = i === 0 ? 'yt-live-chat-text-message-renderer::after' :
-                 i === 1 ? 'yt-live-chat-text-message-renderer #message::before' :
-                 i === 2 ? 'yt-live-chat-text-message-renderer #message::after' :
-                 i === 3 ? 'yt-live-chat-text-message-renderer #author-name::before' : '';
-  if (!pseudo) return '';
-  return `
+    // Map up to 4 extra assets to available unused pseudo-elements
+    const pseudo = i === 0 ? 'yt-live-chat-text-message-renderer::after' :
+      i === 1 ? 'yt-live-chat-text-message-renderer #message::before' :
+        i === 2 ? 'yt-live-chat-text-message-renderer #message::after' :
+          i === 3 ? 'yt-live-chat-text-message-renderer #author-name::before' : '';
+    if (!pseudo) return '';
+    return `
 ${pseudo} {
   content: '';
   position: absolute;
@@ -548,7 +562,7 @@ ${pseudo} {
   z-index: 20;
   pointer-events: none;
 }`;
-}).join('\n') || ''}
+  }).join('\n') || ''}
 
 /* ══════ Emoji Size ══════ */
 #message > img,

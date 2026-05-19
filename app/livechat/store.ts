@@ -43,6 +43,12 @@ export const GOOGLE_FONTS = [
   'Permanent Marker', 'Patrick Hand', 'Gloria Hallelujah',
 ];
 
+type NonFunctionKeys<T> = {
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+
+export type ChatStateField = NonFunctionKeys<ChatState>;
+
 interface ChatState {
   activePreset: ChatPresetName;
   // Layout
@@ -179,7 +185,7 @@ interface ChatState {
   simRoleFrequencies: { [key: string]: number };
   
   // Actions
-  setField: (field: keyof ChatState, value: any) => void;
+  setField: <K extends ChatStateField>(field: K, value: ChatState[K]) => void;
   setSimRole: (role: string, enabled: boolean) => void;
   setSimFreq: (role: string, freq: number) => void;
   applyPreset: (preset: ChatPresetName) => void;
@@ -667,7 +673,7 @@ export const useChatStore = create<ChatState>((set) => ({
     ...state,
     [field]: value,
     ...(field === 'activePreset' ? {} : { activePreset: 'custom' })
-  })),
+  } as unknown as Partial<ChatState>)),
   setSimRole: (role, enabled) => set((state) => ({
     simEnabledRoles: { ...state.simEnabledRoles, [role]: enabled },
     activePreset: 'custom'

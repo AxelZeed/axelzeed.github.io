@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useChatStore } from '../store';
 import { generateCSS } from '../utils';
 import { Play, Pause, Settings2, CheckCircle2, Circle, RefreshCcw } from 'lucide-react';
@@ -77,9 +77,8 @@ function msgToHTML(msg: { author: string; type: string; message: string; avatar:
   </yt-live-chat-text-message-renderer>`;
 }
 
-/* Build the full iframe HTML document */
-function buildIframeDoc(cssText: string, messagesHTML: string) {
-  return `<!DOCTYPE html>
+/* Static base document for the iframe preview */
+const STATIC_IFRAME_DOC = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <style>
 /* === YT element base defaults === */
@@ -119,18 +118,13 @@ yt-live-chat-renderer { display: block; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
-/* === USER GENERATED CSS === */
-${cssText}
 </style>
 </head>
 <body style="margin:0; background:transparent;">
 <yt-live-chat-renderer>
 <yt-live-chat-item-list-renderer>
 <div id="item-scroller">
-<div id="items">
-${messagesHTML}
-</div>
+<div id="items"></div>
 </div>
 </yt-live-chat-item-list-renderer>
 </yt-live-chat-renderer>
@@ -146,7 +140,6 @@ if (items) {
 }
 </script>
 </body></html>`;
-}
 
 export const MockChat = () => {
   const state = useChatStore();
@@ -154,6 +147,8 @@ export const MockChat = () => {
   const [messages, setMessages] = useState<Msg[]>(INITIAL_MESSAGES);
   const [showCtrl, setShowCtrl] = useState(false);
   const [refreshNonce, setRefreshNonce] = useState(0);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const cssText = generateCSS(state);
 
   const refreshPreview = (resetMessages = false) => {
@@ -201,13 +196,39 @@ export const MockChat = () => {
     };
   }, []);
 
-  const iframeDoc = useMemo(() => {
-    const html = tab === 'live'
-      ? messages.map(m => msgToHTML(m)).join('\n')
-      : CATALOG.map(m => msgToHTML(m)).join('\n');
+  // Smoothly sync styles and message components without a hard page reload
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
 
-    return buildIframeDoc(cssText, html);
-  }, [tab, messages, cssText, refreshNonce]);
+    const runSync = () => {
+      const itemsEl = doc.getElementById('items');
+      if (!itemsEl) return;
+
+      let styleEl = doc.getElementById('user-styles') as HTMLStyleElement | null;
+      if (!styleEl) {
+        styleEl = doc.createElement('style');
+        styleEl.id = 'user-styles';
+        doc.head.appendChild(styleEl);
+      }
+      styleEl.textContent = cssText;
+
+      const html = tab === 'live'
+        ? messages.map(m => msgToHTML(m)).join('\n')
+        : CATALOG.map(m => msgToHTML(m)).join('\n');
+      itemsEl.innerHTML = html;
+    };
+
+    // If the document element is already loaded, sync immediately; otherwise, queue it
+    if (doc.readyState === 'complete' || doc.getElementById('items')) {
+      runSync();
+    } else {
+      iframe.addEventListener('load', runSync);
+      return () => iframe.removeEventListener('load', runSync);
+    }
+  }, [cssText, messages, tab, iframeLoaded, refreshNonce]);
 
   return (
     <div className="w-full bg-[#020a0c] border border-white/10 rounded-lg overflow-hidden flex flex-col h-[650px] shadow-2xl relative">
@@ -280,11 +301,12 @@ export const MockChat = () => {
       <div className="flex-1 relative" style={{ backgroundColor: 'transparent' }}>
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,242,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,242,255,0.03)_1px,transparent_1px)] bg-[length:20px_20px] pointer-events-none z-0"></div>
         <iframe
-          key={`${tab}-${refreshNonce}`}
+          ref={iframeRef}
+          onLoad={() => setIframeLoaded(true)}
           className="w-full h-full border-0 relative z-10"
-          sandbox="allow-same-origin"
+          sandbox="allow-same-origin allow-scripts"
           title="Chat Preview"
-          srcDoc={iframeDoc}
+          srcDoc={STATIC_IFRAME_DOC}
         />
       </div>
     </div>

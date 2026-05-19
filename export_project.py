@@ -3,7 +3,7 @@ import re
 
 # Project configuration for Next.js / TypeScript
 folders = [
-    "app/livechat",  # Focusing on the livechat module as requested
+    "app/livechat",
     "public"
 ]
 
