@@ -4,7 +4,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Axel Zeed - Home",
+  title: {
+    default: "Axel Zeed - Home",
+    template: "%s | Axel Zeed"
+  },
   description: "Lead Researcher and Scientist Vtuber from Zeryuz Corp. Specialist in HMV technology and digital soul virtualization.",
   icons: {
     icon: "/Assets/Logo.png",

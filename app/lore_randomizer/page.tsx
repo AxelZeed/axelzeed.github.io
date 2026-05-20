@@ -11,7 +11,7 @@ const themes_en = [
   "Eldritch", "Unpaid", "Bootleg", "Radioactive", "Cursed", "High-Fantasy", "Post-Apocalyptic", "Extremely Loud",
   "Slipper-Wielding", "Low-Battery", "Highly Suspicious", "Permanently Confused", "Dangerously Polite",
   "Low-Resolution", "Gluten-Free", "Tax-Evading", "Emotionally Constipated", "As Seen On TV", "Microwave-Safe",
-  "Haunted", "Semi-Professional", "Over-Scoped"
+  "Haunted", "Semi-Professional", "Over-Scoped", "Extremely Rich", "Extremely Poor"
 ];
 
 const roles_en = [
@@ -36,7 +36,7 @@ const incidents_en = [
   "a legendary shitting session", "an unhandled confession rejection", "an exploding meteor", "a flying shark tornado",
   "a 24-hour karaoke stream", "a sudden neighborhood blackout", "a burning building", "an encounter with an aggressive stray dog",
   "a sneeze that ripped their pants", "getting stuck in a revolving door", "an aggressive sales pitch",
-  "a failed high-five", "stubbing their pinky toe", "swallowing a bug"
+  "a failed high-five", "stubbing their pinky toe", "swallowing a bug", "getting a new iPhone"
 ];
 
 const locations_en = [
@@ -44,15 +44,15 @@ const locations_en = [
   "the bottom of an empty Khong Guan biscuit tin", "a local traditional market", "a cramped elevator", "a giant soup pot",
   "a dynamic parking lot", "a sketchy treehouse", "a bouncy castle", "a crowded commuter train", "a local DMV",
   "a forgotten browser tab", "the inside of a vending machine", "a public restroom mirror", "a dusty storage unit",
-  "a crowded waiting room", "an abandoned cinema"
+  "a crowded waiting room", "an abandoned cinema", "a haunted Minecraft server"
 ];
 
 const entities_en = [
   "the local neighborhood watch", "a gang of stray cats", "the local water company", "a living box of apple juice",
   "a sketchy ice cream seller", "an angry customer", "a swarm of giant butterflies", "a herd of unpaid sheep",
-  "a group of judgmental neighborhood aunties", "the Tax Office", "a rogue mannequin", "a flock of angry pigeons",
-  "the spirit of a broken printer", "a group of aggressive salesmen", "the HOA president", "a sentient Wi-Fi signal",
-  "a judgmental mannequin"
+  "a group of judgmental neighborhood aunties", "the Batman", "a rogue mannequin", "a flock of angry pigeons",
+  "the spirit of a broken printer", "a group of aggressive salesmen", "the president of the United States", "a sentient Wi-Fi signal",
+  "a judgmental mannequin", "a living box of apple juice", "a real-life anime villain"
 ];
 
 const actions_en = [
@@ -60,7 +60,7 @@ const actions_en = [
   "consume radioactive energy drinks", "rant about anime endings", "scream in lowercase", "accidentally mute themselves during an argument",
   "cook instant noodles without water", "slip on a banana peel", "tetris-pack a car trunk perfectly", "swallow a whole ice cube",
   "lose an argument to a mirror", "blink in Morse code", "open a bag of chips completely silently",
-  "argue with an automated voice", "step on a Lego"
+  "argue with an automated voice", "step on a Lego", "trip over literally nothing"
 ];
 
 const blueprints_en = [
@@ -236,7 +236,7 @@ export default function LoreRandomizer() {
         clearInterval(interval);
         setSlots(lang === 'en'
           ? ["[SYSTEM]", "[LORE]", "[GENERATED]", "[SUCCESS]"]
-          : ["[SISTEM]", "[LORE]", "[TERBENTUK]", "[SUKSES]"]
+          : ["[SYSTEM]", "[LORE]", "[GENERATED]", "[SUCCESS]"]
         );
         setIsSpinning(false);
         setIsRevealed(true);
@@ -286,7 +286,7 @@ export default function LoreRandomizer() {
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 relative flex flex-col items-center">
       <h1 className="section-header-tech glitch-text mb-8 text-center text-4xl">
-        {lang === 'en' ? 'The Absurd Lore Randomizer' : 'Pengacak Lore Absurd'}
+        {lang === 'en' ? 'The Absurd Lore Randomizer' : 'The Absurd Lore Randomizer'}
       </h1>
 
       {/* Language Selector Toggle */}
@@ -345,8 +345,8 @@ export default function LoreRandomizer() {
           className="btn-custom w-full max-w-xs text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:scale-100 disabled:hover:bg-neon-cyan"
         >
           {isSpinning
-            ? (lang === 'en' ? '[PROCESSING]' : '[MEMPROSES]')
-            : (lang === 'en' ? '[RANDOMIZE]' : '[ACAK_LORE]')
+            ? (lang === 'en' ? '[PROCESSING]' : '[PROCESSING]')
+            : (lang === 'en' ? '[RANDOMIZE]' : '[RANDOMIZE]')
           }
         </button>
 
