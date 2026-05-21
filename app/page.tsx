@@ -41,7 +41,7 @@ export default function Home() {
               <a href="https://vgen.co/axel_zeed" target="_blank" rel="noopener noreferrer" className="btn-custom bg-white text-black hover:bg-gray-200 text-center text-[10px] sm:text-xs">
                 VGEN
               </a>
-              <Link href="/lore_randomizer" className="btn-custom bg-[#198754] text-white hover:bg-[#157347] text-center text-[10px] sm:text-xs">
+              <Link href="/lore" className="btn-custom bg-[#198754] text-white hover:bg-[#157347] text-center text-[10px] sm:text-xs">
                 LORE RANDOMIZER
               </Link>
               <Link href="/livechat" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs">

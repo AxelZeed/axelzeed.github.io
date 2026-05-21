@@ -265,7 +265,7 @@ export default function LoreRandomizer() {
       link.click();
 
       // Copy text to clipboard
-      const shareText = `Somehow i get this lore : ${finalLore}. Why dont you try it yourself at axelzeed.xyz/lore_randomizer!`;
+      const shareText = `Somehow i get this lore : ${finalLore}. Why dont you try it yourself at axelzeed.xyz/lore!`;
       await navigator.clipboard.writeText(shareText);
       alert(lang === 'en'
         ? "Image downloaded and share text copied to clipboard!"
@@ -278,7 +278,7 @@ export default function LoreRandomizer() {
   };
 
   const handleXShare = () => {
-    const text = `Somehow i get this lore : ${finalLore}. Why dont you try it yourself at axelzeed.xyz/lore_randomizer!`;
+    const text = `Somehow i get this lore : ${finalLore}. Why dont you try it yourself at axelzeed.xyz/lore!`;
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
@@ -422,7 +422,7 @@ export default function LoreRandomizer() {
 
             <div className="absolute bottom-12 left-16 right-16 flex justify-between items-center border-t border-[#00f2ff]/30 pt-4">
               <p className="text-lg text-[#00f2ff]" style={{ fontFamily: 'Ethnocentric, sans-serif' }}>
-                axelzeed.xyz/lore_randomizer
+                axelzeed.xyz/lore
               </p>
               <p className="text-md text-gray-400">
                 {lang === 'en' ? 'LORE GENERATION INITIATIVE' : 'INISIATIF GENERASI LORE'}

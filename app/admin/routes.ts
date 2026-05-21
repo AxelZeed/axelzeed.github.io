@@ -13,7 +13,7 @@ export const publicLinks: RouteLink[] = [
   { title: 'DEBUT_PAGE', url: '/debut' },
   { title: 'FORM', url: '/form' },
   { title: 'LIVECHAT_GEN', url: '/livechat' },
-  { title: 'LORE_RANDOMIZER', url: '/lore_randomizer' },
+  { title: 'LORE', url: '/lore' },
 ];
 
 // These are your private admin-only links
