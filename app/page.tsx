@@ -44,8 +44,8 @@ export default function Home() {
               <Link href="/lore_randomizer" className="btn-custom bg-[#198754] text-white hover:bg-[#157347] text-center text-[10px] sm:text-xs">
                 LORE RANDOMIZER
               </Link>
-              <Link href="/zeryuz" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs">
-                ZERYUZ CORP
+              <Link href="/livechat" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs">
+                LIVECHAT GENERATOR
               </Link>
             </div>
 
