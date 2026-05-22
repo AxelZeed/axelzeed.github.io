@@ -3,8 +3,7 @@ import re
 
 # Project configuration for Next.js / TypeScript
 folders = [
-    "app/livechat",
-    "public"
+    "app/lore"
 ]
 
 # allowed file types for folder scanning
