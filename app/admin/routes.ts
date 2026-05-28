@@ -14,6 +14,7 @@ export const publicLinks: RouteLink[] = [
   { title: 'FORM', url: '/form' },
   { title: 'LIVECHAT_GEN', url: '/livechat' },
   { title: 'LORE', url: '/lore' },
+  { title: 'DEBUT_INVITE_GEN', url: '/invite' },
 ];
 
 // These are your private admin-only links
