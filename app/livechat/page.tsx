@@ -48,7 +48,7 @@ const DocsPage = () => (
         <span className="text-[9px] font-mono text-neon-cyan/60 bg-neon-cyan/10 px-2 py-0.5 rounded uppercase tracking-widest">v1.0-ALPHA</span>
       </div>
       <p className="text-sm text-gray-400 leading-relaxed mb-4">
-        LIVECHAT_MODDER generates a custom CSS file that is injected into OBS Browser Source to style your YouTube Live Chat overlay.
+        LIVECHAT MODDER generates a custom CSS file that is injected into OBS Browser Source to style your YouTube Live Chat overlay.
         Every setting in the Control Panel maps directly to a CSS rule in the output. This document explains what each control does.
       </p>
       <DocNote>
@@ -169,7 +169,7 @@ const DocsPage = () => (
         {[
           ['Step 1 — Get Your Chat URL', 'Go to your YouTube live stream. Click the "..." menu → "Open Chat Popout". Copy the URL (e.g. youtube.com/live_chat?v=XXXXX).'],
           ['Step 2 — Add Browser Source in OBS', 'In OBS, click "+" under Sources → "Browser Source". Set URL to your chat popout URL. Set width/height to match your overlay area.'],
-          ['Step 3 — Copy the CSS', 'In LIVECHAT_MODDER, configure your style then click "COPY_TO_CLIPBOARD" to copy the generated CSS.'],
+          ['Step 3 — Copy the CSS', 'In LIVECHAT MODDER, configure your style then click "COPY TO CLIPBOARD" to copy the generated CSS.'],
           ['Step 4 — Paste into OBS', 'In the Browser Source properties, find the "Custom CSS" text field. Clear its contents and paste your copied CSS.'],
           ['Step 5 — Apply & Test', 'Click OK. Right-click the Browser Source → "Refresh". Your styled chat should appear. Adjust settings and re-copy/paste anytime.'],
         ].map(([step, desc]) => (
@@ -206,10 +206,10 @@ export default function LiveChatGenerator() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Terminal size={24} className="text-neon-cyan" />
-              <span className="text-[10px] font-ethnocentric text-neon-cyan tracking-[0.3em] uppercase">SYSTEM_UTILITY</span>
+              <span className="text-[10px] font-ethnocentric text-neon-cyan tracking-[0.3em] uppercase">SYSTEM UTILITY</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-ethnocentric tracking-tighter text-white mb-2">
-              LIVECHAT_MODDER
+              LIVECHAT MODDER
             </h1>
             <p className="text-xs font-mono text-neon-cyan tracking-widest uppercase opacity-70">
               Advanced CSS Injection Framework for Virtual Overlays
@@ -217,12 +217,12 @@ export default function LiveChatGenerator() {
           </div>
           <div className="flex gap-8">
             <div className="text-right">
-              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Target_Platform</p>
-              <p className="text-[10px] text-white font-mono uppercase">YouTube_Live_Chat</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Target Platform</p>
+              <p className="text-[10px] text-white font-mono uppercase">YouTube Live Chat</p>
             </div>
             <div className="w-[1px] h-10 bg-white/10 hidden md:block"></div>
             <div className="text-right">
-              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Build_Version</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Build Version</p>
               <p className="text-[10px] text-neon-green font-mono uppercase">v1.0-ALPHA</p>
             </div>
           </div>
@@ -246,18 +246,18 @@ export default function LiveChatGenerator() {
         {mainTab === 'generator' && (
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             {/* Controls sidebar */}
-            <div className="w-full lg:w-96 shrink-0 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto border border-white/5 shadow-2xl rounded-lg custom-scrollbar">
+            <div className="w-full lg:w-96 shrink-0 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] overflow-y-auto border border-white/5 shadow-2xl rounded-lg custom-scrollbar order-2 lg:order-1">
               <ControlPanel />
             </div>
 
             {/* Preview & Export */}
-            <div className="flex-1 flex flex-col gap-8 w-full">
+            <div className="flex-1 flex flex-col gap-8 w-full order-1 lg:order-2">
               {/* Live Preview */}
               <div className="bg-black/40 border border-white/5 rounded-lg relative overflow-hidden group">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,242,255,0.03),transparent_70%)] pointer-events-none"></div>
                 <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
                   <div className="w-2.5 h-2.5 bg-neon-green rounded-full animate-pulse shadow-[0_0_10px_#00ff00]"></div>
-                  <span className="text-[10px] font-ethnocentric text-gray-500 tracking-widest uppercase">LIVE_RENDER_UPLINK</span>
+                  <span className="text-[10px] font-ethnocentric text-gray-500 tracking-widest uppercase">LIVE RENDER UPLINK</span>
                 </div>
                 <div className="p-12">
                   <div className="max-w-2xl mx-auto">
@@ -274,14 +274,14 @@ export default function LiveChatGenerator() {
                 <div className="p-5 border-b border-neon-cyan/10 bg-[#041215] flex justify-between items-center">
                   <div className="flex items-center gap-4">
                     <Code size={18} className="text-neon-cyan" />
-                    <span className="text-[10px] font-ethnocentric tracking-[0.2em] text-white">COMPILED_CSS_BUFFER</span>
+                    <span className="text-[10px] font-ethnocentric tracking-[0.2em] text-white">COMPILED CSS BUFFER</span>
                   </div>
                   <button
                     onClick={handleCopy}
                     className={`flex items-center gap-2 px-6 py-3 text-[10px] font-ethnocentric transition-all ${copied ? 'bg-neon-green text-black' : 'bg-neon-cyan text-black hover:scale-105 active:scale-95'}`}
                   >
                     {copied ? <Check size={14} /> : <Copy size={14} />}
-                    {copied ? 'UPLINK_SUCCESS' : 'COPY_TO_CLIPBOARD'}
+                    {copied ? 'UPLINK SUCCESS' : 'COPY TO CLIPBOARD'}
                   </button>
                 </div>
                 <div className="flex-1 p-5 bg-black/60 relative group">
@@ -291,7 +291,7 @@ export default function LiveChatGenerator() {
                     className="w-full h-full bg-transparent font-mono text-[11px] text-neon-cyan/70 resize-none outline-none custom-scrollbar leading-relaxed"
                   />
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p className="text-[8px] font-mono text-gray-600 bg-black/80 px-2 py-1 border border-white/5 uppercase">Read_Only_Stream</p>
+                    <p className="text-[8px] font-mono text-gray-600 bg-black/80 px-2 py-1 border border-white/5 uppercase">Read Only Stream</p>
                   </div>
                 </div>
               </div>

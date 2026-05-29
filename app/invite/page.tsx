@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { 
   Upload, 
   Download, 
@@ -217,18 +218,25 @@ export default function InvitePage() {
   });
 
   // Guest list & inputs
-  const [rawText, setRawText] = useState<string>(
-    "Zack Silver ; ACCESS_CODE: SPACE ; Remind him to showcase his core model!\n" +
-    "Vikra ; ACCESS_CODE: DRAGON ; Make sure to invite his friends too\n" +
-    "Sato ; ACCESS_CODE: DOLL ; A quiet debut visitor\n" +
-    "Aeliana ; ; VIP Special Invitation"
-  );
+  const [rawText, setRawText] = useState<string>("");
   const [delimiter, setDelimiter] = useState<string>(';');
   const [guestList, setGuestList] = useState<Guest[]>([]);
   const [selectedGuestIndex, setSelectedGuestIndex] = useState<number>(0);
 
+  // Zoom & Pan states
+  const [zoom, setZoom] = useState<number>(1.0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [panState, setPanState] = useState({
+    isPanning: false,
+    startX: 0,
+    startY: 0,
+    scrollLeft: 0,
+    scrollTop: 0
+  });
+
   // Asset Pools & Custom Fonts
   const [assetPool, setAssetPool] = useState<ImageAsset[]>([]);
+  const [matchTolerance, setMatchTolerance] = useState<'strict' | 'fuzzy'>('fuzzy');
   const [customFonts, setCustomFonts] = useState<string[]>([]);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
 
@@ -242,6 +250,7 @@ export default function InvitePage() {
   const [activePanelTab, setActivePanelTab] = useState<'editor' | 'roster'>('editor');
 
   // Dragging interaction state
+  const [focusedLayer, setFocusedLayer] = useState<'name' | 'text1' | 'text2' | 'pfp' | null>(null);
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
     layer: 'name' | 'text1' | 'text2' | 'pfp' | null;
@@ -272,11 +281,45 @@ export default function InvitePage() {
   }, []);
 
   // Parse Guest Roster whenever raw text or delimiter changes
-  useEffect(() => {
-    handleParse();
-  }, [rawText, delimiter]);
+  const handleParse = (text: string, delim: string) => {
+    if (!text.trim()) {
+      setGuestList([]);
+      return;
+    }
 
-  // Auto-Match images in asset pool whenever guest list or asset pool changes
+    setGuestList(prevList => {
+      const lines = text.split('\n');
+      const parsed: Guest[] = lines
+        .map((line, idx) => {
+          if (!line.trim()) return null;
+          
+          const parts = line.split(delim);
+          const name = parts[0]?.trim() || `Guest_${idx + 1}`;
+          const text1 = parts[1]?.trim() || '';
+          const text2 = parts.slice(2).join(delim)?.trim() || '';
+
+          const existingGuest = prevList.find(g => g.name === name);
+
+          return {
+            id: existingGuest?.id || `guest-${idx}-${Date.now()}`,
+            name,
+            text1,
+            text2,
+            pfpUrl: existingGuest?.pfpUrl || null,
+            pfpName: existingGuest?.pfpName || null,
+            pfpStatus: existingGuest?.pfpStatus || 'missing'
+          };
+        })
+        .filter(Boolean) as Guest[];
+
+      if (selectedGuestIndex >= parsed.length) {
+        setSelectedGuestIndex(0);
+      }
+      return parsed;
+    });
+  };
+
+  // Auto-Match images in asset pool
   useEffect(() => {
     if (guestList.length === 0 || assetPool.length === 0) return;
 
@@ -297,7 +340,7 @@ export default function InvitePage() {
         });
 
         // Fuzzy match fallback
-        if (!matchedAsset) {
+        if (!matchedAsset && matchTolerance === 'fuzzy') {
           matchedAsset = assetPool.find(asset => {
             const baseName = asset.name.substring(0, asset.name.lastIndexOf('.')) || asset.name;
             const sanitizedBase = sanitize(baseName);
@@ -320,48 +363,7 @@ export default function InvitePage() {
 
       return changed ? updatedList : prevList;
     });
-  }, [assetPool]);
-
-  // --- Handlers ---
-
-  // Parser Logic
-  const handleParse = () => {
-    if (!rawText.trim()) {
-      setGuestList([]);
-      return;
-    }
-
-    const lines = rawText.split('\n');
-    const parsed: Guest[] = lines
-      .map((line, idx) => {
-        if (!line.trim()) return null;
-        
-        // Strict delimiter splitting with limit
-        const parts = line.split(delimiter);
-        const name = parts[0]?.trim() || `Guest_${idx + 1}`;
-        const text1 = parts[1]?.trim() || '';
-        const text2 = parts.slice(2).join(delimiter)?.trim() || '';
-
-        // Preserve PFP association if guest name already exists in previous list
-        const existingGuest = guestList.find(g => g.name === name);
-
-        return {
-          id: existingGuest?.id || `guest-${idx}-${Date.now()}`,
-          name,
-          text1,
-          text2,
-          pfpUrl: existingGuest?.pfpUrl || null,
-          pfpName: existingGuest?.pfpName || null,
-          pfpStatus: existingGuest?.pfpStatus || 'missing'
-        };
-      })
-      .filter(Boolean) as Guest[];
-
-    setGuestList(parsed);
-    if (selectedGuestIndex >= parsed.length) {
-      setSelectedGuestIndex(0);
-    }
-  };
+  }, [assetPool, guestList.length, matchTolerance]);
 
   // Case transforms
   const applyCaseTransform = (mode: 'upper' | 'lower' | 'title') => {
@@ -371,30 +373,26 @@ export default function InvitePage() {
       }).join(' ');
     };
 
-    setGuestList(prev => prev.map(guest => {
-      let newName = guest.name;
-      if (mode === 'upper') newName = guest.name.toUpperCase();
-      else if (mode === 'lower') newName = guest.name.toLowerCase();
-      else if (mode === 'title') newName = titleCase(guest.name);
-      return { ...guest, name: newName };
-    }));
-
-    // Update rawText to reflect changes
-    const updatedRaw = guestList.map(guest => {
-      let newName = guest.name;
-      if (mode === 'upper') newName = guest.name.toUpperCase();
-      else if (mode === 'lower') newName = guest.name.toLowerCase();
-      else if (mode === 'title') newName = titleCase(guest.name);
+    setGuestList(prev => {
+      const updatedList = prev.map(guest => {
+        let newName = guest.name;
+        if (mode === 'upper') newName = guest.name.toUpperCase();
+        else if (mode === 'lower') newName = guest.name.toLowerCase();
+        else if (mode === 'title') newName = titleCase(guest.name);
+        return { ...guest, name: newName };
+      });
       
-      const parts = [newName];
-      if (guest.text1) parts.push(guest.text1);
-      else if (guest.text2) parts.push('');
-      if (guest.text2) parts.push(guest.text2);
+      const updatedRaw = updatedList.map(guest => {
+        const parts = [guest.name];
+        if (guest.text1) parts.push(guest.text1);
+        else if (guest.text2) parts.push('');
+        if (guest.text2) parts.push(guest.text2);
+        return parts.join(` ${delimiter} `);
+      }).join('\n');
       
-      return parts.join(` ${delimiter} `);
-    }).join('\n');
-
-    setRawText(updatedRaw);
+      setRawText(updatedRaw);
+      return updatedList;
+    });
   };
 
   // Template Upload Handler
@@ -547,6 +545,7 @@ export default function InvitePage() {
   const handleMouseDown = (e: React.MouseEvent, layer: 'name' | 'text1' | 'text2' | 'pfp') => {
     e.preventDefault();
     if (!previewContainerRef.current) return;
+    setFocusedLayer(layer);
     const rect = previewContainerRef.current.getBoundingClientRect();
 
     let currentXPercent = 0;
@@ -557,14 +556,22 @@ export default function InvitePage() {
     else if (layer === 'text2') { currentXPercent = text2Style.x; currentYPercent = text2Style.y; }
     else if (layer === 'pfp') { currentXPercent = pfpStyle.x; currentYPercent = pfpStyle.y; }
 
-    const currentXPixels = rect.left + (currentXPercent / 100) * rect.width;
-    const currentYPixels = rect.top + (currentYPercent / 100) * rect.height;
+    const xRel = e.clientX - rect.left;
+    const yRel = e.clientY - rect.top;
+    const unscaledX = xRel / zoom;
+    const unscaledY = yRel / zoom;
+
+    const baseWidth = previewBoxWidth;
+    const baseHeight = previewBoxWidth * aspectRatio;
+
+    const currentXPixels = (currentXPercent / 100) * baseWidth;
+    const currentYPixels = (currentYPercent / 100) * baseHeight;
 
     setDragState({
       isDragging: true,
       layer,
-      offsetX: e.clientX - currentXPixels,
-      offsetY: e.clientY - currentYPixels
+      offsetX: unscaledX - currentXPixels,
+      offsetY: unscaledY - currentYPixels
     });
   };
 
@@ -572,11 +579,19 @@ export default function InvitePage() {
     if (!dragState.isDragging || !dragState.layer || !previewContainerRef.current) return;
     const rect = previewContainerRef.current.getBoundingClientRect();
 
-    const newXPixels = e.clientX - rect.left - dragState.offsetX;
-    const newYPixels = e.clientY - rect.top - dragState.offsetY;
+    const xRel = e.clientX - rect.left;
+    const yRel = e.clientY - rect.top;
+    const unscaledX = xRel / zoom;
+    const unscaledY = yRel / zoom;
 
-    let newXPercent = Math.max(0, Math.min(100, (newXPixels / rect.width) * 100));
-    let newYPercent = Math.max(0, Math.min(100, (newYPixels / rect.height) * 100));
+    const newXPixels = unscaledX - dragState.offsetX;
+    const newYPixels = unscaledY - dragState.offsetY;
+
+    const baseWidth = previewBoxWidth;
+    const baseHeight = previewBoxWidth * aspectRatio;
+
+    let newXPercent = Math.max(0, Math.min(100, (newXPixels / baseWidth) * 100));
+    let newYPercent = Math.max(0, Math.min(100, (newYPixels / baseHeight) * 100));
 
     newXPercent = Math.round(newXPercent * 10) / 10;
     newYPercent = Math.round(newYPercent * 10) / 10;
@@ -596,9 +611,90 @@ export default function InvitePage() {
     setDragState({ isDragging: false, layer: null, offsetX: 0, offsetY: 0 });
   };
 
-  // Touch triggers for mobile compatibility
+  const handleScrollMouseDown = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('.focusable-chunk') || target.closest('select') || target.closest('button') || target.closest('input') || target.closest('textarea')) {
+      return;
+    }
+    if (!scrollContainerRef.current) return;
+    setPanState({
+      isPanning: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      scrollLeft: scrollContainerRef.current.scrollLeft,
+      scrollTop: scrollContainerRef.current.scrollTop
+    });
+  };
+
+  const handleScrollMouseMove = (e: React.MouseEvent) => {
+    if (!panState.isPanning || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - panState.startX;
+    const dy = e.clientY - panState.startY;
+    scrollContainerRef.current.scrollLeft = panState.scrollLeft - dx;
+    scrollContainerRef.current.scrollTop = panState.scrollTop - dy;
+  };
+
+  const handleScrollMouseUp = () => {
+    setPanState(prev => ({ ...prev, isPanning: false }));
+  };
+
+  const handleAutoFit = () => {
+    if (!scrollContainerRef.current) return;
+    const containerWidth = scrollContainerRef.current.clientWidth - 48;
+    if (containerWidth > 0) {
+      const fitZoom = containerWidth / previewBoxWidth;
+      setZoom(Math.max(0.4, Math.min(2.0, fitZoom)));
+    }
+  };
+
+  useEffect(() => {
+    handleAutoFit();
+    window.addEventListener('resize', handleAutoFit);
+    return () => window.removeEventListener('resize', handleAutoFit);
+  }, [bgImage]);
+
+  // Keyboard Nudge Hotkeys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.tagName === 'SELECT') {
+        return;
+      }
+      if (!focusedLayer) return;
+
+      const nudge = e.shiftKey ? 2 : 0.5;
+      
+      const updateStyle = (setStyle: React.Dispatch<React.SetStateAction<any>>) => {
+        setStyle((prev: any) => {
+          let newX = prev.x;
+          let newY = prev.y;
+          if (e.key === 'ArrowUp') newY = Math.max(0, prev.y - nudge);
+          else if (e.key === 'ArrowDown') newY = Math.min(100, prev.y + nudge);
+          else if (e.key === 'ArrowLeft') newX = Math.max(0, prev.x - nudge);
+          else if (e.key === 'ArrowRight') newX = Math.min(100, prev.x + nudge);
+          else return prev;
+
+          // Prevent default scrolling only if we actually handled the arrow key
+          e.preventDefault();
+          return { ...prev, x: Math.round(newX * 10) / 10, y: Math.round(newY * 10) / 10 };
+        });
+      };
+
+      if (focusedLayer === 'name') updateStyle(setNameStyle);
+      else if (focusedLayer === 'text1') updateStyle(setText1Style);
+      else if (focusedLayer === 'text2') updateStyle(setText2Style);
+      else if (focusedLayer === 'pfp') updateStyle(setPfpStyle);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [focusedLayer]);
+
+  // --- Batch Export Engine Logic ---mobile compatibility
   const handleTouchStart = (e: React.TouchEvent, layer: 'name' | 'text1' | 'text2' | 'pfp') => {
     if (!previewContainerRef.current || e.touches.length === 0) return;
+    setFocusedLayer(layer);
     const rect = previewContainerRef.current.getBoundingClientRect();
     const touch = e.touches[0];
 
@@ -610,14 +706,22 @@ export default function InvitePage() {
     else if (layer === 'text2') { currentXPercent = text2Style.x; currentYPercent = text2Style.y; }
     else if (layer === 'pfp') { currentXPercent = pfpStyle.x; currentYPercent = pfpStyle.y; }
 
-    const currentXPixels = rect.left + (currentXPercent / 100) * rect.width;
-    const currentYPixels = rect.top + (currentYPercent / 100) * rect.height;
+    const xRel = touch.clientX - rect.left;
+    const yRel = touch.clientY - rect.top;
+    const unscaledX = xRel / zoom;
+    const unscaledY = yRel / zoom;
+
+    const baseWidth = previewBoxWidth;
+    const baseHeight = previewBoxWidth * aspectRatio;
+
+    const currentXPixels = (currentXPercent / 100) * baseWidth;
+    const currentYPixels = (currentYPercent / 100) * baseHeight;
 
     setDragState({
       isDragging: true,
       layer,
-      offsetX: touch.clientX - currentXPixels,
-      offsetY: touch.clientY - currentYPixels
+      offsetX: unscaledX - currentXPixels,
+      offsetY: unscaledY - currentYPixels
     });
   };
 
@@ -626,11 +730,19 @@ export default function InvitePage() {
     const rect = previewContainerRef.current.getBoundingClientRect();
     const touch = e.touches[0];
 
-    const newXPixels = touch.clientX - rect.left - dragState.offsetX;
-    const newYPixels = touch.clientY - rect.top - dragState.offsetY;
+    const xRel = touch.clientX - rect.left;
+    const yRel = touch.clientY - rect.top;
+    const unscaledX = xRel / zoom;
+    const unscaledY = yRel / zoom;
 
-    let newXPercent = Math.max(0, Math.min(100, (newXPixels / rect.width) * 100));
-    let newYPercent = Math.max(0, Math.min(100, (newYPixels / rect.height) * 100));
+    const newXPixels = unscaledX - dragState.offsetX;
+    const newYPixels = unscaledY - dragState.offsetY;
+
+    const baseWidth = previewBoxWidth;
+    const baseHeight = previewBoxWidth * aspectRatio;
+
+    let newXPercent = Math.max(0, Math.min(100, (newXPixels / baseWidth) * 100));
+    let newYPercent = Math.max(0, Math.min(100, (newYPixels / baseHeight) * 100));
 
     newXPercent = Math.round(newXPercent * 10) / 10;
     newYPercent = Math.round(newYPercent * 10) / 10;
@@ -663,18 +775,17 @@ export default function InvitePage() {
       // Loop sequentially
       for (let i = 0; i < guestList.length; i++) {
         const guest = guestList[i];
-        setExportCurrentName(guest.name);
-
-        // Select the current guest in state to render in offscreen container
-        // Wait, since we are doing sequential DOM rendering, let's create a dedicated element 
-        // that handles painting specifically for the export, or let's update a ref element.
-        // We'll update the selected guest in the preview to render in the export container.
-        setSelectedGuestIndex(i);
+        
+        // Force synchronous React DOM flush to update the active render component
+        flushSync(() => {
+          setExportCurrentName(guest.name);
+          setSelectedGuestIndex(i);
+        });
 
         // Await paint sequence: 
         // 1. Programmatic wait for the images to load completely
         await new Promise<void>(resolve => {
-          const exportCard = document.getElementById('export-card-render');
+          const exportCard = document.getElementById('export-card-render-active');
           if (!exportCard) return resolve();
           
           const bgImg = exportCard.querySelector('.export-bg-element') as HTMLImageElement | null;
@@ -716,7 +827,7 @@ export default function InvitePage() {
         await document.fonts.ready;
 
         // 3. Take HTML snapshot
-        const exportContainer = document.getElementById('export-card-render');
+        const exportContainer = document.getElementById('export-card-render-active');
         if (exportContainer) {
           const canvas = await html2canvas(exportContainer, {
             useCORS: true,
@@ -815,10 +926,10 @@ export default function InvitePage() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <Sparkles size={20} className="text-neon-cyan animate-pulse" />
-              <span className="text-[10px] font-ethnocentric text-neon-cyan tracking-[0.3em] uppercase">ROSTER_SYSTEM</span>
+              <span className="text-[10px] font-ethnocentric text-neon-cyan tracking-[0.3em] uppercase">ROSTER SYSTEM</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-ethnocentric tracking-tighter text-white">
-              DEBUT_INVITE_GEN
+              Virtual Invitation Generator
             </h1>
             <p className="text-xs font-mono text-neon-cyan/70 tracking-widest uppercase mt-2">
               Technofuturistic Card Injection & Batch Compilation Terminal
@@ -826,12 +937,12 @@ export default function InvitePage() {
           </div>
           <div className="flex gap-8">
             <div className="text-right">
-              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Active_Roster</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Active Roster</p>
               <p className="text-xs text-white font-mono uppercase">{guestList.length} Guests</p>
             </div>
             <div className="w-[1px] h-10 bg-white/10 hidden md:block"></div>
             <div className="text-right">
-              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Asset_Loadout</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Asset Loadout</p>
               <p className="text-xs text-neon-green font-mono uppercase">{assetPool.length} PFPs</p>
             </div>
           </div>
@@ -847,7 +958,7 @@ export default function InvitePage() {
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* LEFT PANEL - CONTROLS */}
-          <div className="w-full lg:w-[480px] shrink-0 space-y-6">
+          <div className="w-full lg:w-[480px] shrink-0 space-y-6 order-2 lg:order-1">
             
             {/* PANEL TABS */}
             <div className="flex border border-white/10 rounded-lg overflow-hidden w-full bg-black/40">
@@ -856,14 +967,14 @@ export default function InvitePage() {
                 className={`flex-1 flex items-center justify-center gap-2 py-4 text-[10px] font-ethnocentric tracking-wider transition-all ${activePanelTab === 'editor' ? 'bg-neon-cyan text-black' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
               >
                 <Sliders size={14} />
-                EDITOR_CONTROLS
+                EDITOR CONTROLS
               </button>
               <button
                 onClick={() => setActivePanelTab('roster')}
                 className={`flex-1 flex items-center justify-center gap-2 py-4 text-[10px] font-ethnocentric tracking-wider transition-all ${activePanelTab === 'roster' ? 'bg-neon-cyan text-black' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
               >
                 <Users size={14} />
-                ROSTER_DATA ({guestList.length})
+                ROSTER DATA ({guestList.length})
               </button>
             </div>
 
@@ -874,7 +985,7 @@ export default function InvitePage() {
                 {/* 1. BACKGROUND ACCORDION */}
                 <Accordion 
                   icon={FileImage} 
-                  title="1. Template_Background" 
+                  title="1. Template Background" 
                   isOpen={activeAccordion === 'bg'}
                   onToggle={() => setActiveAccordion(activeAccordion === 'bg' ? null : 'bg')}
                 >
@@ -887,7 +998,7 @@ export default function InvitePage() {
                       <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-lg cursor-pointer bg-white/5 hover:bg-white/10 hover:border-neon-cyan/40 transition-all duration-300">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload size={24} className="text-gray-400 mb-2 group-hover:text-neon-cyan" />
-                          <p className="text-xs text-gray-400 font-mono tracking-widest uppercase">Upload_Template</p>
+                          <p className="text-xs text-gray-400 font-mono tracking-widest uppercase">Upload Template</p>
                           <p className="text-[10px] text-gray-500 font-mono mt-1">PNG, JPG or WEBP</p>
                         </div>
                         <input 
@@ -902,7 +1013,7 @@ export default function InvitePage() {
                     {bgImage && (
                       <div className="p-3 bg-neon-cyan/5 border border-neon-cyan/20 rounded font-mono text-[10px] text-neon-cyan flex justify-between items-center">
                         <div>
-                          <p className="font-bold">STATUS: TEMPLATE_LOADED</p>
+                          <p className="font-bold">STATUS: TEMPLATE LOADED</p>
                           <p className="text-gray-400 mt-0.5">Dims: {bgWidth}x{bgHeight}px (Ratio: {aspectRatio.toFixed(3)})</p>
                         </div>
                         <button 
@@ -920,16 +1031,20 @@ export default function InvitePage() {
                 {/* 2. GUEST LIST PARSER ACCORDION */}
                 <Accordion 
                   icon={Users} 
-                  title="2. Roster_Parser" 
+                  title="2. Name List" 
                   isOpen={activeAccordion === 'roster-parser'}
                   onToggle={() => setActiveAccordion(activeAccordion === 'roster-parser' ? null : 'roster-parser')}
                 >
                   <div className="space-y-4 font-mono">
                     <div className="flex justify-between items-center gap-3">
-                      <span className="text-xs text-gray-400 uppercase">Column_Delimiter:</span>
+                      <span className="text-xs text-gray-400 uppercase">Column Delimiter:</span>
                       <select 
                         value={delimiter}
-                        onChange={(e) => setDelimiter(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDelimiter(val);
+                          handleParse(rawText, val);
+                        }}
                         className="bg-black border border-white/20 text-neon-cyan rounded px-2 py-1 text-xs outline-none"
                       >
                         <option value=";">Semicolon ( ; )</option>
@@ -944,7 +1059,11 @@ export default function InvitePage() {
                       </span>
                       <textarea
                         value={rawText}
-                        onChange={(e) => setRawText(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setRawText(val);
+                          handleParse(val, delimiter);
+                        }}
                         rows={6}
                         className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-xs text-neon-cyan/80 outline-none resize-none focus:border-neon-cyan/40 transition-colors font-mono leading-relaxed"
                         placeholder={`Sato ${delimiter} ACCESS_CODE: DOLL ${delimiter} Message goes here`}
@@ -952,7 +1071,7 @@ export default function InvitePage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-gray-400 uppercase font-bold">Case_Tools:</span>
+                      <span className="text-[10px] text-gray-400 uppercase font-bold">Case Tools:</span>
                       <button 
                         onClick={() => applyCaseTransform('upper')}
                         className="flex-1 py-1.5 bg-white/5 border border-white/10 rounded text-[9px] hover:bg-neon-cyan hover:text-black hover:border-neon-cyan font-bold transition-all"
@@ -978,7 +1097,7 @@ export default function InvitePage() {
                 {/* 3. PFPs BULK ENGINE ACCORDION */}
                 <Accordion 
                   icon={ImageIcon} 
-                  title="3. Bulk_PFP_Loader" 
+                  title="3. Profile Picture" 
                   isOpen={activeAccordion === 'pfp-loader'}
                   onToggle={() => setActiveAccordion(activeAccordion === 'pfp-loader' ? null : 'pfp-loader')}
                 >
@@ -987,6 +1106,18 @@ export default function InvitePage() {
                       Drop all profile pictures here at once. The engine will parse the file names, sanitize extensions, and auto-match them against your parsed guests.
                     </p>
 
+                    <div className="flex justify-between items-center gap-3">
+                      <span className="text-xs text-gray-400 font-mono uppercase">Match Tolerance:</span>
+                      <select 
+                        value={matchTolerance}
+                        onChange={(e) => setMatchTolerance(e.target.value as 'strict' | 'fuzzy')}
+                        className="bg-black border border-white/20 text-neon-cyan rounded px-2 py-1 text-xs outline-none font-mono"
+                      >
+                        <option value="fuzzy">Fuzzy (Substring)</option>
+                        <option value="strict">Strict (Exact Match)</option>
+                      </select>
+                    </div>
+
                     <div 
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
@@ -994,7 +1125,7 @@ export default function InvitePage() {
                       className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 rounded-lg cursor-pointer bg-white/5 hover:bg-white/10 hover:border-neon-cyan/40 transition-all duration-300"
                     >
                       <FolderPlus size={22} className="text-gray-400 mb-1" />
-                      <p className="text-xs text-gray-400 font-mono tracking-widest uppercase">Drop_All_PFPs</p>
+                      <p className="text-xs text-gray-400 font-mono tracking-widest uppercase">Drop Profile Pictures</p>
                       <p className="text-[9px] text-gray-500 font-mono mt-0.5">Click to choose files (Max 4MB each)</p>
                       <input 
                         type="file" 
@@ -1009,7 +1140,7 @@ export default function InvitePage() {
                     {assetPool.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex justify-between items-center text-[10px] font-mono text-gray-400">
-                          <span>UPLOADED_ASSET_POOL ({assetPool.length})</span>
+                          <span>UPLOADED ASSET POOL ({assetPool.length})</span>
                           <button 
                             onClick={handleClearPFPs} 
                             className="text-red-400 hover:text-red-300 font-bold uppercase transition-colors"
@@ -1037,7 +1168,7 @@ export default function InvitePage() {
                 {/* 4. TYPOGRAPHY & LAYOUTS STYLING ACCORDION */}
                 <Accordion 
                   icon={Type} 
-                  title="4. Typography_&_Positioning" 
+                  title="4. Typography & Positioning" 
                   isOpen={activeAccordion === 'typography'}
                   onToggle={() => setActiveAccordion(activeAccordion === 'typography' ? null : 'typography')}
                 >
@@ -1045,7 +1176,7 @@ export default function InvitePage() {
                     {/* CUSTOM FONTS IMPORT SECTION */}
                     <div className="border border-neon-cyan/20 bg-neon-cyan/5 rounded p-3 space-y-3 font-mono">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-neon-cyan font-bold uppercase">Dynamic_Font_Injector:</span>
+                        <span className="text-[10px] text-neon-cyan font-bold uppercase">Dynamic Font Injector:</span>
                         <button 
                           onClick={() => fontInputRef.current?.click()}
                           className="px-2 py-1 bg-neon-cyan/15 border border-neon-cyan/30 text-neon-cyan text-[9px] font-bold hover:bg-neon-cyan hover:text-black rounded transition-all"
@@ -1079,7 +1210,7 @@ export default function InvitePage() {
                       {/* --- A. NAME LAYER STYLE --- */}
                       <div className="border-l-2 border-neon-cyan pl-4 space-y-4">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-ethnocentric tracking-widest text-white">Name_Layer</span>
+                          <span className="text-xs font-ethnocentric tracking-widest text-white">Name Layer</span>
                           <input 
                             type="checkbox" 
                             checked={nameStyle.enabled} 
@@ -1189,7 +1320,7 @@ export default function InvitePage() {
                       {/* --- B. CUSTOM TEXT 1 STYLE --- */}
                       <div className="border-l-2 border-neon-cyan pl-4 space-y-4">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-ethnocentric tracking-widest text-white">Text_1_Layer</span>
+                          <span className="text-xs font-ethnocentric tracking-widest text-white">Text 1 Layer</span>
                           <input 
                             type="checkbox" 
                             checked={text1Style.enabled} 
@@ -1270,7 +1401,7 @@ export default function InvitePage() {
                       {/* --- C. CUSTOM TEXT 2 STYLE --- */}
                       <div className="border-l-2 border-neon-cyan pl-4 space-y-4">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-ethnocentric tracking-widest text-white">Text_2_Layer</span>
+                          <span className="text-xs font-ethnocentric tracking-widest text-white">Text 2 Layer</span>
                           <input 
                             type="checkbox" 
                             checked={text2Style.enabled} 
@@ -1334,7 +1465,7 @@ export default function InvitePage() {
                       {/* --- D. PROFILE PICTURE STYLE --- */}
                       <div className="border-l-2 border-neon-cyan pl-4 space-y-4">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-ethnocentric tracking-widest text-white">Profile_Picture</span>
+                          <span className="text-xs font-ethnocentric tracking-widest text-white">Profile Picture</span>
                           <input 
                             type="checkbox" 
                             checked={pfpStyle.enabled} 
@@ -1414,13 +1545,13 @@ export default function InvitePage() {
             {activePanelTab === 'roster' && (
               <div className="bg-black/25 border border-white/10 rounded-lg p-5 space-y-4 max-h-[700px] overflow-y-auto custom-scrollbar font-mono text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400 font-bold uppercase">PARSED_ROSTER ({guestList.length})</span>
+                  <span className="text-gray-400 font-bold uppercase">PARSED ROSTER ({guestList.length})</span>
                   <span className="text-[10px] text-gray-500 font-mono">DELIM: &quot;{delimiter}&quot;</span>
                 </div>
 
                 {guestList.length === 0 ? (
                   <div className="text-center py-10 border border-dashed border-white/5 rounded text-gray-500 font-mono">
-                    No guests parsed. Fill out the text roster in Editor Controls.
+                    No guests parsed. Fill out the Name List in Editor Controls.
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1444,7 +1575,7 @@ export default function InvitePage() {
                             {/* PFP matching badge status */}
                             {guest.pfpStatus === 'matched' && (
                               <span className="text-[8px] bg-green-500/10 border border-green-500/30 text-green-400 px-1.5 py-0.5 rounded uppercase font-bold" title={`Auto-Matched: ${guest.pfpName}`}>
-                                AUTO_OK
+                                AUTO OK
                               </span>
                             )}
                             {guest.pfpStatus === 'manual' && (
@@ -1454,7 +1585,7 @@ export default function InvitePage() {
                             )}
                             {guest.pfpStatus === 'missing' && (
                               <span className="text-[8px] bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 px-1.5 py-0.5 rounded uppercase font-bold">
-                                NO_PFP
+                                NO PFP
                               </span>
                             )}
 
@@ -1500,7 +1631,7 @@ export default function InvitePage() {
             <div className="border border-neon-cyan/30 rounded-lg p-5 bg-[#05161a]/80 shadow-[0_0_20px_rgba(0,242,255,0.15)] flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <Sliders size={20} className="text-neon-cyan" />
-                <span className="text-xs font-ethnocentric tracking-widest text-white uppercase">Export_Console</span>
+                <span className="text-xs font-ethnocentric tracking-widest text-white uppercase">Export Console</span>
               </div>
               <p className="text-xs font-mono text-gray-400 leading-relaxed">
                 Compile all custom variations in your roster. An asynchronous export sequence will render cards in high definition, pack them inside a ZIP folder, and trigger a local download.
@@ -1512,20 +1643,25 @@ export default function InvitePage() {
                 className="w-full btn-custom flex items-center justify-center gap-2 hover:scale-100 disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all text-xs"
               >
                 <Download size={14} />
-                {isExporting ? 'COMPILING_ASSETS...' : 'BATCH GENERATE & DOWNLOAD'}
+                {isExporting ? 'COMPILING ASSETS...' : 'BATCH GENERATE & DOWNLOAD'}
               </button>
             </div>
           </div>
 
           {/* RIGHT PANEL - LIVE EDITOR CANVAS PREVIEW */}
-          <div className="flex-grow w-full flex flex-col gap-6">
+          <div className="flex-grow w-full flex flex-col gap-6 order-1 lg:order-2 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar p-1">
             
             {/* CANVAS WRAPPER */}
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-center p-4 bg-white/5 border border-white/10 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_#39ff14]"></div>
-                  <span className="text-[10px] font-ethnocentric text-gray-400 tracking-wider">LIVE_VIEWER_FEED</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_#39ff14]"></div>
+                    <span className="text-[10px] font-ethnocentric text-gray-400 tracking-wider">LIVE VIEWER FEED</span>
+                  </div>
+                  <span className="text-[9px] font-mono text-neon-cyan/70">
+                    ⚡ TIP: DRAG ELEMENTS DIRECTLY ON CANVAS TO POSITION
+                  </span>
                 </div>
 
                 {/* Dropdown switch active guest preview */}
@@ -1547,264 +1683,316 @@ export default function InvitePage() {
                 )}
               </div>
 
+              {/* ZOOM CONTROLLER */}
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-black/40 border border-white/10 rounded-lg font-mono text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-400 uppercase text-[9px] font-bold">Zoom:</span>
+                  <button 
+                    onClick={() => setZoom(prev => Math.max(0.4, Math.min(2.0, Math.round((prev - 0.1) * 10) / 10)))}
+                    className="w-6 h-6 flex items-center justify-center bg-white/5 border border-white/10 rounded hover:bg-neon-cyan hover:text-black font-bold transition-all"
+                  >
+                    -
+                  </button>
+                  <span className="text-neon-cyan font-bold w-12 text-center">{Math.round(zoom * 100)}%</span>
+                  <button 
+                    onClick={() => setZoom(prev => Math.max(0.4, Math.min(2.0, Math.round((prev + 0.1) * 10) / 10)))}
+                    className="w-6 h-6 flex items-center justify-center bg-white/5 border border-white/10 rounded hover:bg-neon-cyan hover:text-black font-bold transition-all"
+                  >
+                    +
+                  </button>
+                </div>
+                <input 
+                  type="range" 
+                  min="0.4" 
+                  max="2.0" 
+                  step="0.05" 
+                  value={zoom}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
+                  className="flex-1 max-w-[150px] h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-neon-cyan"
+                />
+                <button 
+                  onClick={handleAutoFit}
+                  className="px-3 py-1 bg-neon-cyan/15 border border-neon-cyan/30 text-neon-cyan text-[10px] font-bold hover:bg-neon-cyan hover:text-black rounded transition-all"
+                >
+                  AUTO FIT
+                </button>
+              </div>
+
               {/* RENDER CANVAS CONTAINER */}
-              <div className="flex items-center justify-center p-8 bg-black/40 border border-white/5 rounded-xl relative overflow-hidden group shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]">
+              <div 
+                ref={scrollContainerRef}
+                onMouseDown={handleScrollMouseDown}
+                onMouseMove={handleScrollMouseMove}
+                onMouseUp={handleScrollMouseUp}
+                onMouseLeave={handleScrollMouseUp}
+                className="w-full overflow-auto p-6 md:p-8 bg-black/40 border border-white/5 rounded-xl relative group shadow-[inset_0_0_30px_rgba(0,0,0,0.8)] custom-scrollbar select-none cursor-grab active:cursor-grabbing flex items-center justify-center"
+                style={{ minHeight: '350px' }}
+              >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,242,255,0.03),transparent_70%)] pointer-events-none"></div>
 
-                {/* THE CARD PREVIEW COMPONENT */}
+                {/* THE ZOOM WRAPPER */}
                 <div 
-                  ref={previewContainerRef}
-                  onMouseMove={handleMouseMove}
-                  onTouchMove={handleTouchMove}
-                  onMouseUp={handleMouseUp}
-                  onTouchEnd={handleMouseUp}
-                  className="relative overflow-hidden shadow-2xl transition-all border border-white/10"
                   style={{
-                    width: `${previewBoxWidth}px`,
-                    height: `${previewBoxWidth * aspectRatio}px`,
-                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-                    backgroundColor: '#05161a',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    cursor: dragState.isDragging ? 'grabbing' : 'default',
-                    userSelect: 'none'
+                    width: `${previewBoxWidth * zoom}px`,
+                    height: `${previewBoxWidth * aspectRatio * zoom}px`,
+                    position: 'relative',
+                    flexShrink: 0
                   }}
                 >
-                  {/* Digital Tech background matrix grid if no background image is uploaded */}
-                  {!bgImage && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-gray-600 font-mono pointer-events-none">
-                      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,242,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,242,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
-                      <AlertCircle size={32} className="text-neon-cyan/40 mb-3" />
-                      <p className="text-[10px] uppercase font-ethnocentric text-neon-cyan/50 tracking-widest">Awaiting_Template_Upload</p>
-                      <p className="text-[9px] mt-1 opacity-70">DEFAULT CYBER LAYOUT ACTIVE</p>
-                    </div>
-                  )}
+                  {/* THE CARD PREVIEW COMPONENT */}
+                  <div 
+                    ref={previewContainerRef}
+                    onMouseMove={handleMouseMove}
+                    onTouchMove={handleTouchMove}
+                    onMouseUp={handleMouseUp}
+                    onTouchEnd={handleMouseUp}
+                    className="absolute left-0 top-0 overflow-hidden shadow-2xl transition-transform border border-white/10"
+                    style={{
+                      width: `${previewBoxWidth}px`,
+                      height: `${previewBoxWidth * aspectRatio}px`,
+                      backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                      backgroundColor: '#05161a',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      cursor: dragState.isDragging ? 'grabbing' : 'default',
+                      userSelect: 'none',
+                      transform: `scale(${zoom})`,
+                      transformOrigin: 'top left'
+                    }}
+                  >
+                    {/* Digital Tech background matrix grid if no background image is uploaded */}
+                    {!bgImage && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-gray-600 font-mono pointer-events-none">
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,242,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,242,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                        <AlertCircle size={32} className="text-neon-cyan/40 mb-3" />
+                        <p className="text-[10px] uppercase font-ethnocentric text-neon-cyan/50 tracking-widest">Awaiting Template Upload</p>
+                        <p className="text-[9px] mt-1 opacity-70">DEFAULT CYBER LAYOUT ACTIVE</p>
+                      </div>
+                    )}
 
-                  {/* ELEMENT: NAME LAYER */}
-                  {nameStyle.enabled && (
-                    <div 
-                      onMouseDown={(e) => handleMouseDown(e, 'name')}
-                      onTouchStart={(e) => handleTouchStart(e, 'name')}
-                      className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow`}
-                      style={{
-                        left: `${nameStyle.x}%`,
-                        top: `${nameStyle.y}%`,
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: `${nameStyle.fontSize * previewScale}px`,
-                        zIndex: 25,
-                        ...getTextStyle(nameStyle)
-                      }}
-                    >
-                      {renderTextContent(activeGuest.name, nameStyle.textTransform)}
-                    </div>
-                  )}
-
-                  {/* ELEMENT: TEXT 1 LAYER */}
-                  {text1Style.enabled && activeGuest.text1 && (
-                    <div 
-                      onMouseDown={(e) => handleMouseDown(e, 'text1')}
-                      onTouchStart={(e) => handleTouchStart(e, 'text1')}
-                      className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow`}
-                      style={{
-                        left: `${text1Style.x}%`,
-                        top: `${text1Style.y}%`,
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: `${text1Style.fontSize * previewScale}px`,
-                        zIndex: 24,
-                        ...getTextStyle(text1Style)
-                      }}
-                    >
-                      {renderTextContent(activeGuest.text1, text1Style.textTransform)}
-                    </div>
-                  )}
-
-                  {/* ELEMENT: TEXT 2 LAYER */}
-                  {text2Style.enabled && activeGuest.text2 && (
-                    <div 
-                      onMouseDown={(e) => handleMouseDown(e, 'text2')}
-                      onTouchStart={(e) => handleTouchStart(e, 'text2')}
-                      className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow`}
-                      style={{
-                        left: `${text2Style.x}%`,
-                        top: `${text2Style.y}%`,
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: `${text2Style.fontSize * previewScale}px`,
-                        zIndex: 23,
-                        ...getTextStyle(text2Style)
-                      }}
-                    >
-                      {renderTextContent(activeGuest.text2, text2Style.textTransform)}
-                    </div>
-                  )}
-
-                  {/* ELEMENT: PFP LAYER */}
-                  {pfpStyle.enabled && (
-                    <div
-                      onMouseDown={(e) => handleMouseDown(e, 'pfp')}
-                      onTouchStart={(e) => handleTouchStart(e, 'pfp')}
-                      className="absolute select-none cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded"
-                      style={{
-                        left: `${pfpStyle.x}%`,
-                        top: `${pfpStyle.y}%`,
-                        transform: 'translate(-50%, -50%)',
-                        width: `${pfpStyle.scale}%`,
-                        aspectRatio: '1',
-                        zIndex: 20,
-                      }}
-                    >
+                    {/* ELEMENT: NAME LAYER */}
+                    {nameStyle.enabled && (
                       <div 
-                        className="w-full h-full relative overflow-hidden transition-all duration-300"
+                        onMouseDown={(e) => handleMouseDown(e, 'name')}
+                        onTouchStart={(e) => handleTouchStart(e, 'name')}
+                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
                         style={{
-                          borderRadius: `${pfpStyle.borderRadius}%`,
-                          borderWidth: `${pfpStyle.borderWidth * previewScale}px`,
-                          borderColor: pfpStyle.borderColor,
-                          boxShadow: pfpStyle.glowBlur > 0 
-                            ? `0 0 ${pfpStyle.glowBlur * previewScale}px ${pfpStyle.glowIntensity}px ${pfpStyle.glowColor}`
-                            : 'none'
+                          left: `${nameStyle.x}%`,
+                          top: `${nameStyle.y}%`,
+                          transform: 'translate(-50%, -50%)',
+                          fontSize: `${nameStyle.fontSize * previewScale}px`,
+                          zIndex: 25,
+                          ...getTextStyle(nameStyle)
                         }}
                       >
-                        <img 
-                          src={activeGuest.pfpUrl || DEFAULT_SILHOUETTE} 
-                          alt="preview avatar" 
-                          className="w-full h-full object-cover pointer-events-none"
-                        />
+                        {renderTextContent(activeGuest.name, nameStyle.textTransform)}
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
 
-                {/* Info absolute overlay banner */}
-                <div className="absolute top-10 left-10 pointer-events-none bg-black/60 border border-white/10 rounded px-3 py-1 font-mono text-[9px] text-gray-400">
-                  ⚡ TIP: DRAG ELEMENTS DIRECTLY ON CANVAS TO POSITION
+                    {/* ELEMENT: TEXT 1 LAYER */}
+                    {text1Style.enabled && activeGuest.text1 && (
+                      <div 
+                        onMouseDown={(e) => handleMouseDown(e, 'text1')}
+                        onTouchStart={(e) => handleTouchStart(e, 'text1')}
+                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
+                        style={{
+                          left: `${text1Style.x}%`,
+                          top: `${text1Style.y}%`,
+                          transform: 'translate(-50%, -50%)',
+                          fontSize: `${text1Style.fontSize * previewScale}px`,
+                          zIndex: 24,
+                          ...getTextStyle(text1Style)
+                        }}
+                      >
+                        {renderTextContent(activeGuest.text1, text1Style.textTransform)}
+                      </div>
+                    )}
+
+                    {/* ELEMENT: TEXT 2 LAYER */}
+                    {text2Style.enabled && activeGuest.text2 && (
+                      <div 
+                        onMouseDown={(e) => handleMouseDown(e, 'text2')}
+                        onTouchStart={(e) => handleTouchStart(e, 'text2')}
+                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
+                        style={{
+                          left: `${text2Style.x}%`,
+                          top: `${text2Style.y}%`,
+                          transform: 'translate(-50%, -50%)',
+                          fontSize: `${text2Style.fontSize * previewScale}px`,
+                          zIndex: 23,
+                          ...getTextStyle(text2Style)
+                        }}
+                      >
+                        {renderTextContent(activeGuest.text2, text2Style.textTransform)}
+                      </div>
+                    )}
+
+                    {/* ELEMENT: PFP LAYER */}
+                    {pfpStyle.enabled && activeGuest.pfpUrl && (
+                      <div
+                        onMouseDown={(e) => handleMouseDown(e, 'pfp')}
+                        onTouchStart={(e) => handleTouchStart(e, 'pfp')}
+                        className="absolute select-none cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded focusable-chunk"
+                        style={{
+                          left: `${pfpStyle.x}%`,
+                          top: `${pfpStyle.y}%`,
+                          transform: 'translate(-50%, -50%)',
+                          width: `${pfpStyle.scale}%`,
+                          aspectRatio: '1',
+                          zIndex: 20,
+                        }}
+                      >
+                        <div 
+                          className="w-full h-full relative overflow-hidden transition-all duration-300"
+                          style={{
+                            borderRadius: `${pfpStyle.borderRadius}%`,
+                            borderWidth: `${pfpStyle.borderWidth * previewScale}px`,
+                            borderColor: pfpStyle.borderColor,
+                            boxShadow: pfpStyle.glowBlur > 0 
+                              ? `0 0 ${pfpStyle.glowBlur * previewScale}px ${pfpStyle.glowIntensity}px ${pfpStyle.glowColor}`
+                              : 'none'
+                          }}
+                        >
+                          <img 
+                            src={activeGuest.pfpUrl} 
+                            alt="preview avatar" 
+                            className="w-full h-full object-cover pointer-events-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* MANUAL INSTRUCTION AND DETAILS */}
-            <div className="bg-white/5 border border-neon-cyan/20 p-5 rounded-lg font-mono text-xs space-y-3 leading-relaxed">
-              <h4 className="text-neon-cyan font-bold tracking-widest text-[11px] uppercase flex items-center gap-2">
-                <HelpCircle size={14} /> DEBUT INVITE MANUAL_UPLINK
-              </h4>
-              <ol className="space-y-2 list-decimal list-inside text-gray-400 text-[11px]">
-                <li>Paste your guest lineup separated by semicolon, pipe or commas in the <b className="text-white">Roster Parser</b>.</li>
-                <li>Upload an invitation card template base (PNG or JPG). The editor locks aspect ratios dynamically.</li>
-                <li>Drop all profile pictures in <b className="text-white">Bulk PFP Loader</b>. The engine pairs files instantly by checking names.</li>
-                <li>Review the roster list. Check the <b className="text-neon-green">AUTO_OK</b> matching badge or manually bind PFPs to rows.</li>
-                <li>Fine-tune positioning (dragging elements directly or using coordinates dials) and trigger the <b className="text-neon-cyan">BATCH GENERATE ZIP</b> array.</li>
-              </ol>
             </div>
           </div>
         </div>
 
-        {/* --- DISSOLVED OFF-SCREEN CARD CONTAINER FOR CRISP BATCH RENDER EXPORTS --- */}
-        <div 
-          id="export-card-render" 
-          style={{
-            position: 'absolute',
-            left: '-9999px',
-            top: '-9999px',
-            width: `${bgWidth}px`,
-            height: `${bgHeight}px`,
-            backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-            backgroundColor: '#05161a',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Background image tracker element for onload monitoring */}
-          {bgImage && (
-            <img 
-              src={bgImage} 
-              alt="bg" 
-              className="export-bg-element hidden" 
-            />
-          )}
+        {/* MANUAL INSTRUCTION AND DETAILS */}
+        <div className="mt-8 bg-white/5 border border-neon-cyan/20 p-5 rounded-lg font-mono text-xs space-y-3 leading-relaxed">
+          <h4 className="text-neon-cyan font-bold tracking-widest text-[11px] uppercase flex items-center gap-2">
+            <HelpCircle size={14} /> Virtual Invitation Generator Manual Uplink
+          </h4>
+          <ol className="space-y-2 list-decimal list-inside text-gray-400 text-[11px]">
+            <li>Paste your guest lineup separated by semicolon, pipe or commas in the <b className="text-white">Name List</b>.</li>
+            <li>Upload an invitation card template base (PNG or JPG). The editor locks aspect ratios dynamically.</li>
+            <li>Drop all profile pictures in <b className="text-white">Profile Picture</b>. The engine pairs files instantly by checking names.</li>
+            <li>Review the roster list. Check the <b className="text-neon-green">AUTO OK</b> matching badge or manually bind PFPs to rows.</li>
+            <li>Fine-tune positioning (dragging elements directly or using coordinates dials) and trigger the <b className="text-neon-cyan">BATCH GENERATE ZIP</b> array.</li>
+          </ol>
+        </div>
 
-          {/* NAME LAYER (HIGH-RES) */}
-          {nameStyle.enabled && (
+        {/* --- DISSOLVED OFF-SCREEN CARD CONTAINERS FOR CRISP BATCH RENDER EXPORTS --- */}
+        <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', pointerEvents: 'none' }}>
+          {isExporting && activeGuest && (
             <div 
+              id="export-card-render-active" 
               style={{
-                position: 'absolute',
-                left: `${nameStyle.x}%`,
-                top: `${nameStyle.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontSize: `${nameStyle.fontSize}px`,
-                zIndex: 25,
-                ...getTextStyle(nameStyle)
+                width: `${bgWidth}px`,
+                height: `${bgHeight}px`,
+                backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                backgroundColor: '#05161a',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                overflow: 'hidden',
+                position: 'relative'
               }}
             >
-              {renderTextContent(activeGuest.name, nameStyle.textTransform)}
-            </div>
-          )}
-
-          {/* TEXT 1 LAYER (HIGH-RES) */}
-          {text1Style.enabled && activeGuest.text1 && (
-            <div 
-              style={{
-                position: 'absolute',
-                left: `${text1Style.x}%`,
-                top: `${text1Style.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontSize: `${text1Style.fontSize}px`,
-                zIndex: 24,
-                ...getTextStyle(text1Style)
-              }}
-            >
-              {renderTextContent(activeGuest.text1, text1Style.textTransform)}
-            </div>
-          )}
-
-          {/* TEXT 2 LAYER (HIGH-RES) */}
-          {text2Style.enabled && activeGuest.text2 && (
-            <div 
-              style={{
-                position: 'absolute',
-                left: `${text2Style.x}%`,
-                top: `${text2Style.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontSize: `${text2Style.fontSize}px`,
-                zIndex: 23,
-                ...getTextStyle(text2Style)
-              }}
-            >
-              {renderTextContent(activeGuest.text2, text2Style.textTransform)}
-            </div>
-          )}
-
-          {/* PFP LAYER (HIGH-RES) */}
-          {pfpStyle.enabled && (
-            <div
-              style={{
-                position: 'absolute',
-                left: `${pfpStyle.x}%`,
-                top: `${pfpStyle.y}%`,
-                transform: 'translate(-50%, -50%)',
-                width: `${pfpStyle.scale}%`,
-                aspectRatio: '1',
-                zIndex: 20,
-              }}
-            >
-              <div 
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderRadius: `${pfpStyle.borderRadius}%`,
-                  borderWidth: `${pfpStyle.borderWidth}px`,
-                  borderColor: pfpStyle.borderColor,
-                  boxShadow: pfpStyle.glowBlur > 0 
-                    ? `0 0 ${pfpStyle.glowBlur}px ${pfpStyle.glowIntensity}px ${pfpStyle.glowColor}`
-                    : 'none'
-                }}
-              >
+              {/* Background image tracker element for onload monitoring */}
+              {bgImage && (
                 <img 
-                  src={activeGuest.pfpUrl || DEFAULT_SILHOUETTE} 
-                  alt="high-res PFP" 
-                  className="export-pfp-element w-full h-full object-cover"
+                  src={bgImage} 
+                  alt="bg" 
+                  className="export-bg-element hidden" 
                 />
-              </div>
+              )}
+
+              {/* NAME LAYER (HIGH-RES) */}
+              {nameStyle.enabled && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: `${nameStyle.x}%`,
+                    top: `${nameStyle.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: `${nameStyle.fontSize}px`,
+                    zIndex: 25,
+                    ...getTextStyle(nameStyle)
+                  }}
+                >
+                  {renderTextContent(activeGuest.name, nameStyle.textTransform)}
+                </div>
+              )}
+
+              {/* TEXT 1 LAYER (HIGH-RES) */}
+              {text1Style.enabled && activeGuest.text1 && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: `${text1Style.x}%`,
+                    top: `${text1Style.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: `${text1Style.fontSize}px`,
+                    zIndex: 24,
+                    ...getTextStyle(text1Style)
+                  }}
+                >
+                  {renderTextContent(activeGuest.text1, text1Style.textTransform)}
+                </div>
+              )}
+
+              {/* TEXT 2 LAYER (HIGH-RES) */}
+              {text2Style.enabled && activeGuest.text2 && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: `${text2Style.x}%`,
+                    top: `${text2Style.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: `${text2Style.fontSize}px`,
+                    zIndex: 23,
+                    ...getTextStyle(text2Style)
+                  }}
+                >
+                  {renderTextContent(activeGuest.text2, text2Style.textTransform)}
+                </div>
+              )}
+
+              {/* PFP LAYER (HIGH-RES) */}
+              {pfpStyle.enabled && activeGuest.pfpUrl && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${pfpStyle.x}%`,
+                    top: `${pfpStyle.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: `${pfpStyle.scale}%`,
+                    aspectRatio: '1',
+                    zIndex: 20,
+                  }}
+                >
+                  <div 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      borderRadius: `${pfpStyle.borderRadius}%`,
+                      borderWidth: `${pfpStyle.borderWidth}px`,
+                      borderColor: pfpStyle.borderColor,
+                      boxShadow: pfpStyle.glowBlur > 0 
+                        ? `0 0 ${pfpStyle.glowBlur}px ${pfpStyle.glowIntensity}px ${pfpStyle.glowColor}`
+                        : 'none'
+                    }}
+                  >
+                    <img 
+                      src={activeGuest.pfpUrl} 
+                      alt="high-res PFP" 
+                      className="export-pfp-element w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1818,8 +2006,8 @@ export default function InvitePage() {
               <RefreshCw size={44} className="text-neon-cyan animate-spin mx-auto mb-4" />
               
               <div className="space-y-2">
-                <span className="text-[10px] text-neon-cyan bg-neon-cyan/10 px-2 py-0.5 rounded tracking-widest uppercase">Array_Compilation_Active</span>
-                <h3 className="text-lg font-ethnocentric text-white tracking-widest uppercase">Invites_Exporter</h3>
+                <span className="text-[10px] text-neon-cyan bg-neon-cyan/10 px-2 py-0.5 rounded tracking-widest uppercase">Array Compilation Active</span>
+                <h3 className="text-lg font-ethnocentric text-white tracking-widest uppercase">Virtual Invitation Exporter</h3>
               </div>
 
               <div className="space-y-4">
@@ -1838,7 +2026,7 @@ export default function InvitePage() {
               </div>
 
               <div className="border border-white/5 rounded p-3 bg-white/5 text-xs text-left">
-                <span className="text-gray-500 block uppercase text-[9px] font-bold">Current_Asset:</span>
+                <span className="text-gray-500 block uppercase text-[9px] font-bold">Current Asset:</span>
                 <span className="text-neon-cyan font-bold truncate block mt-0.5">{exportCurrentName || 'Initializing pipeline...'}</span>
               </div>
             </div>
