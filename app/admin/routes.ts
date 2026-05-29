@@ -12,8 +12,9 @@ export const publicLinks: RouteLink[] = [
   { title: 'ZERYUZ_CORP', url: '/zeryuz' },
   { title: 'DEBUT_PAGE', url: '/debut' },
   { title: 'FORM', url: '/form' },
-  { title: 'LIVECHAT_GEN', url: '/livechat' },
+  { title: 'LIVECHAT', url: '/livechat' },
   { title: 'LORE', url: '/lore' },
+  { title: 'INVITE', url: '/invite' },
 ];
 
 // These are your private admin-only links

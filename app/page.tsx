@@ -1,7 +1,12 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { ChevronDown, Cpu } from 'lucide-react';
 
 export default function Home() {
+  const [toolsExpanded, setToolsExpanded] = useState(false);
+
   return (
     <div className="container mx-auto px-3 sm:px-4 py-8 md:py-20 relative">
 
@@ -34,19 +39,53 @@ export default function Home() {
               I specialize in <span className="text-neon-cyan">HMV technology</span> and digital soul virtualization.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-8">
-              <Link href="/portfolio" className="btn-custom text-[10px] sm:text-xs text-center">
-                PORTFOLIO
-              </Link>
-              <a href="https://vgen.co/axel_zeed" target="_blank" rel="noopener noreferrer" className="btn-custom bg-white text-black hover:bg-gray-200 text-center text-[10px] sm:text-xs">
-                VGEN
-              </a>
-              <Link href="/lore" className="btn-custom bg-[#198754] text-white hover:bg-[#157347] text-center text-[10px] sm:text-xs">
-                LORE RANDOMIZER
-              </Link>
-              <Link href="/livechat" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs">
-                LIVECHAT GENERATOR
-              </Link>
+            <div className="mb-8">
+              {/* Primary Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4">
+                <Link href="/portfolio" className="btn-custom text-[10px] sm:text-xs text-center">
+                  PORTFOLIO
+                </Link>
+                <a href="https://vgen.co/axel_zeed" target="_blank" rel="noopener noreferrer" className="btn-custom bg-white text-black hover:bg-gray-200 text-center text-[10px] sm:text-xs">
+                  VGEN
+                </a>
+              </div>
+
+              {/* Collapsible Cyber Drawer Trigger */}
+              <button 
+                onClick={() => setToolsExpanded(!toolsExpanded)}
+                className="w-full flex items-center justify-between p-3.5 bg-black/60 border border-neon-cyan/40 hover:border-neon-green/60 text-neon-cyan hover:text-neon-green transition-all duration-300 font-mono text-xs tracking-widest relative group shadow-[0_0_15px_rgba(0,242,255,0.05)] rounded overflow-hidden"
+              >
+                {/* Corner highlights in cyber style */}
+                <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-current"></div>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-current"></div>
+                
+                <div className="flex items-center gap-2">
+                  <Cpu size={14} className="animate-pulse" />
+                  <span>[ACCESS_SYSTEM_TOOLS]</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-gray-500 font-bold group-hover:text-neon-green/60 transition-colors uppercase">
+                    {toolsExpanded ? 'COLLAPSE' : 'EXPAND'}
+                  </span>
+                  <ChevronDown size={16} className={`transition-transform duration-300 ${toolsExpanded ? 'rotate-180 text-neon-green' : 'text-neon-cyan'}`} />
+                </div>
+              </button>
+
+              {/* Collapsible Cyber Drawer Panel */}
+              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${toolsExpanded ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+                <div className="p-4 bg-black/40 border border-white/5 rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
+                  <Link href="/lore" className="btn-custom bg-[#198754] text-white hover:bg-[#157347] text-center text-[10px] sm:text-xs py-3 flex items-center justify-center tracking-widest font-bold">
+                    LORE RANDOMIZER
+                  </Link>
+                  <Link href="/livechat" className="btn-custom bg-[#dc3545] text-white hover:bg-[#bb2d3b] text-center text-[10px] sm:text-xs py-3 flex items-center justify-center tracking-widest font-bold">
+                    LIVECHAT GENERATOR
+                  </Link>
+                  <Link href="/invite" className="btn-custom bg-[#058F8B] text-white hover:bg-[#047773] text-center text-[10px] sm:text-xs py-3 flex items-center justify-center tracking-widest font-bold">
+                    VIRTUAL INVITATION
+                  </Link>
+                </div>
+              </div>
             </div>
 
             {/* Trakteer Button */}

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Live Chat Simulator',
+  title: 'Live Chat Generator',
   description: 'Practice stream chat virtualization in the Zeryuz Corp custom simulation chamber.',
 };
 

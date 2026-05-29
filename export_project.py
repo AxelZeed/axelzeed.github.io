@@ -3,7 +3,7 @@ import re
 
 # Project configuration for Next.js / TypeScript
 folders = [
-    "app/lore"
+    "app/invite"
 ]
 
 # allowed file types for folder scanning
@@ -11,10 +11,7 @@ allowed_ext = [".ts", ".tsx", ".css", ".js", ".jsx", ".html", ".json"]
 
 # single files you want to include even if they're outside those folders
 extra_files = [
-    "package.json",
-    "tsconfig.json",
-    "next.config.js",
-    "next.config.mjs"
+    ""
 ]
 
 output = ""
