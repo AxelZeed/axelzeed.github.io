@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Download, Share2 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { toJpeg } from 'html-to-image';
 
 // English Data Pool
 const themes_en = [
@@ -450,13 +450,12 @@ export default function LoreRandomizer() {
     await document.fonts.ready;
 
     try {
-      const canvas = await html2canvas(activeRef.current, {
-        useCORS: true,
-        scale: 2,
-        backgroundColor: null
+      const dataUrl = await toJpeg(activeRef.current, {
+        quality: 0.9,
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: '#000000'
       });
-
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
       const link = document.createElement('a');
       const filename = mode === 'solo'
         ? `${nameA.replace(/\s+/g, '_')}_lore.jpg`
@@ -796,10 +795,9 @@ export default function LoreRandomizer() {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img
-              src="/Assets/Card_Randomizer_Solo.jpg"
+              src="/Assets/Randomizer_Card_Solo.jpg"
               alt="Card Background"
               className="w-full h-full object-cover opacity-80"
-              crossOrigin="anonymous"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/95"></div>
           </div>
@@ -879,10 +877,9 @@ export default function LoreRandomizer() {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img
-              src="/Assets/Card_Randomizer_Synergy.jpg"
+              src="/Assets/Randomizer_Card_Synergy.jpg"
               alt="Card Background"
               className="w-full h-full object-cover opacity-80"
-              crossOrigin="anonymous"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/95"></div>
           </div>
@@ -903,7 +900,7 @@ export default function LoreRandomizer() {
               </div>
             </div>
             <div className="text-right self-start mt-2">
-              <span className="text-[10px] text-[#ffd700]/70 font-mono tracking-widest bg-[#ffd700]/5 px-3 py-1 border border-[#ffd700]/15" style={{ paddingBottom: '18px' }}>
+              <span className="text-[10px] text-[#ffd700]/70 font-mono tracking-widest bg-[#ffd700]/5 px-3 py-1 border border-[#ffd700]/15">
                 SYNERGY_ENGINE_ACTIVE
               </span>
             </div>
@@ -926,7 +923,7 @@ export default function LoreRandomizer() {
                   return (
                     <div key={stat.key} className="flex flex-col gap-1.5">
                       <div className="flex justify-between text-[11px] font-conthrax">
-                        <span className="text-gray-500 truncate" style={{ paddingBottom: '10px' }}>{stat.label.split(' ')[0]}</span>
+                        <span className="text-gray-500 truncate">{stat.label.split(' ')[0]}</span>
                         <span className="text-neon-cyan font-bold">{val}%</span>
                       </div>
                       <div className="h-1.5 w-full bg-black border border-[#00f2ff]/10 rounded-sm overflow-hidden">
@@ -941,7 +938,7 @@ export default function LoreRandomizer() {
             {/* Synergy Center Column */}
             <div className="col-span-2 flex flex-col items-center justify-center gap-4">
               <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4 border-dashed border-[#ffd700] bg-black">
-                <span className="text-2xl text-white font-bold font-conthrax relative -top-1" style={{ paddingBottom: '18px' }}>{synergyPercentage}%</span>
+                <span className="text-2xl text-white font-bold font-conthrax relative -top-1" style={{ paddingTop: '10px' }}>{synergyPercentage}%</span>
               </div>
               <span className="text-[9px] font-ethnocentric text-center text-[#ffd700] tracking-wider">MATCH RATE</span>
             </div>
@@ -961,7 +958,7 @@ export default function LoreRandomizer() {
                   return (
                     <div key={stat.key} className="flex flex-col gap-1.5">
                       <div className="flex justify-between text-[11px] font-conthrax">
-                        <span className="text-gray-500 truncate" style={{ paddingBottom: '15px' }}>{stat.label.split(' ')[0]}</span>
+                        <span className="text-gray-500 truncate">{stat.label.split(' ')[0]}</span>
                         <span className="text-[#ff00ff] font-bold">{val}%</span>
                       </div>
                       <div className="h-1.5 w-full bg-black border border-[#ff00ff]/10 rounded-sm overflow-hidden">
