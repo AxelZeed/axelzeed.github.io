@@ -818,7 +818,7 @@ export default function InvitePage() {
         // 3. MODERN RASTERIZATION PIPE: Pixel-Perfect image compilation using SVG foreignObject architecture
         const blob = await toBlob(exportContainer, {
           pixelRatio: 1,       // Retain the clean, raw pixel proportions of your template width/height dimensions
-          cacheBust: true,     // Bust local browser tracking caches to eliminate old image data bleeding
+          cacheBust: false,    // Safe for local Blob URLs (profile pictures)
           backgroundColor: 'transparent',
           style: {
             transform: 'scale(1)', // Lock the snapshot target scale parameter
