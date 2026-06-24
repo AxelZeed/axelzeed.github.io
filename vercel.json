@@ -5,5 +5,17 @@
       "path": "/api/heartbeat",
       "schedule": "0 0 * * *"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/debutlive",
+      "destination": "https://www.youtube.com/live/cQinAv1I4to?si=CyID9TQUXNz2js8o",
+      "permanent": false
+    },
+    {
+      "source": "/gform",
+      "destination": "https://docs.google.com/forms/d/e/1FAIpQLScDiR8Ecab3e_wMGQcTRYP_QV0hU1w-ptCrDsmGXbBbsJlwcA/viewform?usp=dialog",
+      "permanent": false
+    }
   ]
 }

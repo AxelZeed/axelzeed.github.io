@@ -14,8 +14,7 @@ export interface UserConfig {
 }
 
 export const USERS: Record<string, UserConfig> = {
-  'prototype018': { name: 'Axel Zeed', img: '/Assets/Axel_Ver3.5.png', passcode: 'prototype018' },
-  'scientist_001': { name: 'Zeryuz Researcher', img: '/Assets/Axel_Ver3.png', passcode: 'scientist_001' },
+  '018': { name: 'Axel Zeed', img: '/Assets/Axel_Banner.jpg', passcode: '018' },
   'goddess': { name: 'Hiera', img: '/Assets/Photocard_Hiera.jpg', passcode: 'goddess' },
   'dragon': { name: 'Vikra', img: '/Assets/Photocard_Vikra.jpg', passcode: 'dragon' },
   'space': { name: 'Zack', img: '/Assets/Photocard_Zack.jpg', passcode: 'space' },
@@ -35,39 +34,49 @@ export const PREFERENCES = {
 };
 
 export const SEARCH_PROTOCOLS = [
-  { 
-    title: 'Bing', 
-    src: '/Assets/Bing.png', 
-    desc: "It's not that bad as people said, I use it as my daily driver. It has a reward system that I can redeem lmao. Overall Bing is a good search engine. Get out of here Google." 
+  {
+    title: 'Bing',
+    src: '/Assets/Bing.png',
+    desc: "It's not that bad as people said, I use it as my daily driver. It has a reward system that I can redeem lmao. Overall Bing is a good search engine. Get out of here Google."
   },
-  { 
-    title: 'Brave Search', 
-    src: '/Assets/Brave.png', 
-    desc: "Alternative to Bing since it is default from the Brave browser. Their UI is slick and straightforward." 
+  {
+    title: 'Brave Search',
+    src: '/Assets/Brave.png',
+    desc: "Alternative to Bing since it is default from the Brave browser. Their UI is slick and straightforward."
   },
-  { 
-    title: 'Kagi', 
-    src: '/Assets/Kagi.png', 
-    desc: "My favorite for its usefulness. If it's not because of the monthly limit, I will certainly make it my daily driver." 
+  {
+    title: 'Duck Duck Go',
+    src: '/Assets/Duck.png',
+    desc: "Ooohhh alternative for no-AI searching. But it is okay tho. I rarely use it."
   },
-  { 
-    title: 'Google', 
-    src: '/Assets/Google.png', 
-    desc: "It's the default, what do you expect? Ad cluttered and overall AI stuff that didn't add any value. Also get out of here.",
+  {
+    title: 'Kagi',
+    src: '/Assets/Kagi.png',
+    desc: "My favorite for its usefulness. If it's not because of the monthly limit, I will certainly make it my daily driver."
+  },
+  {
+    title: 'Google',
+    src: '/Assets/Google.png',
+    desc: "It's the default, what do you expect? Ad cluttered and overall AI stuff that didn't add any value. Well it is better nowadays but still. Also get out of here.",
     isStruck: true
   }
 ];
 
 export const WEB_BROWSERS = [
-  { 
-    title: 'Brave Browser', 
-    src: '/Assets/Brave.png', 
-    desc: "Damn good and light. The default adblock is ZAMNN GOOD. Blocks annoying ads on YT and Spotify. Works on Mobile too. God, I love this." 
+  {
+    title: 'Brave Browser',
+    src: '/Assets/Brave.png',
+    desc: "Damn good and light. The default adblock is ZAMNN GOOD. Blocks annoying ads on YT and Spotify. Works on Mobile too. God, I love this."
   },
-  { 
-    title: 'Edge', 
-    src: '/Assets/Edge.png', 
-    desc: "Near perfect but has a lot of bloat features that made my laptop and pc dying. I will use it IF somehow Brave can't use specific Chrome features." 
+  {
+    title: 'Edge',
+    src: '/Assets/Edge.png',
+    desc: "Near perfect but has a lot of bloat features that made my laptop and pc dying. I will use it IF somehow Brave can't use specific Chrome features."
+  },
+  {
+    title: 'Chrome',
+    src: '/Assets/Chrome.png',
+    desc: "If SOMEHOW i still need chrome...."
   }
 ];
 
@@ -131,7 +140,7 @@ export const FILMS: MediaItem[] = [
 
 export const GAMES_COMBAT: MediaItem[] = [
   { title: 'FPS', src: '/Assets/Valorant.png', songs: ['Valorant', 'Call of Duty', 'Apex Legend', 'CS2', 'Point Blank', 'The Finals'] },
-  { title: 'ACTION', src: '/Assets/RE.jpg', songs: ['Resident Evil (4-8)', 'Nier Automata', 'Warframe'] },
+  { title: 'ACTION', src: '/Assets/RE.jpg', songs: ['Resident Evil (2-8)', 'Nier Automata', 'Warframe'] },
   { title: 'BATTLE ROYALE', src: '/Assets/Apex.png', songs: ['PUBGM', 'Apex Legend', 'Bloodstrike', 'Farlight 84', 'Eternal Returns'] }
 ];
 
@@ -143,10 +152,10 @@ export const GAMES_OPENWORLD: MediaItem[] = [
 ];
 
 export const GAMES_STRATEGY: MediaItem[] = [
-  { title: 'GACHA', src: '/Assets/Honkai.png', songs: ['Aether Gazer', 'Wuthering Waves', 'Honkai Star Rail', 'Echocalypse', 'NIKKE'] },
+  { title: 'GACHA', src: '/Assets/Honkai.png', songs: ['Zenless Zone Zero', 'Aether Gazer', 'Wuthering Waves', 'Honkai Star Rail', 'Echocalypse', 'NIKKE'] },
   { title: 'MOBA', src: '/Assets/ML.png', songs: ['Mobile Legends', 'Honor of Kings', 'AOV'] },
   { title: 'MILITARY MMO', src: '/Assets/War_Thunder.png', songs: ['World of Tanks', 'World of Warships', 'War Thunder'] },
-  { title: 'COLLAB', src: '/Assets/Goose.png', songs: ['Magic Chess Go Go', 'Stumble Guys', 'Roblox', 'Goose Goose Duck', 'Pico Park', 'Crab Game'] }
+  { title: 'COLLAB', src: '/Assets/Goose.png', songs: ['Gartic IO', 'Magic Chess Go Go', 'Stumble Guys', 'Roblox', 'Goose Goose Duck', 'Pico Park', 'Crab Game', 'Muck'] }
 ];
 
 export const MUSIC_JPOP: MediaItem[] = [
@@ -169,7 +178,7 @@ export const MUSIC_INTERNATIONAL: MediaItem[] = [
   { title: 'Imagine Dragon', src: '/Assets/Dragons.jpg', songs: ['Lonely', "Gods Don't Pray", 'Eyes Closed', 'Kids', 'Sharks', 'Bones'] },
   { title: 'Maneskin', src: '/Assets/Maneskin.jpg', songs: ['For Your Love', 'I Wanna Be Your Slave', 'The Driver', 'La Paura Del Buio', 'Gossip', 'Torna a Casa', 'Moriro da Re'] },
   { title: 'The Score', src: '/Assets/Score.jpg', songs: ['Stronger', 'Unstoppable', 'Only One', 'Revolution', 'The Fear', 'Glory'] },
-  { title: 'Anya Nami', src: '/Assets/Anya.jpg', songs: ['Sadistic', 'Bread', 'Dirty Dream', 'Folk Rush'] },
+  { title: 'Anya Nami', src: '/Assets/Anya.jpg', songs: ['Sugar Glass', 'Sadistic', 'Bread', 'Dirty Dream', 'Folk Rush'] },
   { title: 'TEYA', src: '/Assets/TEYA.jpg', songs: ['To-Do List', 'Talk That Talk', 'Behind The Scenes', 'Jail', 'Not Scared of Going Old'] },
   { title: 'Maroon 5', src: '/Assets/Maroon5.jpg', songs: ['Misery', 'This Love', 'Give A Little More', 'Maps', 'She Will Be Loved', 'Beautiful Mistake'] },
   { title: 'Sub Urban', src: '/Assets/SubUrban.jpg', songs: ['Bandit', 'Paramour', 'Inferno', 'Cradles', 'Freak', 'Cirque'] },
@@ -232,15 +241,14 @@ export const HARDWARE_PC = [
 ];
 
 export const HARDWARE_LAPTOP = [
-  { label: 'Processor', value: 'AMD Ryzen™ 3-3250U (up to 3.5GHz)' },
-  { label: 'Graphics', value: 'AMD Radeon Graphics Vega 3' },
-  { label: 'Display Screen', value: '14 inch' },
-  { label: 'RAM', value: '2x4GB DDR4 2400Mhz (total usable 6GB)' },
-  { label: 'Storage', value: '256GB PCIe NVMe M.2 (Win 11), 1x 128GB Joyflash SATA (MX Linux)' },
-  { label: 'Webcam', value: 'Acer webcam (640 x 480)' },
-  { label: 'Audio Jack', value: '1 x 3.5mm headphone/speaker jack' },
-  { label: 'Network', value: '10/100/1000 LAN' },
-  { label: 'Wireless', value: 'Wireless 802.11ac' }
+  { label: 'Processor', value: 'Intel® Core i5-1235U 10 Core 12 Threads 1.3 GHz (up to 4.4 GHz)' },
+  { label: 'Code Name', value: 'Intel® Alder Lake' },
+  { label: 'Graphics', value: 'Intel® Iris XE' },
+  { label: 'Display Screen', value: '14″inch IPS (16:9) FHD 1920×1080' },
+  { label: 'RAM', value: '2x8GB DDR4 2666Mhz ' },
+  { label: 'Storage', value: '512GB M.2 NVMe PCIe SSD Running Windows 11 (320GB - Shared NTFS 25GB), MX Linux (150GB)' },
+  { label: 'Webcam', value: '2Mpx 1080p' },
+  { label: 'Network', value: 'Intel Wireless-AC 9560 ac/b/g/n and Bluetooth 5.1' }
 ];
 
 export const CARS_HYPER: MediaItem[] = [
@@ -289,10 +297,11 @@ export const RACING_BROADCASTS: MediaItem[] = [
 
 export const TAGS = [
   { label: 'General', value: '#AxelZeed' },
+  { label: 'Icon', value: '🤖 💻 ' },
   { label: 'Live', value: '#AxeLive' },
-  { label: 'Fanarts', value: '' },
-  { label: 'Memes', value: '' },
-  { label: 'Fanname', value: '' }
+  { label: 'Fanarts', value: '#Axelent' },
+  { label: 'Memes', value: '#Axixixi' },
+  { label: 'Fanname', value: 'Zeenity' }
 ];
 
 export const CONTENTS = {
@@ -300,15 +309,15 @@ export const CONTENTS = {
     'Gaming',
     'Discussion about AI',
     'Watchparty (Esport, Race, Film, etc)',
-    'Weekly / Monthly AI News',
+    'Weekly / Monthly News',
     'Tournament',
     'Maybe, just maybe, Karaoke',
     'Recurring Episodes: Zeed Archive'
   ],
   right: [
-    'Gameshow: Vtuber 100, Who Wants to Be A Gazilionare, Guess Who, Two Truth One Lie, Who\'s The Impostor, Got Talent, Court Simulator, Hot Debate',
+    'Gameshow: Vtuber 100 (Family 100), Who Wants to Be A Gazilionare, Guess Who, Two Truth One Lie, Who\'s The Impostor, Got Talent, Court Simulator, Hot Debate',
     'Get To Know (GTK)',
-    'Podcast with Vtuber discussing something',
+    'Podcast with Vtuber',
     'Lemme See Dat (LSD): Review / Tier List / React'
   ]
 };
@@ -325,7 +334,6 @@ export const CREDITS: MediaItem[] = [
   { title: 'Schedule', author: '@axel_zeed', src: '/Assets/Credit_9.png' },
   { title: 'Opening / Ending', author: '@axel_zeed', src: '/Assets/Credit_10.png' },
   { title: 'Livechat CSS', author: '@axel_zeed', src: '/Assets/Credit_11.png' },
-  { title: 'BGM', author: '@axel_zeed', src: '/Assets/Credit_12.png' }
 ];
 
 export const GALLERY: MediaItem[] = [

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Send as SendIcon, Image as PhotoIcon, CheckCircle as SuccessIcon, AlertCircle as ErrorIcon, Copy as CopyIcon } from 'lucide-react';
+import { Send as SendIcon, Image as PhotoIcon, CheckCircle as SuccessIcon, AlertCircle as ErrorIcon, Copy as CopyIcon, XCircle } from 'lucide-react';
 
 
 interface Wish {
@@ -18,7 +18,46 @@ export const WishesForm = () => {
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'loading' | null; msg: string }>({ type: null, msg: '' });
   const [rescueMode, setRescueMode] = useState(false);
   const [formData, setFormData] = useState({ name: '', message: '' });
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Generate object URLs for previews
+    const urls = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+
+    // Cleanup URLs when files change or component unmounts
+    return () => {
+      urls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [files]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const selectedFiles = Array.from(e.target.files);
+    
+    // Check if adding these files exceeds the limit of 2
+    if (files.length + selectedFiles.length > 2) {
+      alert("Maximum 2 images allowed.");
+      return;
+    }
+
+    // Check size of each file
+    for (const f of selectedFiles) {
+      if (f.size > 5 * 1024 * 1024) {
+        alert(`File ${f.name} exceeds the 5MB size limit.`);
+        return;
+      }
+    }
+
+    setFiles(prev => [...prev, ...selectedFiles]);
+    // Reset file input value so same file can be re-selected if removed
+    e.target.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +66,9 @@ export const WishesForm = () => {
     setStatus({ type: 'loading', msg: '>> ESTABLISHING_UPLINK...' });
 
     try {
-      let imageUrl = null;
+      let imageUrls: string[] = [];
 
-      if (file) {
+      for (const file of files) {
         if (file.size > 5 * 1024 * 1024) {
           throw new Error('VISUAL_DATA_EXCEEDS_5MB_LIMIT');
         }
@@ -45,8 +84,12 @@ export const WishesForm = () => {
         if (uploadError) throw uploadError;
 
         const { data } = supabase.storage.from('wish-images').getPublicUrl(filePath);
-        imageUrl = data.publicUrl;
+        if (data?.publicUrl) {
+          imageUrls.push(data.publicUrl);
+        }
       }
+
+      const imageUrl = imageUrls.length > 0 ? imageUrls.join(',') : null;
 
       const { error: dbError } = await supabase
         .from('wishes')
@@ -60,11 +103,27 @@ export const WishesForm = () => {
 
       setStatus({ type: 'success', msg: '>> DATA_ARCHIVED_SUCCESSFULLY' });
       setFormData({ name: '', message: '' });
-      setFile(null);
+      setFiles([]);
 
     } catch (err: any) {
       console.error(err);
-      setStatus({ type: 'error', msg: `!! ERROR: ${err.message || 'TRANSMISSION_FAILED'} !!` });
+      const errorMsg = err.message || 'TRANSMISSION_FAILED';
+      let statusMsg = `!! ERROR: ${errorMsg} !!`;
+
+      const isStorageFull = 
+        errorMsg.toLowerCase().includes('quota') || 
+        errorMsg.toLowerCase().includes('exceeded') || 
+        errorMsg.toLowerCase().includes('capacity') ||
+        errorMsg.toLowerCase().includes('full') ||
+        errorMsg.toLowerCase().includes('413') ||
+        errorMsg.toLowerCase().includes('large') ||
+        errorMsg.toLowerCase().includes('limit');
+
+      if (isStorageFull) {
+        statusMsg = `!! ERROR: MAINFRAME STORAGE FULL OR PAYLOAD TOO LARGE !!`;
+      }
+
+      setStatus({ type: 'error', msg: statusMsg });
       setRescueMode(true);
     } finally {
       setLoading(false);
@@ -112,19 +171,46 @@ export const WishesForm = () => {
           </div>
 
           <div className="group/field">
-            <label className="block text-[10px] text-neon-green font-mono mb-3 uppercase tracking-[0.3em] group-focus-within/field:text-white transition-colors">Visual_Attachment (MAX_5MB)</label>
+            <label className="block text-[10px] text-neon-green font-mono mb-3 uppercase tracking-[0.3em] group-focus-within/field:text-white transition-colors">Visual_Attachment (MAX_5MB, MAX 2 IMAGES)</label>
             <div className="relative group/file">
               <input 
                 type="file" 
+                multiple
                 accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                onChange={handleFileChange}
+                disabled={files.length >= 2}
+                className="absolute inset-0 opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
               />
-              <div className="flex items-center gap-4 bg-black/40 border border-white/10 p-4 text-xs text-gray-500 group-hover/file:border-neon-green transition-all">
+              <div className={`flex items-center gap-4 bg-black/40 border p-4 text-xs text-gray-500 transition-all ${files.length >= 2 ? 'border-white/5 opacity-50' : 'border-white/10 group-hover/file:border-neon-green'}`}>
                 <PhotoIcon size={18} className="text-neon-green" />
-                <span className="truncate font-mono">{file ? file.name.toUpperCase() : 'UPLOAD_VISUAL_DATA...'}</span>
+                <span className="truncate font-mono">
+                  {files.length === 0 ? 'UPLOAD_VISUAL_DATA...' : `${files.length} IMAGE(S) SELECTED (MAX 2)`}
+                </span>
               </div>
             </div>
+
+            {/* Image Preview List */}
+            {previewUrls.length > 0 && (
+              <div className="flex flex-wrap gap-4 mt-6">
+                {previewUrls.map((url, idx) => (
+                  <div key={idx} className="relative w-28 h-28 border border-white/10 bg-black/40 p-1 group/img-preview">
+                    <img 
+                      src={url} 
+                      alt={`Preview ${idx + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFile(idx)}
+                      className="absolute -top-2 -right-2 bg-black border border-neon-red/50 text-neon-red hover:text-white hover:bg-neon-red p-1 rounded-full transition-all shadow-[0_0_10px_rgba(255,0,0,0.3)] z-20"
+                      title="Remove image"
+                    >
+                      <XCircle size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <button 
@@ -157,7 +243,9 @@ export const WishesForm = () => {
             <h4 className="text-neon-red font-ethnocentric text-[10px] mb-4 uppercase tracking-tighter flex items-center gap-2">
                <ErrorIcon size={14} /> !! RECOVERY_MODE_ACTIVE !!
             </h4>
-            <p className="text-[10px] text-gray-400 mb-6 leading-relaxed font-mono uppercase tracking-wider">The Zeryuz database may be at capacity. Your message has been saved in the local buffer. Proceed to manual relay.</p>
+            <p className="text-[10px] text-gray-400 mb-6 leading-relaxed font-mono uppercase tracking-wider">
+              The mainframe storage capacity may be full or exceeded. Your message is preserved below. Proceed to external relay.
+            </p>
             
             <div className="flex flex-col gap-4">
                <button 
@@ -169,11 +257,10 @@ export const WishesForm = () => {
                </button>
                
                <a 
-                 href="https://forms.gle/h9pnYHYRGjJ973Jy8" 
-                 target="_blank" 
+                 href="/gform" 
                  className="block w-full bg-neon-red text-white p-4 text-[10px] font-ethnocentric text-center hover:bg-white hover:text-neon-red transition-all tracking-widest"
                >
-                 EXTERNAL_GOOGLE_RELAY
+                 SUBMIT VIA GOOGLE FORM RELAY
                </a>
             </div>
           </div>

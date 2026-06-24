@@ -74,11 +74,11 @@ export const Lightbox: React.FC<LightboxProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative max-w-5xl w-full flex flex-col items-center cursor-default"
       >
-        <div className="relative w-full aspect-auto max-h-[80vh] flex items-center justify-center overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,242,255,0.1)]">
+        <div className="relative max-h-[80vh] flex items-center justify-center">
           <img 
             src={src} 
             alt={title || "Viewer"} 
-            className="max-w-full max-h-full object-contain animate-zoom-in" 
+            className="max-w-full max-h-[80vh] object-contain animate-zoom-in border border-white/10 shadow-[0_0_50px_rgba(0,242,255,0.1)]" 
           />
         </div>
         

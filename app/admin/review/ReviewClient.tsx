@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, LayoutGrid, Square, ChevronLeft, ChevronRight, Hash, Lock, Trash2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -25,6 +25,12 @@ const WishCard = ({
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="bg-[#05161a] border-2 border-neon-cyan/20 p-8 relative overflow-hidden group hover:border-neon-cyan/50 transition-all animate-fade-in">
       <div className="flex justify-between items-center border-b border-white/10 pb-6 mb-8">
@@ -38,9 +44,11 @@ const WishCard = ({
               <Hash size={14} />
               <span className="text-sm font-ethnocentric">NODE_{index + 1}</span>
             </div>
-            <p className="text-[10px] text-gray-500 font-mono">{new Date(wish.created_at).toLocaleString()}</p>
+            <p className="text-[10px] text-gray-500 font-mono">
+              {mounted ? new Date(wish.created_at).toLocaleString() : ""}
+            </p>
           </div>
-          <button 
+          <button
             onClick={() => onDelete(wish.id)}
             className="p-3 border border-neon-red/30 text-neon-red/50 hover:text-neon-red hover:bg-neon-red/10 transition-all rounded"
             title="Delete Entry"
@@ -58,13 +66,18 @@ const WishCard = ({
         <div className="mt-8 pt-8 border-t border-white/5">
           <div
             onClick={() => onToggle(wish.id)}
-            className="relative cursor-pointer overflow-hidden border border-white/10 group/img"
+            className="relative cursor-pointer overflow-hidden border border-white/10 group/img p-4 bg-black/20"
           >
-            <img
-              src={wish.image_url}
-              className={`w-full max-h-[500px] object-contain transition-all duration-1000 ${isRevealed ? 'blur-0' : 'blur-3xl grayscale'}`}
-              alt="Attachment"
-            />
+            <div className={`grid gap-4 ${wish.image_url.split(',').length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+              {wish.image_url.split(',').map((url, idx) => (
+                <img
+                  key={idx}
+                  src={url}
+                  className={`w-full max-h-[500px] object-contain transition-all duration-1000 ${isRevealed ? 'blur-0' : 'blur-3xl grayscale'}`}
+                  alt={`Attachment ${idx + 1}`}
+                />
+              ))}
+            </div>
             {!isRevealed && (
               <div className="absolute inset-0 bg-[#05333f]/80 flex flex-col items-center justify-center gap-4 text-center p-6">
                 <Lock className="text-neon-red animate-pulse" size={40} />
@@ -109,16 +122,27 @@ export function ReviewClient({ initialWishes }: { initialWishes: Wish[] }) {
   const handleDelete = async (id: string) => {
     if (!confirm('REALLY_DELETE_THIS_TRANSMISSION?')) return;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('wishes')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select();
 
-    if (!error) {
-      setWishes(prev => prev.filter(w => w.id !== id));
-      if (currentIndex >= wishes.length - 1 && currentIndex > 0) {
-        setCurrentIndex(prev => prev - 1);
-      }
+    if (error) {
+      console.error("Error deleting wish:", error);
+      alert(`Delete failed: ${error.message}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      console.error("No rows were deleted. RLS policies might be blocking this action.");
+      alert("Delete failed: You may not have permission to delete this record (verify Supabase RLS policies for delete).");
+      return;
+    }
+
+    setWishes(prev => prev.filter(w => w.id !== id));
+    if (currentIndex >= wishes.length - 1 && currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
     }
   };
 
