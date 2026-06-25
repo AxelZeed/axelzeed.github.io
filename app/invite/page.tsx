@@ -22,7 +22,9 @@ import {
   CaseSensitive,
   FileImage,
   ChevronRight,
-  Maximize2
+  Maximize2,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { toBlob } from 'html-to-image';
@@ -80,6 +82,20 @@ interface PFPStyle {
   glowBlur: number;
   glowIntensity: number;
   enabled: boolean;
+}
+
+interface CustomImageLayer {
+  id: string;
+  name: string;
+  url: string;
+  x: number;
+  y: number;
+  scale: number;
+  aspectRatio: number;
+  opacity: number;
+  rotation: number;
+  enabled: boolean;
+  locked?: boolean;
 }
 
 // --- Pre-defined Fonts list ---
@@ -241,6 +257,71 @@ export default function InvitePage() {
   const [customFonts, setCustomFonts] = useState<string[]>([]);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
 
+  // Custom Images and Layers state
+  const [customImages, setCustomImages] = useState<CustomImageLayer[]>([]);
+  const [layerOrder, setLayerOrder] = useState<string[]>(['pfp', 'name', 'text1', 'text2']);
+
+  const customImgInputRef = useRef<HTMLInputElement>(null);
+
+  // Keep a reference of customImages for unmount cleanup
+  const customImagesRef = useRef<CustomImageLayer[]>(customImages);
+  useEffect(() => {
+    customImagesRef.current = customImages;
+  }, [customImages]);
+
+  useEffect(() => {
+    return () => {
+      customImagesRef.current.forEach(img => {
+        if (img.url.startsWith('blob:')) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
+    };
+  }, []);
+
+  const handleCustomImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+    
+    filesArray.forEach(file => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const newLayer: CustomImageLayer = {
+          id: Math.random().toString(36).substr(2, 9),
+          name: file.name,
+          url,
+          x: 50,
+          y: 50,
+          scale: 30,
+          aspectRatio: img.naturalWidth / img.naturalHeight,
+          opacity: 100,
+          rotation: 0,
+          enabled: true,
+          locked: false
+        };
+        setCustomImages(prev => [...prev, newLayer]);
+        setLayerOrder(prev => [...prev, `custom_${newLayer.id}`]);
+      };
+      img.src = url;
+    });
+    
+    e.target.value = '';
+  };
+
+  const moveLayer = (index: number, direction: 'up' | 'down') => {
+    setLayerOrder(prev => {
+      const next = [...prev];
+      const targetIndex = direction === 'up' ? index + 1 : index - 1;
+      if (targetIndex >= 0 && targetIndex < next.length) {
+        const temp = next[index];
+        next[index] = next[targetIndex];
+        next[targetIndex] = temp;
+      }
+      return next;
+    });
+  };
+
   // Accordion Control
   const [activeAccordion, setActiveAccordion] = useState<string | null>('bg');
 
@@ -251,10 +332,10 @@ export default function InvitePage() {
   const [activePanelTab, setActivePanelTab] = useState<'editor' | 'roster'>('editor');
 
   // Dragging interaction state
-  const [focusedLayer, setFocusedLayer] = useState<'name' | 'text1' | 'text2' | 'pfp' | null>(null);
+  const [focusedLayer, setFocusedLayer] = useState<string | null>(null);
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
-    layer: 'name' | 'text1' | 'text2' | 'pfp' | null;
+    layer: string | null;
     offsetX: number;
     offsetY: number;
   }>({
@@ -543,7 +624,7 @@ export default function InvitePage() {
   };
 
   // --- Drag and Drop Coordinates Handler ---
-  const handleMouseDown = (e: React.MouseEvent, layer: 'name' | 'text1' | 'text2' | 'pfp') => {
+  const handleMouseDown = (e: React.MouseEvent, layer: string) => {
     e.preventDefault();
     if (!previewContainerRef.current) return;
     setFocusedLayer(layer);
@@ -556,6 +637,14 @@ export default function InvitePage() {
     else if (layer === 'text1') { currentXPercent = text1Style.x; currentYPercent = text1Style.y; }
     else if (layer === 'text2') { currentXPercent = text2Style.x; currentYPercent = text2Style.y; }
     else if (layer === 'pfp') { currentXPercent = pfpStyle.x; currentYPercent = pfpStyle.y; }
+    else if (layer.startsWith('custom_')) {
+      const id = layer.replace('custom_', '');
+      const img = customImages.find(ci => ci.id === id);
+      if (img) {
+        currentXPercent = img.x;
+        currentYPercent = img.y;
+      }
+    }
 
     const xRel = e.clientX - rect.left;
     const yRel = e.clientY - rect.top;
@@ -605,6 +694,9 @@ export default function InvitePage() {
       setText2Style(prev => ({ ...prev, x: newXPercent, y: newYPercent }));
     } else if (dragState.layer === 'pfp') {
       setPfpStyle(prev => ({ ...prev, x: newXPercent, y: newYPercent }));
+    } else if (dragState.layer.startsWith('custom_')) {
+      const id = dragState.layer.replace('custom_', '');
+      setCustomImages(prev => prev.map(img => img.id === id ? { ...img, x: newXPercent, y: newYPercent } : img));
     }
   };
 
@@ -686,6 +778,22 @@ export default function InvitePage() {
       else if (focusedLayer === 'text1') updateStyle(setText1Style);
       else if (focusedLayer === 'text2') updateStyle(setText2Style);
       else if (focusedLayer === 'pfp') updateStyle(setPfpStyle);
+      else if (focusedLayer.startsWith('custom_')) {
+        const id = focusedLayer.replace('custom_', '');
+        setCustomImages(prev => prev.map(img => {
+          if (img.id !== id) return img;
+          let newX = img.x;
+          let newY = img.y;
+          if (e.key === 'ArrowUp') newY = Math.max(0, img.y - nudge);
+          else if (e.key === 'ArrowDown') newY = Math.min(100, img.y + nudge);
+          else if (e.key === 'ArrowLeft') newX = Math.max(0, img.x - nudge);
+          else if (e.key === 'ArrowRight') newX = Math.min(100, img.x + nudge);
+          else return img;
+
+          e.preventDefault();
+          return { ...img, x: Math.round(newX * 10) / 10, y: Math.round(newY * 10) / 10 };
+        }));
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -693,7 +801,7 @@ export default function InvitePage() {
   }, [focusedLayer]);
 
   // --- Batch Export Engine Logic ---mobile compatibility
-  const handleTouchStart = (e: React.TouchEvent, layer: 'name' | 'text1' | 'text2' | 'pfp') => {
+  const handleTouchStart = (e: React.TouchEvent, layer: string) => {
     if (!previewContainerRef.current || e.touches.length === 0) return;
     setFocusedLayer(layer);
     const rect = previewContainerRef.current.getBoundingClientRect();
@@ -706,6 +814,14 @@ export default function InvitePage() {
     else if (layer === 'text1') { currentXPercent = text1Style.x; currentYPercent = text1Style.y; }
     else if (layer === 'text2') { currentXPercent = text2Style.x; currentYPercent = text2Style.y; }
     else if (layer === 'pfp') { currentXPercent = pfpStyle.x; currentYPercent = pfpStyle.y; }
+    else if (layer.startsWith('custom_')) {
+      const id = layer.replace('custom_', '');
+      const img = customImages.find(ci => ci.id === id);
+      if (img) {
+        currentXPercent = img.x;
+        currentYPercent = img.y;
+      }
+    }
 
     const xRel = touch.clientX - rect.left;
     const yRel = touch.clientY - rect.top;
@@ -756,6 +872,9 @@ export default function InvitePage() {
       setText2Style(prev => ({ ...prev, x: newXPercent, y: newYPercent }));
     } else if (dragState.layer === 'pfp') {
       setPfpStyle(prev => ({ ...prev, x: newXPercent, y: newYPercent }));
+    } else if (dragState.layer.startsWith('custom_')) {
+      const id = dragState.layer.replace('custom_', '');
+      setCustomImages(prev => prev.map(img => img.id === id ? { ...img, x: newXPercent, y: newYPercent } : img));
     }
   };
 
@@ -794,11 +913,13 @@ export default function InvitePage() {
         await new Promise<void>(resolve => {
           const bgImg = exportContainer.querySelector('.export-bg-element') as HTMLImageElement | null;
           const pfpImg = exportContainer.querySelector('.export-pfp-element') as HTMLImageElement | null;
+          const customImgs = Array.from(exportContainer.querySelectorAll('.export-custom-img-element')) as HTMLImageElement[];
 
           let bgLoaded = !bgImage;
           let pfpLoaded = !guest.pfpUrl;
+          let customLoaded = customImgs.length === 0;
 
-          const checkDone = () => { if (bgLoaded && pfpLoaded) resolve(); };
+          const checkDone = () => { if (bgLoaded && pfpLoaded && customLoaded) resolve(); };
 
           if (bgImg) {
             if (bgImg.complete) bgLoaded = true;
@@ -807,6 +928,24 @@ export default function InvitePage() {
           if (pfpImg && guest.pfpUrl) {
             if (pfpImg.complete) pfpLoaded = true;
             else { pfpImg.onload = () => { pfpLoaded = true; checkDone(); }; pfpImg.onerror = () => { pfpLoaded = true; checkDone(); }; }
+          }
+          if (customImgs.length > 0) {
+            let loadedCount = 0;
+            customImgs.forEach(img => {
+              if (img.complete) {
+                loadedCount++;
+                if (loadedCount === customImgs.length) { customLoaded = true; checkDone(); }
+              } else {
+                img.onload = () => {
+                  loadedCount++;
+                  if (loadedCount === customImgs.length) { customLoaded = true; checkDone(); }
+                };
+                img.onerror = () => {
+                  loadedCount++;
+                  if (loadedCount === customImgs.length) { customLoaded = true; checkDone(); }
+                };
+              }
+            });
           }
           checkDone();
           setTimeout(resolve, 150); // Fast timing threshold fallback
@@ -1519,6 +1658,207 @@ export default function InvitePage() {
                     </div>
                   </div>
                 </Accordion>
+
+                {/* 5. CUSTOM IMAGES / ASSETS ACCORDION */}
+                <Accordion
+                  icon={ImageIcon}
+                  title="5. Custom Assets"
+                  isOpen={activeAccordion === 'custom-assets'}
+                  onToggle={() => setActiveAccordion(activeAccordion === 'custom-assets' ? null : 'custom-assets')}
+                >
+                  <div className="space-y-4 font-mono text-xs">
+                    <p className="text-gray-400 leading-relaxed">
+                      Upload custom overlay images, frames, borders or accessories. You can move them around the canvas, scale, rotate, and layer them.
+                    </p>
+
+                    <div className="flex justify-between items-center">
+                      <button
+                        onClick={() => customImgInputRef.current?.click()}
+                        className="w-full py-2 bg-neon-cyan/15 border border-neon-cyan/30 text-neon-cyan text-[10px] font-bold hover:bg-neon-cyan hover:text-black rounded transition-all flex items-center justify-center gap-2"
+                      >
+                        <Plus size={12} /> ADD CUSTOM IMAGE
+                      </button>
+                      <input
+                        type="file"
+                        ref={customImgInputRef}
+                        className="hidden"
+                        multiple
+                        accept="image/*"
+                        onChange={handleCustomImageUpload}
+                      />
+                    </div>
+
+                    {customImages.length > 0 && (
+                      <div className="space-y-6 mt-4">
+                        {customImages.map((img) => (
+                          <div key={img.id} className="border border-white/10 rounded-lg p-3 bg-black/40 space-y-3">
+                            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                              <span className="text-[10px] text-neon-cyan font-bold truncate max-w-[150px]">{img.name}</span>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, locked: !ci.locked } : ci))}
+                                  className={`p-1 border rounded transition-all ${img.locked ? 'border-neon-cyan text-neon-cyan bg-neon-cyan/15' : 'border-white/10 text-gray-400 hover:border-neon-cyan/40 hover:text-white'}`}
+                                  title={img.locked ? "Unlock Direct Drag" : "Lock Direct Drag"}
+                                >
+                                  {img.locked ? <Lock size={12} /> : <Unlock size={12} />}
+                                </button>
+                                <input
+                                  type="checkbox"
+                                  checked={img.enabled}
+                                  onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, enabled: e.target.checked } : ci))}
+                                  className="w-3 h-3 text-neon-cyan bg-black border-white/20 rounded focus:ring-0 cursor-pointer"
+                                  title="Enable/Disable Layer"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (img.url.startsWith('blob:')) {
+                                      URL.revokeObjectURL(img.url);
+                                    }
+                                    setCustomImages(prev => prev.filter(ci => ci.id !== img.id));
+                                    setLayerOrder(prev => prev.filter(l => l !== `custom_${img.id}`));
+                                  }}
+                                  className="text-red-400 hover:text-red-300"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </div>
+
+                            {img.enabled && (
+                              <div className="space-y-2 text-[10px] text-gray-400">
+                                {/* Position inputs */}
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="space-y-1">
+                                    <span>X Position ({img.x}%)</span>
+                                    <input
+                                      type="range" min="0" max="100" step="0.5" value={img.x}
+                                      onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, x: parseFloat(e.target.value) } : ci))}
+                                      className="w-full h-1 bg-white/10 appearance-none cursor-pointer accent-neon-cyan"
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <span>Y Position ({img.y}%)</span>
+                                    <input
+                                      type="range" min="0" max="100" step="0.5" value={img.y}
+                                      onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, y: parseFloat(e.target.value) } : ci))}
+                                      className="w-full h-1 bg-white/10 appearance-none cursor-pointer accent-neon-cyan"
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Scale & Opacity */}
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="space-y-1">
+                                    <span>Scale ({img.scale}%)</span>
+                                    <input
+                                      type="range" min="1" max="200" value={img.scale}
+                                      onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, scale: parseInt(e.target.value) } : ci))}
+                                      className="w-full h-1 bg-white/10 appearance-none cursor-pointer accent-neon-cyan"
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <span>Opacity ({img.opacity}%)</span>
+                                    <input
+                                      type="range" min="0" max="100" value={img.opacity}
+                                      onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, opacity: parseInt(e.target.value) } : ci))}
+                                      className="w-full h-1 bg-white/10 appearance-none cursor-pointer accent-neon-cyan"
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Rotation */}
+                                <div className="space-y-1">
+                                  <span>Rotation ({img.rotation}°)</span>
+                                  <input
+                                    type="range" min="0" max="360" value={img.rotation}
+                                    onChange={(e) => setCustomImages(prev => prev.map(ci => ci.id === img.id ? { ...ci, rotation: parseInt(e.target.value) } : ci))}
+                                    className="w-full h-1 bg-white/10 appearance-none cursor-pointer accent-neon-cyan"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Accordion>
+
+                {/* 6. LAYER MANAGER ACCORDION */}
+                <Accordion
+                  icon={Settings}
+                  title="6. Layer Manager"
+                  isOpen={activeAccordion === 'layer-manager'}
+                  onToggle={() => setActiveAccordion(activeAccordion === 'layer-manager' ? null : 'layer-manager')}
+                >
+                  <div className="space-y-4 font-mono text-xs">
+                    <p className="text-gray-400 leading-relaxed">
+                      Arrange the stack order of your template elements. Top elements will sit on top of bottom elements.
+                    </p>
+
+                    <div className="space-y-2 border border-white/10 rounded-lg p-3 bg-black/40">
+                      {[...layerOrder].reverse().map((layerId, idx) => {
+                        const origIdx = layerOrder.length - 1 - idx;
+                        let displayName = layerId;
+                        if (layerId === 'pfp') displayName = '👤 Profile Picture';
+                        else if (layerId === 'name') displayName = '✏️ Name Text';
+                        else if (layerId === 'text1') displayName = '📝 Custom Text 1';
+                        else if (layerId === 'text2') displayName = '📝 Custom Text 2';
+                        else if (layerId.startsWith('custom_')) {
+                          const id = layerId.replace('custom_', '');
+                          const img = customImages.find(ci => ci.id === id);
+                          displayName = img ? `🖼️ ${img.name}` : '🖼️ Custom Image';
+                        }
+
+                        return (
+                          <div
+                            key={layerId}
+                            onClick={() => setFocusedLayer(layerId)}
+                            className={`flex justify-between items-center p-2 border transition-all rounded cursor-pointer ${focusedLayer === layerId ? 'border-neon-cyan bg-neon-cyan/10 shadow-[0_0_10px_rgba(0,242,255,0.15)] font-bold' : 'bg-white/5 border-white/5 hover:border-neon-cyan/20'}`}
+                          >
+                            <span className="truncate max-w-[150px] text-[10px] text-gray-300">{displayName}</span>
+                            <div className="flex gap-1.5 items-center" onClick={(e) => e.stopPropagation()}>
+                              {/* Lock indicator for custom layers in Layer Manager */}
+                              {layerId.startsWith('custom_') && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const id = layerId.replace('custom_', '');
+                                    setCustomImages(prev => prev.map(ci => ci.id === id ? { ...ci, locked: !ci.locked } : ci));
+                                  }}
+                                  className={`p-1 border rounded transition-all text-[9px] ${customImages.find(ci => ci.id === layerId.replace('custom_', ''))?.locked ? 'border-neon-cyan text-neon-cyan bg-neon-cyan/10' : 'border-white/10 text-gray-400 hover:border-neon-cyan/40 hover:text-white'}`}
+                                  title={customImages.find(ci => ci.id === layerId.replace('custom_', ''))?.locked ? "Unlock Direct Drag" : "Lock Direct Drag"}
+                                >
+                                  {customImages.find(ci => ci.id === layerId.replace('custom_', ''))?.locked ? <Lock size={10} /> : <Unlock size={10} />}
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                disabled={origIdx === 0}
+                                onClick={() => moveLayer(origIdx, 'down')}
+                                className="p-1 border border-white/15 hover:border-neon-cyan hover:text-neon-cyan disabled:opacity-20 rounded transition-all text-[9px]"
+                                title="Move Down (Send Back)"
+                              >
+                                ↓
+                              </button>
+                              <button
+                                type="button"
+                                disabled={origIdx === layerOrder.length - 1}
+                                onClick={() => moveLayer(origIdx, 'up')}
+                                className="p-1 border border-white/15 hover:border-neon-cyan hover:text-neon-cyan disabled:opacity-20 rounded transition-all text-[9px]"
+                                title="Move Up (Bring Forward)"
+                              >
+                                ↑
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </Accordion>
               </div>
             )}
 
@@ -1756,13 +2096,13 @@ export default function InvitePage() {
                       <div
                         onMouseDown={(e) => handleMouseDown(e, 'name')}
                         onTouchStart={(e) => handleTouchStart(e, 'name')}
-                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
+                        className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow ${focusedLayer === 'name' ? 'ring-2 ring-neon-cyan shadow-[0_0_15px_rgba(0,242,255,0.4)]' : ''}`}
                         style={{
                           left: `${nameStyle.x}%`,
                           top: `${nameStyle.y}%`,
                           transform: 'translate(-50%, -50%)',
                           fontSize: `${nameStyle.fontSize * previewScale}px`,
-                          zIndex: 25,
+                          zIndex: 10 + layerOrder.indexOf('name'),
                           ...getTextStyle(nameStyle)
                         }}
                       >
@@ -1775,13 +2115,13 @@ export default function InvitePage() {
                       <div
                         onMouseDown={(e) => handleMouseDown(e, 'text1')}
                         onTouchStart={(e) => handleTouchStart(e, 'text1')}
-                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
+                        className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow ${focusedLayer === 'text1' ? 'ring-2 ring-neon-cyan shadow-[0_0_15px_rgba(0,242,255,0.4)]' : ''}`}
                         style={{
                           left: `${text1Style.x}%`,
                           top: `${text1Style.y}%`,
                           transform: 'translate(-50%, -50%)',
                           fontSize: `${text1Style.fontSize * previewScale}px`,
-                          zIndex: 24,
+                          zIndex: 10 + layerOrder.indexOf('text1'),
                           ...getTextStyle(text1Style)
                         }}
                       >
@@ -1794,13 +2134,13 @@ export default function InvitePage() {
                       <div
                         onMouseDown={(e) => handleMouseDown(e, 'text2')}
                         onTouchStart={(e) => handleTouchStart(e, 'text2')}
-                        className="absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow"
+                        className={`absolute select-none focusable-chunk cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded transition-shadow ${focusedLayer === 'text2' ? 'ring-2 ring-neon-cyan shadow-[0_0_15px_rgba(0,242,255,0.4)]' : ''}`}
                         style={{
                           left: `${text2Style.x}%`,
                           top: `${text2Style.y}%`,
                           transform: 'translate(-50%, -50%)',
                           fontSize: `${text2Style.fontSize * previewScale}px`,
-                          zIndex: 23,
+                          zIndex: 10 + layerOrder.indexOf('text2'),
                           ...getTextStyle(text2Style)
                         }}
                       >
@@ -1813,14 +2153,14 @@ export default function InvitePage() {
                       <div
                         onMouseDown={(e) => handleMouseDown(e, 'pfp')}
                         onTouchStart={(e) => handleTouchStart(e, 'pfp')}
-                        className="absolute select-none cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 p-1.5 rounded focusable-chunk"
+                        className={`absolute select-none cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50 rounded focusable-chunk ${focusedLayer === 'pfp' ? 'ring-2 ring-neon-cyan shadow-[0_0_15px_rgba(0,242,255,0.4)]' : ''}`}
                         style={{
                           left: `${pfpStyle.x}%`,
                           top: `${pfpStyle.y}%`,
                           transform: 'translate(-50%, -50%)',
                           width: `${pfpStyle.scale}%`,
                           aspectRatio: '1',
-                          zIndex: 20,
+                          zIndex: 10 + layerOrder.indexOf('pfp'),
                         }}
                       >
                         <div
@@ -1842,6 +2182,35 @@ export default function InvitePage() {
                         </div>
                       </div>
                     )}
+
+                    {/* ELEMENT: CUSTOM IMAGES LAYERS */}
+                    {customImages.map((img) => {
+                      if (!img.enabled) return null;
+                      const layerKey = `custom_${img.id}`;
+                      const zIndexVal = 10 + layerOrder.indexOf(layerKey);
+                      return (
+                        <div
+                          key={img.id}
+                          onMouseDown={(e) => !img.locked && handleMouseDown(e, layerKey)}
+                          onTouchStart={(e) => !img.locked && handleTouchStart(e, layerKey)}
+                          className={`absolute select-none rounded focusable-chunk ${img.locked ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing hover:ring-1 hover:ring-neon-cyan/50'} ${focusedLayer === layerKey ? 'ring-2 ring-neon-cyan shadow-[0_0_15px_rgba(0,242,255,0.4)]' : ''}`}
+                          style={{
+                            left: `${img.x}%`,
+                            top: `${img.y}%`,
+                            transform: `translate(-50%, -50%) rotate(${img.rotation}deg)`,
+                            width: `${img.scale}%`,
+                            opacity: img.opacity / 100,
+                            zIndex: zIndexVal,
+                          }}
+                        >
+                          <img
+                            src={img.url}
+                            alt={img.name}
+                            className="w-full h-auto pointer-events-none"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -1897,7 +2266,7 @@ export default function InvitePage() {
                     top: `${nameStyle.y}%`,
                     transform: 'translate(-50%, -50%)',
                     fontSize: `${nameStyle.fontSize}px`,
-                    zIndex: 25,
+                    zIndex: 10 + layerOrder.indexOf('name'),
                     ...getTextStyle(nameStyle)
                   }}
                 >
@@ -1914,7 +2283,7 @@ export default function InvitePage() {
                     top: `${text1Style.y}%`,
                     transform: 'translate(-50%, -50%)',
                     fontSize: `${text1Style.fontSize}px`,
-                    zIndex: 24,
+                    zIndex: 10 + layerOrder.indexOf('text1'),
                     ...getTextStyle(text1Style)
                   }}
                 >
@@ -1931,7 +2300,7 @@ export default function InvitePage() {
                     top: `${text2Style.y}%`,
                     transform: 'translate(-50%, -50%)',
                     fontSize: `${text2Style.fontSize}px`,
-                    zIndex: 23,
+                    zIndex: 10 + layerOrder.indexOf('text2'),
                     ...getTextStyle(text2Style)
                   }}
                 >
@@ -1949,7 +2318,7 @@ export default function InvitePage() {
                     transform: 'translate(-50%, -50%)',
                     width: `${pfpStyle.scale}%`,
                     aspectRatio: '1',
-                    zIndex: 20,
+                    zIndex: 10 + layerOrder.indexOf('pfp'),
                   }}
                 >
                   <div
@@ -1974,6 +2343,33 @@ export default function InvitePage() {
                   </div>
                 </div>
               )}
+
+              {/* CUSTOM IMAGES LAYERS (HIGH-RES) */}
+              {customImages.map((img) => {
+                if (!img.enabled) return null;
+                const layerKey = `custom_${img.id}`;
+                const zIndexVal = 10 + layerOrder.indexOf(layerKey);
+                return (
+                  <div
+                    key={img.id}
+                    style={{
+                      position: 'absolute',
+                      left: `${img.x}%`,
+                      top: `${img.y}%`,
+                      transform: `translate(-50%, -50%) rotate(${img.rotation}deg)`,
+                      width: `${img.scale}%`,
+                      opacity: img.opacity / 100,
+                      zIndex: zIndexVal,
+                    }}
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.name}
+                      className="export-custom-img-element w-full h-auto"
+                    />
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
